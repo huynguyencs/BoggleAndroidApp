@@ -11,22 +11,60 @@
     tools:context="com.example.mymac.boggle.MainActivity">
 
     <Button
-        android:text="Quit Game"
-        android:layout_width="wrap_content"
+        android:text="Instruction"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:id="@+id/exitGameButton"
-        android:layout_below="@+id/newGameButton"
-        android:layout_alignRight="@+id/newGameButton"
-        android:layout_alignEnd="@+id/newGameButton" />
+        android:id="@+id/instruction"
+        android:layout_below="@+id/highscore"
+        android:layout_alignLeft="@+id/highscore"
+        android:layout_alignStart="@+id/highscore" />
 
     <Button
-        android:text="New Game"
+        android:text="2 Players"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/twoPlayer"
+        android:layout_below="@+id/onePlayer"
+        android:layout_alignLeft="@+id/highscore"
+        android:layout_alignStart="@+id/highscore" />
+
+    <Button
+        android:text="High Score"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/highscore"
+        android:layout_below="@+id/twoPlayer"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="1 Player"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/onePlayer"
+        android:layout_marginTop="147dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/twoPlayer"
+        android:layout_alignStart="@+id/twoPlayer"
+        style="@style/Widget.AppCompat.Button" />
+
+    <TextView
+        android:text="WELCOME"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/newGameButton"
-        android:layout_marginTop="184dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="41dp"
+        android:id="@+id/textView2"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    <Button
+        android:text="Quit"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/exitGameButton"
+        android:layout_marginBottom="18dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/instruction"
+        android:layout_alignStart="@+id/instruction" />
 
 </RelativeLayout>

@@ -14,18 +14,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Button newGameButton = (Button) findViewById(R.id.newGameButton);
+        final Button newGameButton = (Button) findViewById(R.id.onePlayer);
         newGameButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i("clicks","You Clicked Start Game");
-                Intent i = new Intent(MainActivity.this, GameMode.class);
+                Intent i = new Intent(MainActivity.this, GameDifficulty.class);
                 startActivity(i);
             }
         });
 
         final Button exitGameButton = (Button) findViewById(R.id.exitGameButton);
         exitGameButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 finish();
