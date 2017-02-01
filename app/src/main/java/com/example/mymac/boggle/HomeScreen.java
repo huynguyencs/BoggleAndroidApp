@@ -7,18 +7,27 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class HomeScreen extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Button newGameButton = (Button) findViewById(R.id.onePlayer);
-        newGameButton.setOnClickListener(new View.OnClickListener() {
+        final Button SPlayerBtn = (Button) findViewById(R.id.onePlayer);
+        SPlayerBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.i("clicks","You Clicked Start Game");
-                Intent i = new Intent(MainActivity.this, GameDifficulty.class);
+                Log.i("clicks","You Clicked Single Player Game.");
+                Intent i = new Intent(HomeScreen.this, GameDifficulty.class);
+                startActivity(i);
+            }
+        });
+
+        final Button MPlayerBtn = (Button) findViewById(R.id.twoPlayer);
+        MPlayerBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.i("clicks","You Clicked Multiplayer Game");
+                Intent i = new Intent(HomeScreen.this, MultiplayerMode.class);
                 startActivity(i);
             }
         });
