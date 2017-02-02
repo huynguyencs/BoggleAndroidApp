@@ -32,13 +32,33 @@ public class HomeScreen extends AppCompatActivity {
             }
         });
 
-        final Button exitGameButton = (Button) findViewById(R.id.exitGameButton);
-        exitGameButton.setOnClickListener(new View.OnClickListener() {
+        final Button leaderBoardBtn = (Button) findViewById(R.id.leaderBoard);
+        leaderBoardBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.i("clicks","You Clicked Leaderboard");
+                Intent i = new Intent(HomeScreen.this, Leaderboard.class);
+                startActivity(i);
+            }
+        });
+
+        final Button InstructionBtn = (Button) findViewById(R.id.instruction);
+        InstructionBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.i("clicks","You Clicked Instruction.");
+                Intent i = new Intent(HomeScreen.this, Instruction.class);
+                startActivity(i);
+            }
+        });
+
+        final Button exitGameBtn = (Button) findViewById(R.id.exitGameButton);
+        exitGameBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
                 System.exit(0);
             }
         });
+
+
     }
 }

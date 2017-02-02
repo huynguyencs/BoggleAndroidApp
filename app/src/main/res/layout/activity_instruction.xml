@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_instruction"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.mymac.boggle.Instruction">
+
+    <TextView
+        android:text="Boggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tittle"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    <TextView
+        android:text="There are 16 cubic dice with a letter on each side of a die. The game starts by shaking the dice. The dice fall into a 4x4 game board, therefore only top letter of each die is visible to the players. Players then have some 3 minutes to select as many words of 3 or more letters as they can. Repeated words only count once. The words must be formed from sequentially adjacent cubes. A cube is adjacent to another if they are horizontal, vertical or diagonal neighbors. See the following figure for an example, SUPER is a valid word. Words can be in singular, plural or other derived forms. Names and abbreviations are not valid. Each cube letter can be used only once in a single word. \n\nThe score of each valid word is counted based on its length, 1 point for 3 or 4 letter words, 2 points for 5 letter words, 3 points for 6 letter words, 5 points for 7 letter words, and 10 points for words of 8 or more letters. A candidate word is submitted by sliding a finger over dice on the screen. "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/instructionText"
+        android:layout_below="@+id/tittle"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="11dp" />
+</RelativeLayout>

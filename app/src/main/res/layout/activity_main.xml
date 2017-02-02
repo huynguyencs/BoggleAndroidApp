@@ -15,9 +15,9 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:id="@+id/instruction"
-        android:layout_below="@+id/highscore"
-        android:layout_alignLeft="@+id/highscore"
-        android:layout_alignStart="@+id/highscore" />
+        android:layout_below="@+id/leaderBoard"
+        android:layout_alignLeft="@+id/leaderBoard"
+        android:layout_alignStart="@+id/leaderBoard" />
 
     <Button
         android:text="2 Players"
@@ -25,14 +25,14 @@
         android:layout_height="wrap_content"
         android:id="@+id/twoPlayer"
         android:layout_below="@+id/onePlayer"
-        android:layout_alignLeft="@+id/highscore"
-        android:layout_alignStart="@+id/highscore" />
+        android:layout_alignLeft="@+id/leaderBoard"
+        android:layout_alignStart="@+id/leaderBoard" />
 
     <Button
-        android:text="High Score"
+        android:text="Leaderboard"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:id="@+id/highscore"
+        android:id="@+id/leaderBoard"
         android:layout_below="@+id/twoPlayer"
         android:layout_centerHorizontal="true" />
 

@@ -14,10 +14,28 @@ public class GameDifficulty extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_difficulty);
 
-        final Button singleMode = (Button) findViewById(R.id.easyDifficulty);
-        singleMode.setOnClickListener (new View.OnClickListener() {
+        final Button easyDifficulty = (Button) findViewById(R.id.easyDifficulty);
+        easyDifficulty.setOnClickListener (new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i("clicks","You Clicked Easy Difficulty.");
+                Intent i = new Intent(GameDifficulty.this, MainBoard.class);
+                startActivity(i);
+            }
+        });
+
+        final Button mediumDifficulty = (Button) findViewById(R.id.mediumDifficulty);
+        mediumDifficulty.setOnClickListener (new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.i("clicks","You Clicked Medium Difficulty.");
+                Intent i = new Intent(GameDifficulty.this, MainBoard.class);
+                startActivity(i);
+            }
+        });
+
+        final Button hardDifficulty = (Button) findViewById(R.id.hardDifficulty);
+        hardDifficulty.setOnClickListener (new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.i("clicks","You Clicked Hard Difficulty.");
                 Intent i = new Intent(GameDifficulty.this, MainBoard.class);
                 startActivity(i);
             }

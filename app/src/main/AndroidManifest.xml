@@ -17,7 +17,9 @@
         </activity>
         <activity android:name=".GameDifficulty" />
         <activity android:name=".MainBoard" />
-        <activity android:name=".MultiplayerMode"></activity>
+        <activity android:name=".MultiplayerMode" />
+        <activity android:name=".Instruction" />
+        <activity android:name=".Leaderboard" />
     </application>
 
 </manifest>
