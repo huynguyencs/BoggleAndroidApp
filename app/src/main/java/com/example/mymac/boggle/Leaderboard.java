@@ -1,16 +1,29 @@
 package com.example.mymac.boggle;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import android.app.Activity;
 import android.os.Bundle;
-import android.widget.ListView;
+import android.app.ListActivity;
 
-public class Leaderboard extends Activity {
+
+public class Leaderboard extends ListActivity {
+
+    private CustomAdapter mAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_leaderboard);
+        mAdapter = new CustomAdapter(this);
+
+        mAdapter.addSectionHeaderItem("Easy Mode");
+        mAdapter.addItem("Henry: " + 150 + "pts");
+        mAdapter.addItem("Brett: " + 100 + "pts");
+        mAdapter.addItem("Gabi: " + 75 + "pts");
+
+        mAdapter.addSectionHeaderItem("Medium Mode");
+        mAdapter.addItem("Simeng: " + 50 + "pts");
+
+        mAdapter.addSectionHeaderItem("Hard Mode");
+
+        setListAdapter(mAdapter);
     }
+
 }
