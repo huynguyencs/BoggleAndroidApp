@@ -21,7 +21,7 @@ public class Dictionary {
     }
 
     public String[] findValidWords(String[] possibleString) {
-        return null;
+        return possibleString;
     }
 
     private boolean isValid(String word) {

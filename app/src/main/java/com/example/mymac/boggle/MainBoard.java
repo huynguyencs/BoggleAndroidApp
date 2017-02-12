@@ -1,5 +1,6 @@
 package com.example.mymac.boggle;
 
+import android.content.Intent;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -64,8 +65,6 @@ public class MainBoard extends AppCompatActivity {
 
         //todo Add difficulty levels
         if(englishWords == null) return false;
-        if(englishWords.length < 2) return false;
-
         //add these words to the list of possible words for the board
         possibleWords = englishWords;
 
@@ -83,6 +82,13 @@ public class MainBoard extends AppCompatActivity {
             }
         }
         return true;
+    }
+
+    private void endGame(String[] possibleWords, String[] wordsFound){
+        Intent i = new Intent(MainBoard.this, Results.class);
+        i.putExtra("possibleWords", possibleWords);
+        i.putExtra("wordsFound", wordsFound);
+        startActivity(i);
     }
 
     //todo
