@@ -29,6 +29,8 @@ public class MainBoard  extends AppCompatActivity  {
     private String[] wordsFound;
     private Dictionary dictionary;
 
+    //private DiceGraph graph = new DiceGraph();
+
     public Die[] dice;
 
 
@@ -49,6 +51,7 @@ public class MainBoard  extends AppCompatActivity  {
             e.printStackTrace();
         }
 
+
         //attach new board to UI Buttons
         buttonCreation();
 
@@ -67,7 +70,7 @@ public class MainBoard  extends AppCompatActivity  {
         while(true) {
             wordsFound = new String[0];
             randomDice();
-            DiceGraph diceGraph = new DiceGraph(Dice);
+            DiceGraph diceGraph = new DiceGraph();
             String[] wordPossiblilities = possiblePaths();
             //if (validateBoard(wordPossiblilities)) continue;
             return true;
