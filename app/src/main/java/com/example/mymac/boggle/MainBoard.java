@@ -116,7 +116,8 @@ public class MainBoard  extends AppCompatActivity  {
 
             String word = "";
             String line = filescan.nextLine();
-            for (String node: line.split("-")) {
+            String parsedLine = line.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll("\\,", "");
+            for (String node: parsedLine.split(" ")) {
                 String letter = dice[Integer.parseInt(node) - 1].topLetter;
                 word += letter;
             }
