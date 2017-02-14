@@ -36,7 +36,7 @@ public class MainBoard extends AppCompatActivity {
         buttonCreation();
 
         timerText = (TextView) this.findViewById(R.id.timer);
-        timer = new countDownTimer(180 * 1000, 1 * 1000);
+        timer = new countDownTimer(15 * 1000, 1 * 1000);
         timer.start();
 
         user_score = (TextView) this.findViewById(R.id.score);
@@ -108,6 +108,9 @@ public class MainBoard extends AppCompatActivity {
         @Override
         public void onFinish() {
             timerText.setText("TIME'S UP!");
+            String[] possibleWords = {"test", "one", "two", "three"};
+            String[] wordsFound = {"one"};
+            endGame(possibleWords, wordsFound);
         }
         @Override
         public void onTick(long millisUntilFinished) {
