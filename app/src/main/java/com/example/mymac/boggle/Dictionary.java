@@ -49,6 +49,7 @@ public class Dictionary extends AppCompatActivity {
 
     public String[] findValidWords(String[] possibleString) {
         ArrayList<String> possibleWords = new ArrayList<String>();
+        if(possibleString == null) return null;
         for(int i = 0; i < possibleString.length; ++i){
             if(isValid(possibleString[i]))
                 possibleWords.add(possibleString[i]);
