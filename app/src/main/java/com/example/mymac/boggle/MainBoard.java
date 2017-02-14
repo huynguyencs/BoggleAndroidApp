@@ -1,14 +1,28 @@
 package com.example.mymac.boggle;
 
+import android.content.res.AssetManager;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.InputStream;
+
+import android.util.Log;
+import android.widget.Button;
+import android.widget.TextView;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import java.util.Random;
+import java.util.Scanner;
+import java.io.File;
 
 import static java.lang.System.in;
 
@@ -24,7 +38,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
     private String[] wordsFound;
     private Dictionary dictionary;
     private StringBuilder selectingWord = new StringBuilder();
-    private boolean [] value = new boolean [16];
+    private boolean [] value = new boolean [16]
+
+    //private DiceGraph graph = new DiceGraph();
+
+    public Die[] dice;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -35,8 +54,14 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
             dictionary = new Dictionary(inputS);
         } catch (Exception e) { }
 
+
         //fully create a new Board
-        newBoard();
+        try {
+            newBoard();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         //attach new board to UI Buttons
         buttonCreation();
@@ -68,10 +93,11 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
     }
 
     //Sets up the board with a number of helper functions
-    private boolean newBoard() {
+    private boolean newBoard() throws IOException {
         while(true) {
             wordsFound = new String[0];
             randomDice();
+            DiceGraph diceGraph = new DiceGraph();
             String[] wordPossiblilities = possiblePaths();
             //if (validateBoard(wordPossiblilities)) continue;
             return true;
@@ -98,16 +124,33 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
 
     //creates a new 2d array of Die objects
-    private boolean randomDice(){
-        Dice = new Die[16];
-        for(int i = 0; i < 16; i++) {
-            Dice[i] = new Die();
+    private boolean randomDice() {
+        dice = new Die[16];
+        for(int i = 0; i < dice.length ; i++) {
+            dice[i] = new Die(i);
         }
         return true;
     }
 
     //todo
-    private String[] possiblePaths(){
+    private String[] possiblePaths() throws IOException{
+
+        List<String> generatedWords = new LinkedList<>();
+
+
+        Scanner filescan = new Scanner(getAssets().open("possible_paths.txt"));
+        while (filescan.hasNext()) {
+
+            String word = "";
+            String line = filescan.nextLine();
+            String parsedLine = line.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll("\\,", "");
+            for (String node: parsedLine.split(" ")) {
+                String letter = dice[Integer.parseInt(node) - 1].topLetter;
+                word += letter;
+            }
+            generatedWords.add(word);
+        }
+        final int myCode = Log.i("myCode", generatedWords.toString());
         return null;
     }
 
@@ -132,47 +175,47 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
     private void buttonCreation() {
         Button p1_button = (Button)findViewById(R.id.button1);
-        p1_button.setText(Character.toString(Dice[0].topLetter));
+        p1_button.setText(Character.toString(dice[0].topLetter));
         p1_button.setOnClickListener(this);
 
         Button p2_button = (Button)findViewById(R.id.button2);
-        p2_button.setText(Character.toString(Dice[1].topLetter));
+        p2_button.setText(Character.toString(dice[1].topLetter));
         p2_button.setOnClickListener(this);
 
         Button p3_button = (Button)findViewById(R.id.button3);
-        p3_button.setText(Character.toString(Dice[2].topLetter));
+        p3_button.setText(Character.toString(dice[2].topLetter));
         p3_button.setOnClickListener(this);
 
         Button p4_button = (Button)findViewById(R.id.button4);
-        p4_button.setText(Character.toString(Dice[3].topLetter));
+        p4_button.setText(Character.toString(dice[3].topLetter));
         p4_button.setOnClickListener(this);
 
         Button p5_button = (Button)findViewById(R.id.button5);
-        p5_button.setText(Character.toString(Dice[4].topLetter));
+        p5_button.setText(Character.toString(dice[4].topLetter));
         p5_button.setOnClickListener(this);
 
         Button p6_button = (Button)findViewById(R.id.button6);
-        p6_button.setText(Character.toString(Dice[5].topLetter));
+        p6_button.setText(Character.toString(dice[5].topLetter));
         p6_button.setOnClickListener(this);
 
         Button p7_button = (Button)findViewById(R.id.button7);
-        p7_button.setText(Character.toString(Dice[6].topLetter));
+        p7_button.setText(Character.toString(dice[6].topLetter));
         p7_button.setOnClickListener(this);
 
         Button p8_button = (Button)findViewById(R.id.button8);
-        p8_button.setText(Character.toString(Dice[7].topLetter));
+        p8_button.setText(Character.toString(dice[7].topLetter));
         p8_button.setOnClickListener(this);
 
         Button p9_button = (Button)findViewById(R.id.button9);
-        p9_button.setText(Character.toString(Dice[8].topLetter));
+        p9_button.setText(Character.toString(dice[8].topLetter));
         p9_button.setOnClickListener(this);
 
         Button p10_button = (Button)findViewById(R.id.button10);
-        p10_button.setText(Character.toString(Dice[9].topLetter));
+        p10_button.setText(Character.toString(dice[9].topLetter));
         p10_button.setOnClickListener(this);
 
         Button p11_button = (Button)findViewById(R.id.button11);
-        p11_button.setText(Character.toString(Dice[10].topLetter));
+        p11_button.setText(Character.toString(dice[10].topLetter));
         p11_button.setOnClickListener(this);
 
         Button p12_button = (Button)findViewById(R.id.button12);
@@ -197,6 +240,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
         Button submitBtn = (Button)findViewById(R.id.submit);
         submitBtn.setOnClickListener(this);
+
     }
 }
 
