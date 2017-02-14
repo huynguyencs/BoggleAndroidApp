@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.Random;
 
 
@@ -43,7 +45,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 if (flag[0] == true) {
                     selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 0;
@@ -57,7 +59,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -66,7 +68,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 1;
                 if (flag[1] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -80,7 +82,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[1] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -91,7 +93,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 2;
                 if (flag[2] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -105,7 +107,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[2] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -116,7 +118,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 3;
                 if (flag[3] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -130,7 +132,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[3] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -141,7 +143,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 0;
                 if (flag[4] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -155,7 +157,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[4] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -166,7 +168,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 1;
                 if (flag[5] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -180,7 +182,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[5] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -191,7 +193,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 2;
                 if (flag[6] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -205,7 +207,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[6] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -216,7 +218,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 3;
                 if (flag[7] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -230,7 +232,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[7] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -241,7 +243,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 0;
                 if (flag[8] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -255,7 +257,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[8] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -266,7 +268,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 1;
                 if (flag[9] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -280,7 +282,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[9] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -291,7 +293,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 2;
                 if (flag[10] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -305,7 +307,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[10] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -316,7 +318,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 3;
                 if (flag[11] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -330,7 +332,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[11] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -341,7 +343,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 0;
                 if (flag[12] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -355,7 +357,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[12] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -366,7 +368,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 1;
                 if (flag[13] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -380,7 +382,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[13] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -391,7 +393,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 2;
                 if (flag[14] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -405,7 +407,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[14] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -416,7 +418,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curCol = 3;
                 if (flag[15] == true) {
                     selectingWord.delete(0, selectingWord.length());
-                    //toast
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
                 } else {
                     if (selectingWord.length() == 0) {
@@ -430,7 +432,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[15] = true;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
-                            //toast
+                            Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
                         }
                     }
@@ -499,8 +501,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
     //creates a new 2d array of Die objects
     private boolean randomDice(){
-        Dice = new Die[4];
-        for(int i = 0; i < 4; i++) {
+        Dice = new Die[16];
+        for(int i = 0; i < 16; i++) {
             Dice[i] = new Die();
         }
         return true;
