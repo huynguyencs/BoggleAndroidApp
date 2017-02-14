@@ -3,12 +3,13 @@ package com.example.mymac.boggle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import java.util.Random;
 
 
-public class MainBoard extends AppCompatActivity {
+public class MainBoard extends AppCompatActivity implements View.OnClickListener {
 
     public TextView timerText;
     public TextView user_score;
@@ -19,6 +20,129 @@ public class MainBoard extends AppCompatActivity {
     private String[] possibleWords;
     private String[] wordsFound;
     private Dictionary dictionary;
+    private StringBuilder selectingWord = new StringBuilder();
+
+    private boolean[] flag = new boolean[16];
+
+    int prevRow = 0;
+    int prevCol = 0;
+
+
+    @Override
+    public void onClick(View v) {
+        // default method for handling onClick Events.
+        int curRow;
+        int curCol;
+        switch (v.getId()) {
+            case R.id.submit:
+                System.out.println("Checking user's words to dictionary.");
+                break;
+            case R.id.button1:
+                curRow = 0;
+                curCol = 0;
+                if (flag[0] == true) {
+                    selectingWord.delete(0, selectingWord.length());
+                    //toast
+                } else {
+                    if (selectingWord.length() == 0) {
+                        prevRow = 0;
+                        prevCol = 0;
+                        selectingWord.append(((Button)v).getText().toString());
+                        flag[0] = true;
+                    } else {
+                        if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
+                            selectingWord.append(((Button)v).getText().toString());
+                            flag[0] = true;
+                        } else {
+                            selectingWord.delete(0, selectingWord.length());
+                            //toast
+                        }
+                    }
+                }
+            case R.id.button2:
+                curRow = 0;
+                curCol = 1;
+                if (flag[1] == true) {
+                    selectingWord.delete(0, selectingWord.length());
+                    //toast
+                } else {
+                    if (selectingWord.length() == 0) {
+                        prevRow = 0;
+                        prevCol = 1;
+                        selectingWord.append(((Button)v).getText().toString());
+                        flag[1] = true;
+                    } else {
+                        if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
+                            selectingWord.append(((Button)v).getText().toString());
+                            flag[1] = true;
+                        } else {
+                            selectingWord.delete(0, selectingWord.length());
+                            //toast
+                        }
+                    }
+                }
+            case R.id.button3:
+                curRow = 0;
+                curCol = 2;
+                if (flag[2] == true) {
+                    selectingWord.delete(0, selectingWord.length());
+                    //toast
+                } else {
+                    if (selectingWord.length() == 0) {
+                        prevRow = 0;
+                        prevCol = 2;
+                        selectingWord.append(((Button)v).getText().toString());
+                        flag[2] = true;
+                    } else {
+                        if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
+                            selectingWord.append(((Button)v).getText().toString());
+                            flag[2] = true;
+                        } else {
+                            selectingWord.delete(0, selectingWord.length());
+                            //toast
+                        }
+                    }
+                }
+            case R.id.button4:
+                curRow = 0;
+                curCol = 3;
+                if (flag[3] == true) {
+                    selectingWord.delete(0, selectingWord.length());
+                    //toast
+                } else {
+                    if (selectingWord.length() == 0) {
+                        prevRow = 0;
+                        prevCol = 3;
+                        selectingWord.append(((Button)v).getText().toString());
+                        flag[3] = true;
+                    } else {
+                        if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
+                            selectingWord.append(((Button)v).getText().toString());
+                            flag[3] = true;
+                        } else {
+                            selectingWord.delete(0, selectingWord.length());
+                            //toast
+                        }
+                    }
+                }
+            case R.id.button5:
+            case R.id.button6:
+            case R.id.button7:
+            case R.id.button8:
+            case R.id.button9:
+            case R.id.button10:
+            case R.id.button11:
+            case R.id.button12:
+            case R.id.button13:
+            case R.id.button14:
+            case R.id.button15:
+            case R.id.button16:
+            default:
+                selectingWord.append(((Button)v).getText().toString());
+                System.out.println(selectingWord);
+                break;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
