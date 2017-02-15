@@ -1,5 +1,7 @@
 package com.example.mymac.boggle;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Random;
+
 
 
 public class MainBoard extends AppCompatActivity implements View.OnClickListener {
@@ -45,6 +48,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 if (flag[0] == true) {
                     selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
@@ -52,16 +56,19 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         prevCol = 0;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[0] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[0] = true;
                             prevCol = 0;
                             prevRow = 0;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -72,22 +79,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 0;
                         prevCol = 1;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[1] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[1] = true;
                             prevRow = 0;
                             prevCol = 1;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -99,22 +110,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 0;
                         prevCol = 2;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[2] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[2] = true;
                             prevRow = 0;
                             prevCol = 2;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -126,22 +141,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 0;
                         prevCol = 3;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[3] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[3] = true;
                             prevRow = 0;
                             prevCol = 3;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -153,22 +172,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 1;
                         prevCol = 0;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[4] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[4] = true;
                             prevRow = 1;
                             prevCol = 0;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -180,22 +203,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 1;
                         prevCol = 1;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[5] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[5] = true;
                             prevRow = 1;
                             prevCol = 1;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -207,22 +234,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 1;
                         prevCol = 2;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[6] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[6] = true;
                             prevRow = 1;
                             prevCol = 2;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -234,22 +265,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 1;
                         prevCol = 3;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[7] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[7] = true;
                             prevRow = 1;
                             prevCol = 3;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -261,22 +296,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 2;
                         prevCol = 0;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[8] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[8] = true;
                             prevRow = 2;
                             prevCol = 0;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -288,22 +327,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 2;
                         prevCol = 1;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[9] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[9] = true;
                             prevRow = 2;
                             prevCol = 1;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -315,22 +358,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 2;
                         prevCol = 2;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[10] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[10] = true;
                             prevRow = 2;
                             prevCol = 2;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -342,22 +389,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 2;
                         prevCol = 3;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[11] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[11] = true;
                             prevRow = 2;
                             prevCol = 3;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -369,22 +420,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 3;
                         prevCol = 0;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[12] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[12] = true;
                             prevRow = 3;
                             prevCol = 0;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -396,22 +451,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 3;
                         prevCol = 1;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[13] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[13] = true;
                             prevRow = 3;
                             prevCol = 1;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -423,22 +482,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 3;
                         prevCol = 2;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[14] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[14] = true;
                             prevRow = 3;
                             prevCol = 2;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
@@ -450,22 +513,26 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     selectingWord.delete(0, selectingWord.length());
                     Toast.makeText(getApplicationContext(), "THIS BUTTON IS ALREADY PRESSED!!!", Toast.LENGTH_SHORT).show();
                     flag = new boolean[16];
+                    v.getBackground().clearColorFilter();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 3;
                         prevCol = 3;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[15] = true;
+                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[15] = true;
                             prevRow = 3;
                             prevCol = 3;
+                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
                             flag = new boolean[16];
+                            v.getBackground().clearColorFilter();
                         }
                     }
                 }
