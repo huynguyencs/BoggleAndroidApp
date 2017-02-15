@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 
@@ -23,10 +25,10 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
     public Die[] Dice;
     private String[] possibleWords;
-    private String[] wordsFound;
+    private ArrayList<String> wordsFound;
     private Dictionary dictionary;
     private StringBuilder selectingWord = new StringBuilder();
-
+    private int userScore;
     private boolean[] flag = new boolean[16];
 
     int prevRow = 0;
@@ -45,6 +47,33 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         switch (v.getId()) {
             case R.id.submit:
                 System.out.println("Checking user's words to dictionary.");
+                //if user's submitted word is valid
+                if(Arrays.asList(possibleWords).contains(selectingWord.toString())){
+                    //check if it's already in the list of found word
+                    if(wordsFound.contains(selectingWord.toString())){
+                        Toast.makeText(getApplicationContext(), "THIS WORD HAS ALREADY SUBMITTED!!!", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        wordsFound.add(selectingWord.toString());
+                        if (selectingWord.length() >= 3 && selectingWord.length() <= 4){
+                            userScore += 1;
+                        }else if (selectingWord.length() == 5){
+                            userScore += 2;
+                        }else if (selectingWord.length() == 6){
+                            userScore += 3;
+                        }else if (selectingWord.length() == 7){
+                            userScore += 5;
+                        }else if (selectingWord.length() >= 8){
+                            userScore += 10;
+                        }
+                        updateTextView();
+                        selectingWord.delete(0, selectingWord.length());
+                        resetBtnBackground();
+                    }
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "INVALID WORD!!!", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.button1:
                 curRow = 0;
@@ -584,7 +613,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         timer.start();
 
         user_score = (TextView) this.findViewById(R.id.score);
-        user_score.setText("Your score: " + 0);
+        user_score.setText("Your score: " + userScore);
 
 
     }
@@ -592,7 +621,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
     //Sets up the board with a number of helper functions
     private boolean newBoard() {
         while(true) {
-            wordsFound = new String[0];
+            userScore = 0;
+            wordsFound = new ArrayList<String>();
             randomDice();
             String[] wordPossiblilities = possiblePaths();
             if (validateBoard(wordPossiblilities)) continue;
@@ -612,7 +642,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         if(englishWords.length < 2) return false;
 
         //add these words to the list of possible words for the board
-        possibleWords = englishWords;
+        //possibleWords = englishWords;
 
         //success
         return true;
@@ -705,6 +735,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         Button submitBtn = (Button)findViewById(R.id.submit);
         submitBtn.setOnClickListener(this);
     }
+
     private void resetBtnBackground(){
         p1_button.getBackground().clearColorFilter();
         p2_button.getBackground().clearColorFilter();
@@ -722,6 +753,11 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         p14_button.getBackground().clearColorFilter();
         p15_button.getBackground().clearColorFilter();
         p16_button.getBackground().clearColorFilter();
+    }
+
+    public void updateTextView() {
+        TextView textView = (TextView) findViewById(R.id.score);
+        textView.setText("Your score: " + userScore);
     }
 }
 
