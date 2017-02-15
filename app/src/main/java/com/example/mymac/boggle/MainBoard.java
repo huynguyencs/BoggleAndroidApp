@@ -56,6 +56,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[0] = true;
+                            prevCol = 0;
+                            prevRow = 0;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
@@ -80,6 +82,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[1] = true;
+                            prevRow = 0;
+                            prevCol = 1;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -105,6 +109,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[2] = true;
+                            prevRow = 0;
+                            prevCol = 2;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -130,6 +136,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[3] = true;
+                            prevRow = 0;
+                            prevCol = 3;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -155,6 +163,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[4] = true;
+                            prevRow = 1;
+                            prevCol = 0;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -180,6 +190,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[5] = true;
+                            prevRow = 1;
+                            prevCol = 1;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -205,6 +217,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[6] = true;
+                            prevRow = 1;
+                            prevCol = 2;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -230,6 +244,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[7] = true;
+                            prevRow = 1;
+                            prevCol = 3;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -255,6 +271,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[8] = true;
+                            prevRow = 2;
+                            prevCol = 0;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -280,6 +298,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[9] = true;
+                            prevRow = 2;
+                            prevCol = 1;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -305,6 +325,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[10] = true;
+                            prevRow = 2;
+                            prevCol = 2;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -330,6 +352,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[11] = true;
+                            prevRow = 2;
+                            prevCol = 3;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -355,6 +379,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[12] = true;
+                            prevRow = 3;
+                            prevCol = 0;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -380,6 +406,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[13] = true;
+                            prevRow = 3;
+                            prevCol = 1;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -405,6 +433,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[14] = true;
+                            prevRow = 3;
+                            prevCol = 2;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -430,6 +460,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         if (curRow - prevRow <= 1 && curCol - prevCol >= -1) {
                             selectingWord.append(((Button)v).getText().toString());
                             flag[15] = true;
+                            prevRow = 3;
+                            prevCol = 3;
                         } else {
                             selectingWord.delete(0, selectingWord.length());
                             Toast.makeText(getApplicationContext(), "THIS BUTTON IS NOT IN VALID POSITION!!!", Toast.LENGTH_SHORT).show();
@@ -439,9 +471,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 }
                 break;
             default:
-                selectingWord.append(((Button)v).getText().toString());
-                System.out.println(selectingWord);
                 break;
+
         }
     }
 
