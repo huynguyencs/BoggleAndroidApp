@@ -583,6 +583,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         timer = new countDownTimer(180 * 1000, 1 * 1000);
         timer.start();
 
+
         user_score = (TextView) this.findViewById(R.id.score);
         user_score.setText("Your score: " + 0);
 
@@ -648,7 +649,10 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         }
         @Override
         public void onTick(long millisUntilFinished) {
-            timerText.setText("TIME LEFT: " + millisUntilFinished / 1000);
+            long total_seconds = millisUntilFinished / 1000;
+            long seconds = total_seconds % 60;
+            long minutes = total_seconds / 60;
+            timerText.setText("TIME LEFT: " + minutes + ":" + seconds);
         }
     }
 
