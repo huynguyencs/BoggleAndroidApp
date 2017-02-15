@@ -1,98 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:weightSum="1">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:text="All Possible Words"
+    <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textViewResultsTitle"
-        android:textAlignment="center"
-        android:textStyle="normal|bold" />
+        android:layout_height="462dp"
+        android:id="@+id/@android:id/list" />
 
-    <Button
-        android:text="Done"
-        android:layout_height="wrap_content"
-        android:id="@+id/buttonDone"
-        android:layout_weight="0.17"
-        android:layout_marginRight="34dp"
-        android:layout_marginEnd="34dp"
-        android:layout_width="125dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        android:text="Replay"
-        android:layout_width="125dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/buttonReplay"
-        android:layout_weight="0.10"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="41dp"
-        android:layout_marginStart="41dp" />
-
-    <TextView
-        android:text="Player Score"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvScoreTitle"
-        android:layout_below="@+id/textViewResultsTitle"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:textAlignment="center" />
-
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvScore"
-        android:layout_below="@+id/tvScoreTitle"
-        android:layout_alignLeft="@+id/tvPossScore"
-        android:layout_alignStart="@+id/tvPossScore"
-        android:textAlignment="center" />
-
-    <ScrollView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textViewResultsTitle">
+        android:layout_height="wrap_content">
 
-        <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/resultTable"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+        <Button
+            android:text="replay"
+            android:id="@+id/buttonReplay"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" />
 
-        </TableLayout>
-    </ScrollView>
+        <Button
+            android:text="done"
+            android:id="@+id/buttonDone"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" />
+    </LinearLayout>
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvPossScore"
-        android:layout_below="@+id/tvPossScoreTitle"
-        android:layout_alignLeft="@+id/tvScoreTitle"
-        android:layout_alignStart="@+id/tvScoreTitle"
-        android:textAlignment="center" />
-
-    <TextView
-        android:text="Possible Score"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvPossScoreTitle"
-        android:layout_below="@+id/tvScore"
-        android:layout_marginTop="33dp"
-        android:layout_alignLeft="@+id/tvPossScore"
-        android:layout_alignStart="@+id/tvPossScore"
-        android:textAlignment="center" />
-
-</RelativeLayout>
+</LinearLayout>
