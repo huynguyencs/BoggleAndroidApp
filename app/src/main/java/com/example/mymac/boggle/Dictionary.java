@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 
 /**
@@ -54,6 +55,7 @@ public class Dictionary extends AppCompatActivity {
             if(isValid(possibleString[i]))
                 possibleWords.add(possibleString[i]);
         }
+        Collections.sort(possibleWords, String.CASE_INSENSITIVE_ORDER);
         return possibleWords.toArray(new String[0]);
     }
 
@@ -81,6 +83,5 @@ public class Dictionary extends AppCompatActivity {
             return 5;
         }
         return 10;
-
     }
 }
