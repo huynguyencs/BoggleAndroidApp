@@ -305,6 +305,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             pts = 10;
                         }
                         userScore += pts;
+                        flag = new boolean[16];
                         CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                         updateTextView();
@@ -314,6 +315,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 }
                 else{
                     Toast.makeText(getApplicationContext(), "INVALID WORD!!!", Toast.LENGTH_SHORT).show();
+                    resetBtnBackground();
                 }
                 break;
             case R.id.button1:
