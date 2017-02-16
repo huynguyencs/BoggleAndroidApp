@@ -3,8 +3,11 @@ package com.example.mymac.boggle;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import java.util.ArrayList;
 
 public class Results extends ListActivity {
 
@@ -18,33 +21,40 @@ public class Results extends ListActivity {
 
         Intent intent = getIntent();
         String[] possibleWords = intent.getStringArrayExtra("possibleWords");
-        String[] wordsFound = intent.getStringArrayExtra("wordsFound");
+        ArrayList<String> wordsFound = intent.getStringArrayListExtra("wordsFound");
         int userScore = intent.getIntExtra("userScore", 0);
 
-        int playerScore = 0;
-        int possScore = 0;
         int wordScore = 0;
-        boolean found = false;
-
+        int totalScore = 0;
         rAdapter.addSectionHeaderItem("RESULTS");
+
+        // Set the player score
+        User testUser = new User("", userScore);
+        //TODO QUERY IF THEY SET HIGH SCORE
+
         // check found words exists
-        if (wordsFound != null && wordsFound.length > 0) {
-            for(int i = 0; i < wordsFound.length; i++) {
-                wordScore = get_score(wordsFound[i]);
-                String row = wordsFound[i] + "      " + wordScore;
+        if (wordsFound != null && !wordsFound.isEmpty()) {
+            for (String word : wordsFound) {
+                wordScore = get_score(word);
+                String row = word + "      " + wordScore;
                 rAdapter.addBoldItem(row);
             }
+          }
+        else {
+            rAdapter.addBoldItem("No Words Found");
         }
 
-        for (int i = 0; i < possibleWords.length; i++) {
-            for (int j = 0; j < wordsFound.length; j++) {
-                if (!possibleWords[i].equals(wordsFound[j])) {
-                    wordScore = get_score(possibleWords[i]);
-                    String row = possibleWords[i] + "       " + wordScore;
-                    rAdapter.addItem(row);
-                }
-            }
-        }
+//        for (String possWord : possibleWords) {
+//            wordScore = get_score(possWord);
+//            totalScore += wordScore;
+//            if (!wordsFound.isEmpty() && !wordsFound.contains(possWord)) {
+//                String row = possWord + "       " + wordScore;
+//                rAdapter.addItem(row);
+//            }
+//        }
+
+//        rAdapter.addSectionHeaderItem("Score: " + userScore + "/" + totalScore);
+        rAdapter.addSectionHeaderItem("Score: " + userScore);
         setListAdapter(rAdapter);
 
         final Button buttonDone = (Button) findViewById(R.id.buttonDone);

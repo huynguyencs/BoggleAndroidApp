@@ -48,10 +48,6 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
     Button p7_button; Button p8_button; Button p9_button; Button p10_button; Button p11_button; Button p12_button;
     Button p13_button; Button p14_button; Button p15_button; Button p16_button;
 
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -78,7 +74,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
 
         timerText = (TextView) this.findViewById(R.id.timer);
-        timer = new countDownTimer(180 * 1000, 1 * 1000);
+        timer = new countDownTimer(18 * 1000, 1 * 1000);
         timer.start();
 
 
@@ -133,7 +129,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         return true;
     }
 
-    private void endGame(String[] possibleWords, String[] wordsFound, int userScore){
+    private void endGame(){
         Intent i = new Intent(MainBoard.this, Results.class);
         i.putExtra("possibleWords", possibleWords);
         i.putExtra("wordsFound", wordsFound);
@@ -175,10 +171,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         @Override
         public void onFinish() {
             timerText.setText("TIME'S UP!");
-            String[] possibleWords = {"test", "one", "two", "three"};
-            String[] wordsFound = {"one"};
-            int user_score = 3242;
-            endGame(possibleWords, wordsFound, user_score);
+            endGame();
         }
         @Override
         public void onTick(long millisUntilFinished) {
