@@ -2,32 +2,42 @@ package com.example.mymac.boggle;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.widget.Toast;
+import java.util.Arrays;
+import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
+import java.io.InputStream;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.TextView;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
+import java.io.File;
 
+import static java.lang.System.in;
 
-
-public class MainBoard extends AppCompatActivity implements View.OnClickListener {
-
+public class MainBoard extends AppCompatActivity implements View.OnClickListener{
     public TextView timerText;
     public TextView user_score;
     private CountDownTimer timer;
 
+    public Die[] dice;
 
-    public Die[] Dice;
     private String[] possibleWords;
     private ArrayList<String> wordsFound;
     private Dictionary dictionary;
     private StringBuilder selectingWord = new StringBuilder();
+
     private int userScore;
     private boolean[] flag = new boolean[16];
 
@@ -598,18 +608,30 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         System.out.println(selectingWord);
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_board);
+        try {
+            InputStream inputS = getResources().openRawResource(R.raw.dictionary);
+            dictionary = new Dictionary(inputS);
+        } catch (Exception e) { }
 
-        dictionary = new Dictionary();
+
         //fully create a new Board
-        newBoard();
+        try {
+            newBoard();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //attach new board to UI Buttons
         buttonCreation();
+
+        //get possibleWords from dictionary
+
 
         timerText = (TextView) this.findViewById(R.id.timer);
         timer = new countDownTimer(180 * 1000, 1 * 1000);
@@ -617,19 +639,41 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
 
         user_score = (TextView) this.findViewById(R.id.score);
+
         user_score.setText("Your score: " + userScore);
 
+
+    @Override
+    public void onClick(View v) {
+        // default method for handling onClick Events..
+        switch (v.getId()) {
+            case R.id.submit:
+                System.out.println("Checking user's words to dictionary.");
+                break;
+
+            default:
+                //array button id 0-15
+
+                selectingWord.append(((Button)v).getText().toString());
+                System.out.println(selectingWord);
+                break;
+        }
 
     }
 
     //Sets up the board with a number of helper functions
-    private boolean newBoard() {
+    private boolean newBoard() throws IOException {
         while(true) {
             userScore = 0;
             wordsFound = new ArrayList<String>();
             randomDice();
+            DiceGraph diceGraph = new DiceGraph();
             String[] wordPossiblilities = possiblePaths();
-            if (validateBoard(wordPossiblilities)) continue;
+            possibleWords = dictionary.findValidWords(wordPossiblilities);
+            System.out.println(possibleWords);
+            //if(!validateBoard(possibleWords))
+            //        continue;
+            //if (validateBoard(wordPossiblilities)) continue;
             return true;
         }
     }
@@ -643,8 +687,6 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
         //todo Add difficulty levels
         if(englishWords == null) return false;
-        if(englishWords.length < 2) return false;
-
         //add these words to the list of possible words for the board
         //possibleWords = englishWords;
 
@@ -654,16 +696,42 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
 
     //creates a new 2d array of Die objects
-    private boolean randomDice(){
-        Dice = new Die[16];
-        for(int i = 0; i < 16; i++) {
-            Dice[i] = new Die();
+
+    private boolean randomDice() {
+        dice = new Die[16];
+        for(int i = 0; i < dice.length ; i++) {
+            dice[i] = new Die(i);
         }
         return true;
     }
 
+    private void endGame(String[] possibleWords, String[] wordsFound, int userScore){
+        Intent i = new Intent(MainBoard.this, Results.class);
+        i.putExtra("possibleWords", possibleWords);
+        i.putExtra("wordsFound", wordsFound);
+        i.putExtra("userScore", userScore);
+        startActivity(i);
+    }
+
     //todo
-    private String[] possiblePaths(){
+    private String[] possiblePaths() throws IOException{
+
+        List<String> generatedWords = new LinkedList<>();
+
+
+        Scanner filescan = new Scanner(getAssets().open("possible_paths.txt"));
+        while (filescan.hasNext()) {
+
+            String word = "";
+            String line = filescan.nextLine();
+            String parsedLine = line.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll("\\,", "");
+            for (String node: parsedLine.split(" ")) {
+                String letter = dice[Integer.parseInt(node) - 1].topLetter;
+                word += letter;
+            }
+            generatedWords.add(word);
+        }
+        System.out.println(generatedWords.toString());
         return null;
     }
 
@@ -679,6 +747,10 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         @Override
         public void onFinish() {
             timerText.setText("TIME'S UP!");
+            String[] possibleWords = {"test", "one", "two", "three"};
+            String[] wordsFound = {"one"};
+            int user_score = 3242;
+            endGame(possibleWords, wordsFound, user_score);
         }
         @Override
         public void onTick(long millisUntilFinished) {
@@ -690,53 +762,54 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
     }
 
     private void buttonCreation() {
+
         p1_button = (Button)findViewById(R.id.button1);
-        p1_button.setText(Character.toString(Dice[0].topLetter));
+        p1_button.setText(Character.toString(dice[0].topLetter));
         p1_button.setOnClickListener(this);
         p2_button = (Button)findViewById(R.id.button2);
-        p2_button.setText(Character.toString(Dice[1].topLetter));
+        p2_button.setText(Character.toString(dice[1].topLetter));
         p2_button.setOnClickListener(this);
         p3_button = (Button)findViewById(R.id.button3);
-        p3_button.setText(Character.toString(Dice[2].topLetter));
+        p3_button.setText(Character.toString(dice[2].topLetter));
         p3_button.setOnClickListener(this);
         p4_button = (Button)findViewById(R.id.button4);
-        p4_button.setText(Character.toString(Dice[3].topLetter));
+        p4_button.setText(Character.toString(dice[3].topLetter));
         p4_button.setOnClickListener(this);
         p5_button = (Button)findViewById(R.id.button5);
-        p5_button.setText(Character.toString(Dice[4].topLetter));
+        p5_button.setText(Character.toString(dice[4].topLetter));
         p5_button.setOnClickListener(this);
         p6_button = (Button)findViewById(R.id.button6);
-        p6_button.setText(Character.toString(Dice[5].topLetter));
+        p6_button.setText(Character.toString(dice[5].topLetter));
         p6_button.setOnClickListener(this);
         p7_button = (Button)findViewById(R.id.button7);
-        p7_button.setText(Character.toString(Dice[6].topLetter));
+        p7_button.setText(Character.toString(dice[6].topLetter));
         p7_button.setOnClickListener(this);
         p8_button = (Button)findViewById(R.id.button8);
-        p8_button.setText(Character.toString(Dice[7].topLetter));
+        p8_button.setText(Character.toString(dice[7].topLetter));
         p8_button.setOnClickListener(this);
         p9_button = (Button)findViewById(R.id.button9);
-        p9_button.setText(Character.toString(Dice[8].topLetter));
+        p9_button.setText(Character.toString(dice[8].topLetter));
         p9_button.setOnClickListener(this);
         p10_button = (Button)findViewById(R.id.button10);
-        p10_button.setText(Character.toString(Dice[9].topLetter));
+        p10_button.setText(Character.toString(dice[9].topLetter));
         p10_button.setOnClickListener(this);
         p11_button = (Button)findViewById(R.id.button11);
-        p11_button.setText(Character.toString(Dice[10].topLetter));
+        p11_button.setText(Character.toString(dice[10].topLetter));
         p11_button.setOnClickListener(this);
         p12_button = (Button)findViewById(R.id.button12);
-        p12_button.setText(Character.toString(Dice[11].topLetter));
+        p12_button.setText(Character.toString(dice[11].topLetter));
         p12_button.setOnClickListener(this);
         p13_button = (Button)findViewById(R.id.button13);
-        p13_button.setText(Character.toString(Dice[12].topLetter));
+        p13_button.setText(Character.toString(dice[12].topLetter));
         p13_button.setOnClickListener(this);
         p14_button = (Button)findViewById(R.id.button14);
-        p14_button.setText(Character.toString(Dice[13].topLetter));
+        p14_button.setText(Character.toString(dice[13].topLetter));
         p14_button.setOnClickListener(this);
         p15_button = (Button)findViewById(R.id.button15);
-        p15_button.setText(Character.toString(Dice[14].topLetter));
+        p15_button.setText(Character.toString(dice[14].topLetter));
         p15_button.setOnClickListener(this);
         p16_button = (Button)findViewById(R.id.button16);
-        p16_button.setText(Character.toString(Dice[15].topLetter));
+        p16_button.setText(Character.toString(dice[15].topLetter));
         p16_button.setOnClickListener(this);
 
         Button submitBtn = (Button)findViewById(R.id.submit);
@@ -771,6 +844,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
     public int getRandomColor(){
         Random rnd = new Random();
         return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+
     }
 }
 
