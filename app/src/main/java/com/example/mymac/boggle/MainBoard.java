@@ -49,6 +49,232 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
     Button p13_button; Button p14_button; Button p15_button; Button p16_button;
 
 
+
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main_board);
+        try {
+            InputStream inputS = getResources().openRawResource(R.raw.dictionary);
+            dictionary = new Dictionary(inputS);
+        } catch (Exception e) {
+        }
+
+
+        //fully create a new Board
+        try {
+            newBoard();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //attach new board to UI Buttons
+        buttonCreation();
+
+        //get possibleWords from dictionary
+
+
+        timerText = (TextView) this.findViewById(R.id.timer);
+        timer = new countDownTimer(180 * 1000, 1 * 1000);
+        timer.start();
+
+
+        user_score = (TextView) this.findViewById(R.id.score);
+
+        user_score.setText("Your score: " + userScore);
+    }
+
+
+
+    //Sets up the board with a number of helper functions
+    private boolean newBoard() throws IOException {
+        while(true) {
+            userScore = 0;
+            wordsFound = new ArrayList<String>();
+            randomDice();
+            DiceGraph diceGraph = new DiceGraph();
+            String[] wordPossiblilities = possiblePaths();
+            possibleWords = dictionary.findValidWords(wordPossiblilities);
+            System.out.println(possibleWords);
+            //if(!validateBoard(possibleWords))
+            //        continue;
+            //if (validateBoard(wordPossiblilities)) continue;
+            return true;
+        }
+    }
+
+
+    /* Takes a list of word possibilities and checks with the Dictionary to get
+    a list of valid words back for the board. Returns false if the board
+    doesnt meet the difficulty criteria */
+    private boolean validateBoard(String[] wordPossibilities) {
+        String[] englishWords = dictionary.findValidWords(wordPossibilities);
+
+        //todo Add difficulty levels
+        if(englishWords == null) return false;
+        //add these words to the list of possible words for the board
+        //possibleWords = englishWords;
+
+        //success
+        return true;
+    }
+
+
+    //creates a new 2d array of Die objects
+
+    private boolean randomDice() {
+        dice = new Die[16];
+        for(int i = 0; i < dice.length ; i++) {
+            dice[i] = new Die(i);
+        }
+        return true;
+    }
+
+    private void endGame(String[] possibleWords, String[] wordsFound, int userScore){
+        Intent i = new Intent(MainBoard.this, Results.class);
+        i.putExtra("possibleWords", possibleWords);
+        i.putExtra("wordsFound", wordsFound);
+        i.putExtra("userScore", userScore);
+        startActivity(i);
+    }
+
+    //todo
+    private String[] possiblePaths() throws IOException{
+
+        List<String> generatedWords = new LinkedList<>();
+
+
+        Scanner filescan = new Scanner(getAssets().open("possible_paths.txt"));
+        while (filescan.hasNext()) {
+
+            String word = "";
+            String line = filescan.nextLine();
+            String parsedLine = line.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll("\\,", "");
+            for (String node: parsedLine.split(" ")) {
+                String letter = dice[Integer.parseInt(node) - 1].topLetter;
+                word += letter;
+            }
+            generatedWords.add(word);
+        }
+        System.out.println(generatedWords.toString());
+        return null;
+    }
+
+    protected char rndChar () {
+        Random rnd = new Random();
+        return (char) (65 + rnd.nextInt(26));
+    }
+
+    public class countDownTimer extends CountDownTimer {
+        public countDownTimer(long startTime, long interval) {
+            super(startTime, interval);
+        }
+        @Override
+        public void onFinish() {
+            timerText.setText("TIME'S UP!");
+            String[] possibleWords = {"test", "one", "two", "three"};
+            String[] wordsFound = {"one"};
+            int user_score = 3242;
+            endGame(possibleWords, wordsFound, user_score);
+        }
+        @Override
+        public void onTick(long millisUntilFinished) {
+            long total_seconds = millisUntilFinished / 1000;
+            long seconds = total_seconds % 60;
+            long minutes = total_seconds / 60;
+            timerText.setText("TIME LEFT: " + minutes + ":" + seconds);
+        }
+    }
+
+    private void buttonCreation() {
+
+        p1_button = (Button)findViewById(R.id.button1);
+        p1_button.setText((dice[0].topLetter));
+        p1_button.setOnClickListener(this);
+        p2_button = (Button)findViewById(R.id.button2);
+        p2_button.setText((dice[1].topLetter));
+        p2_button.setOnClickListener(this);
+        p3_button = (Button)findViewById(R.id.button3);
+        p3_button.setText((dice[2].topLetter));
+        p3_button.setOnClickListener(this);
+        p4_button = (Button)findViewById(R.id.button4);
+        p4_button.setText((dice[3].topLetter));
+        p4_button.setOnClickListener(this);
+        p5_button = (Button)findViewById(R.id.button5);
+        p5_button.setText((dice[4].topLetter));
+        p5_button.setOnClickListener(this);
+        p6_button = (Button)findViewById(R.id.button6);
+        p6_button.setText((dice[5].topLetter));
+        p6_button.setOnClickListener(this);
+        p7_button = (Button)findViewById(R.id.button7);
+        p7_button.setText((dice[6].topLetter));
+        p7_button.setOnClickListener(this);
+        p8_button = (Button)findViewById(R.id.button8);
+        p8_button.setText((dice[7].topLetter));
+        p8_button.setOnClickListener(this);
+        p9_button = (Button)findViewById(R.id.button9);
+        p9_button.setText((dice[8].topLetter));
+        p9_button.setOnClickListener(this);
+        p10_button = (Button)findViewById(R.id.button10);
+        p10_button.setText((dice[9].topLetter));
+        p10_button.setOnClickListener(this);
+        p11_button = (Button)findViewById(R.id.button11);
+        p11_button.setText((dice[10].topLetter));
+        p11_button.setOnClickListener(this);
+        p12_button = (Button)findViewById(R.id.button12);
+        p12_button.setText((dice[11].topLetter));
+        p12_button.setOnClickListener(this);
+        p13_button = (Button)findViewById(R.id.button13);
+        p13_button.setText((dice[12].topLetter));
+        p13_button.setOnClickListener(this);
+        p14_button = (Button)findViewById(R.id.button14);
+        p14_button.setText((dice[13].topLetter));
+        p14_button.setOnClickListener(this);
+        p15_button = (Button)findViewById(R.id.button15);
+        p15_button.setText((dice[14].topLetter));
+        p15_button.setOnClickListener(this);
+        p16_button = (Button)findViewById(R.id.button16);
+        p16_button.setText((dice[15].topLetter));
+        p16_button.setOnClickListener(this);
+
+        Button submitBtn = (Button)findViewById(R.id.submit);
+        submitBtn.setOnClickListener(this);
+    }
+
+    private void resetBtnBackground(){
+        p1_button.getBackground().clearColorFilter();
+        p2_button.getBackground().clearColorFilter();
+        p3_button.getBackground().clearColorFilter();
+        p4_button.getBackground().clearColorFilter();
+        p5_button.getBackground().clearColorFilter();
+        p6_button.getBackground().clearColorFilter();
+        p7_button.getBackground().clearColorFilter();
+        p8_button.getBackground().clearColorFilter();
+        p9_button.getBackground().clearColorFilter();
+        p10_button.getBackground().clearColorFilter();
+        p11_button.getBackground().clearColorFilter();
+        p12_button.getBackground().clearColorFilter();
+        p13_button.getBackground().clearColorFilter();
+        p14_button.getBackground().clearColorFilter();
+        p15_button.getBackground().clearColorFilter();
+        p16_button.getBackground().clearColorFilter();
+    }
+
+    public void updateTextView() {
+        TextView textView = (TextView) findViewById(R.id.score);
+        textView.setText("Your score: " + userScore);
+        textView.setTextColor( getRandomColor());
+    }
+
+    public int getRandomColor(){
+        Random rnd = new Random();
+        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+
+    }
+
     @Override
     public void onClick(View v) {
         // default method for handling onClick Events.
@@ -58,7 +284,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
             case R.id.submit:
                 System.out.println("Checking user's words to dictionary.");
                 //if user's submitted word is valid
-                if(Arrays.asList(possibleWords).contains(selectingWord.toString())){
+                //if(Arrays.asList(possibleWords).contains(selectingWord.toString())){
+                if(dictionary.isValid(selectingWord.toString())){
                     //check if it's already in the list of found word
                     if(wordsFound.contains(selectingWord.toString())){
                         Toast.makeText(getApplicationContext(), "THIS WORD HAS ALREADY BEEN SUBMITTED!!!", Toast.LENGTH_SHORT).show();
@@ -606,230 +833,6 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 break;
         }
         System.out.println(selectingWord);
-    }
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_board);
-        try {
-            InputStream inputS = getResources().openRawResource(R.raw.dictionary);
-            dictionary = new Dictionary(inputS);
-        } catch (Exception e) {
-        }
-
-
-        //fully create a new Board
-        try {
-            newBoard();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //attach new board to UI Buttons
-        buttonCreation();
-
-        //get possibleWords from dictionary
-
-
-        timerText = (TextView) this.findViewById(R.id.timer);
-        timer = new countDownTimer(180 * 1000, 1 * 1000);
-        timer.start();
-
-
-        user_score = (TextView) this.findViewById(R.id.score);
-
-        user_score.setText("Your score: " + userScore);
-    }
-
-
-
-    //Sets up the board with a number of helper functions
-    private boolean newBoard() throws IOException {
-        while(true) {
-            userScore = 0;
-            wordsFound = new ArrayList<String>();
-            randomDice();
-            DiceGraph diceGraph = new DiceGraph();
-            String[] wordPossiblilities = possiblePaths();
-            possibleWords = dictionary.findValidWords(wordPossiblilities);
-            System.out.println(possibleWords);
-            //if(!validateBoard(possibleWords))
-            //        continue;
-            //if (validateBoard(wordPossiblilities)) continue;
-            return true;
-        }
-    }
-
-
-    /* Takes a list of word possibilities and checks with the Dictionary to get
-    a list of valid words back for the board. Returns false if the board
-    doesnt meet the difficulty criteria */
-    private boolean validateBoard(String[] wordPossibilities) {
-        String[] englishWords = dictionary.findValidWords(wordPossibilities);
-
-        //todo Add difficulty levels
-        if(englishWords == null) return false;
-        //add these words to the list of possible words for the board
-        //possibleWords = englishWords;
-
-        //success
-        return true;
-    }
-
-
-    //creates a new 2d array of Die objects
-
-    private boolean randomDice() {
-        dice = new Die[16];
-        for(int i = 0; i < dice.length ; i++) {
-            dice[i] = new Die(i);
-        }
-        return true;
-    }
-
-    private void endGame(String[] possibleWords, String[] wordsFound, int userScore){
-        Intent i = new Intent(MainBoard.this, Results.class);
-        i.putExtra("possibleWords", possibleWords);
-        i.putExtra("wordsFound", wordsFound);
-        i.putExtra("userScore", userScore);
-        startActivity(i);
-    }
-
-    //todo
-    private String[] possiblePaths() throws IOException{
-
-        List<String> generatedWords = new LinkedList<>();
-
-
-        Scanner filescan = new Scanner(getAssets().open("possible_paths.txt"));
-        while (filescan.hasNext()) {
-
-            String word = "";
-            String line = filescan.nextLine();
-            String parsedLine = line.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll("\\,", "");
-            for (String node: parsedLine.split(" ")) {
-                String letter = dice[Integer.parseInt(node) - 1].topLetter;
-                word += letter;
-            }
-            generatedWords.add(word);
-        }
-        System.out.println(generatedWords.toString());
-        return null;
-    }
-
-    protected char rndChar () {
-        Random rnd = new Random();
-        return (char) (65 + rnd.nextInt(26));
-    }
-
-    public class countDownTimer extends CountDownTimer {
-        public countDownTimer(long startTime, long interval) {
-            super(startTime, interval);
-        }
-        @Override
-        public void onFinish() {
-            timerText.setText("TIME'S UP!");
-            String[] possibleWords = {"test", "one", "two", "three"};
-            String[] wordsFound = {"one"};
-            int user_score = 3242;
-            endGame(possibleWords, wordsFound, user_score);
-        }
-        @Override
-        public void onTick(long millisUntilFinished) {
-            long total_seconds = millisUntilFinished / 1000;
-            long seconds = total_seconds % 60;
-            long minutes = total_seconds / 60;
-            timerText.setText("TIME LEFT: " + minutes + ":" + seconds);
-        }
-    }
-
-    private void buttonCreation() {
-
-        p1_button = (Button)findViewById(R.id.button1);
-        p1_button.setText((dice[0].topLetter));
-        p1_button.setOnClickListener(this);
-        p2_button = (Button)findViewById(R.id.button2);
-        p2_button.setText((dice[1].topLetter));
-        p2_button.setOnClickListener(this);
-        p3_button = (Button)findViewById(R.id.button3);
-        p3_button.setText((dice[2].topLetter));
-        p3_button.setOnClickListener(this);
-        p4_button = (Button)findViewById(R.id.button4);
-        p4_button.setText((dice[3].topLetter));
-        p4_button.setOnClickListener(this);
-        p5_button = (Button)findViewById(R.id.button5);
-        p5_button.setText((dice[4].topLetter));
-        p5_button.setOnClickListener(this);
-        p6_button = (Button)findViewById(R.id.button6);
-        p6_button.setText((dice[5].topLetter));
-        p6_button.setOnClickListener(this);
-        p7_button = (Button)findViewById(R.id.button7);
-        p7_button.setText((dice[6].topLetter));
-        p7_button.setOnClickListener(this);
-        p8_button = (Button)findViewById(R.id.button8);
-        p8_button.setText((dice[7].topLetter));
-        p8_button.setOnClickListener(this);
-        p9_button = (Button)findViewById(R.id.button9);
-        p9_button.setText((dice[8].topLetter));
-        p9_button.setOnClickListener(this);
-        p10_button = (Button)findViewById(R.id.button10);
-        p10_button.setText((dice[9].topLetter));
-        p10_button.setOnClickListener(this);
-        p11_button = (Button)findViewById(R.id.button11);
-        p11_button.setText((dice[10].topLetter));
-        p11_button.setOnClickListener(this);
-        p12_button = (Button)findViewById(R.id.button12);
-        p12_button.setText((dice[11].topLetter));
-        p12_button.setOnClickListener(this);
-        p13_button = (Button)findViewById(R.id.button13);
-        p13_button.setText((dice[12].topLetter));
-        p13_button.setOnClickListener(this);
-        p14_button = (Button)findViewById(R.id.button14);
-        p14_button.setText((dice[13].topLetter));
-        p14_button.setOnClickListener(this);
-        p15_button = (Button)findViewById(R.id.button15);
-        p15_button.setText((dice[14].topLetter));
-        p15_button.setOnClickListener(this);
-        p16_button = (Button)findViewById(R.id.button16);
-        p16_button.setText((dice[15].topLetter));
-        p16_button.setOnClickListener(this);
-
-        Button submitBtn = (Button)findViewById(R.id.submit);
-        submitBtn.setOnClickListener(this);
-    }
-
-    private void resetBtnBackground(){
-        p1_button.getBackground().clearColorFilter();
-        p2_button.getBackground().clearColorFilter();
-        p3_button.getBackground().clearColorFilter();
-        p4_button.getBackground().clearColorFilter();
-        p5_button.getBackground().clearColorFilter();
-        p6_button.getBackground().clearColorFilter();
-        p7_button.getBackground().clearColorFilter();
-        p8_button.getBackground().clearColorFilter();
-        p9_button.getBackground().clearColorFilter();
-        p10_button.getBackground().clearColorFilter();
-        p11_button.getBackground().clearColorFilter();
-        p12_button.getBackground().clearColorFilter();
-        p13_button.getBackground().clearColorFilter();
-        p14_button.getBackground().clearColorFilter();
-        p15_button.getBackground().clearColorFilter();
-        p16_button.getBackground().clearColorFilter();
-    }
-
-    public void updateTextView() {
-        TextView textView = (TextView) findViewById(R.id.score);
-        textView.setText("Your score: " + userScore);
-        textView.setTextColor( getRandomColor());
-    }
-
-    public int getRandomColor(){
-        Random rnd = new Random();
-        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-
     }
 }
 

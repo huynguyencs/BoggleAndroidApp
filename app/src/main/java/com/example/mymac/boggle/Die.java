@@ -13,14 +13,29 @@ public class Die {
     int boardPosition;
 
     Die(int boardPosition){
-        topLetter = String.valueOf(randomChar());
+        if(boardPosition == 1 || boardPosition == 14)
+            topLetter = String.valueOf(randomVowel());
+        else
+            topLetter = String.valueOf(randomChar());
         this.boardPosition = boardPosition;
     }
 
     private char randomChar() {
-        Random r = new Random();
-        char c = (char)(r.nextInt(26) + 'a');
-        return c;
+        while(true) {
+            Random r = new Random();
+            char c = (char) (r.nextInt(26) + 'a');
+
+            //eliminates low frequency letters
+            if(c == 'x' || c == 'q' || c == 'z' || c == 'v' || c == 'j' || c == 'k' || c == 'y')
+                continue;
+            return c;
+        }
+    }
+
+    private char randomVowel() {
+        char[] vowels = {'a','e','i','o','u','y'};
+        Random r=new Random();
+        return vowels[r.nextInt(vowels.length)];
     }
 
 
