@@ -74,7 +74,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
 
         timerText = (TextView) this.findViewById(R.id.timer);
-        timer = new countDownTimer(180 * 1000, 1 * 1000);
+        timer = new countDownTimer(60 * 1000, 1 * 1000);
         timer.start();
 
 
@@ -282,6 +282,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     //check if it's already in the list of found word
                     if(wordsFound.contains(selectingWord.toString())){
                         Toast.makeText(getApplicationContext(), "THIS WORD HAS ALREADY BEEN SUBMITTED!!!", Toast.LENGTH_SHORT).show();
+                        resetBtnBackground();
                     }
                     else{
                         int pts = 0;
@@ -294,7 +295,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             pts = 3;
                         }else if (selectingWord.length() == 7){
                             pts = 5;
-                        }else{
+                        }else if (selectingWord.length() >= 8) {
                             pts = 10;
                         }
                         userScore += pts;
