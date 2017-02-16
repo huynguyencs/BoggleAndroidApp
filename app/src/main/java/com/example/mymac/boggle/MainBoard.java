@@ -74,7 +74,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
 
         timerText = (TextView) this.findViewById(R.id.timer);
-        timer = new countDownTimer(18 * 1000, 1 * 1000);
+        timer = new countDownTimer(180 * 1000, 1 * 1000);
         timer.start();
 
 
