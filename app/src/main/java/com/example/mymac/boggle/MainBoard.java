@@ -63,7 +63,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             userScore += 3;
                         }else if (selectingWord.length() == 7){
                             userScore += 5;
-                        }else if (selectingWord.length() >= 8){
+                        }else{
                             userScore += 10;
                         }
                         updateTextView();
@@ -601,7 +601,6 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         setContentView(R.layout.activity_main_board);
 
         dictionary = new Dictionary();
-
         //fully create a new Board
         newBoard();
 
@@ -762,6 +761,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
     public void updateTextView() {
         TextView textView = (TextView) findViewById(R.id.score);
         textView.setText("Your score: " + userScore);
+        textView.setTextColor( getRandomColor());
+    }
+
+    public int getRandomColor(){
+        Random rnd = new Random();
+        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
     }
 }
 
