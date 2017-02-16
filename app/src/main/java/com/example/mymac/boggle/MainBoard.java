@@ -305,11 +305,9 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             pts = 10;
                         }
                         userScore += pts;
-                        flag = new boolean[16];
                         CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                         updateTextView();
-                        selectingWord.delete(0, selectingWord.length());
                         resetBtnBackground();
                     }
                 }
@@ -317,6 +315,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                     Toast.makeText(getApplicationContext(), "INVALID WORD!!!", Toast.LENGTH_SHORT).show();
                     resetBtnBackground();
                 }
+                selectingWord.delete(0, selectingWord.length());
+                flag = new boolean[16];
                 break;
             case R.id.button1:
                 curRow = 0;
