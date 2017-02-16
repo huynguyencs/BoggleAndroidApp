@@ -617,7 +617,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         try {
             InputStream inputS = getResources().openRawResource(R.raw.dictionary);
             dictionary = new Dictionary(inputS);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
 
         //fully create a new Board
@@ -641,25 +642,9 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         user_score = (TextView) this.findViewById(R.id.score);
 
         user_score.setText("Your score: " + userScore);
-
-
-    @Override
-    public void onClick(View v) {
-        // default method for handling onClick Events..
-        switch (v.getId()) {
-            case R.id.submit:
-                System.out.println("Checking user's words to dictionary.");
-                break;
-
-            default:
-                //array button id 0-15
-
-                selectingWord.append(((Button)v).getText().toString());
-                System.out.println(selectingWord);
-                break;
-        }
-
     }
+
+
 
     //Sets up the board with a number of helper functions
     private boolean newBoard() throws IOException {
@@ -764,52 +749,52 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
     private void buttonCreation() {
 
         p1_button = (Button)findViewById(R.id.button1);
-        p1_button.setText(Character.toString(dice[0].topLetter));
+        p1_button.setText((dice[0].topLetter));
         p1_button.setOnClickListener(this);
         p2_button = (Button)findViewById(R.id.button2);
-        p2_button.setText(Character.toString(dice[1].topLetter));
+        p2_button.setText((dice[1].topLetter));
         p2_button.setOnClickListener(this);
         p3_button = (Button)findViewById(R.id.button3);
-        p3_button.setText(Character.toString(dice[2].topLetter));
+        p3_button.setText((dice[2].topLetter));
         p3_button.setOnClickListener(this);
         p4_button = (Button)findViewById(R.id.button4);
-        p4_button.setText(Character.toString(dice[3].topLetter));
+        p4_button.setText((dice[3].topLetter));
         p4_button.setOnClickListener(this);
         p5_button = (Button)findViewById(R.id.button5);
-        p5_button.setText(Character.toString(dice[4].topLetter));
+        p5_button.setText((dice[4].topLetter));
         p5_button.setOnClickListener(this);
         p6_button = (Button)findViewById(R.id.button6);
-        p6_button.setText(Character.toString(dice[5].topLetter));
+        p6_button.setText((dice[5].topLetter));
         p6_button.setOnClickListener(this);
         p7_button = (Button)findViewById(R.id.button7);
-        p7_button.setText(Character.toString(dice[6].topLetter));
+        p7_button.setText((dice[6].topLetter));
         p7_button.setOnClickListener(this);
         p8_button = (Button)findViewById(R.id.button8);
-        p8_button.setText(Character.toString(dice[7].topLetter));
+        p8_button.setText((dice[7].topLetter));
         p8_button.setOnClickListener(this);
         p9_button = (Button)findViewById(R.id.button9);
-        p9_button.setText(Character.toString(dice[8].topLetter));
+        p9_button.setText((dice[8].topLetter));
         p9_button.setOnClickListener(this);
         p10_button = (Button)findViewById(R.id.button10);
-        p10_button.setText(Character.toString(dice[9].topLetter));
+        p10_button.setText((dice[9].topLetter));
         p10_button.setOnClickListener(this);
         p11_button = (Button)findViewById(R.id.button11);
-        p11_button.setText(Character.toString(dice[10].topLetter));
+        p11_button.setText((dice[10].topLetter));
         p11_button.setOnClickListener(this);
         p12_button = (Button)findViewById(R.id.button12);
-        p12_button.setText(Character.toString(dice[11].topLetter));
+        p12_button.setText((dice[11].topLetter));
         p12_button.setOnClickListener(this);
         p13_button = (Button)findViewById(R.id.button13);
-        p13_button.setText(Character.toString(dice[12].topLetter));
+        p13_button.setText((dice[12].topLetter));
         p13_button.setOnClickListener(this);
         p14_button = (Button)findViewById(R.id.button14);
-        p14_button.setText(Character.toString(dice[13].topLetter));
+        p14_button.setText((dice[13].topLetter));
         p14_button.setOnClickListener(this);
         p15_button = (Button)findViewById(R.id.button15);
-        p15_button.setText(Character.toString(dice[14].topLetter));
+        p15_button.setText((dice[14].topLetter));
         p15_button.setOnClickListener(this);
         p16_button = (Button)findViewById(R.id.button16);
-        p16_button.setText(Character.toString(dice[15].topLetter));
+        p16_button.setText((dice[15].topLetter));
         p16_button.setOnClickListener(this);
 
         Button submitBtn = (Button)findViewById(R.id.submit);
