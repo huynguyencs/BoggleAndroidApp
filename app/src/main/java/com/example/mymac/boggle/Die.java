@@ -6,13 +6,14 @@ import java.util.Random;
 
 public class Die {
 
-    char topLetter;
+    String topLetter;
 
     //posistion on the board
-    int[] boardCoordinates;
+    int boardPosition;
 
-    Die(){
-        topLetter = randomChar();
+    Die(int boardPosition){
+        topLetter = String.valueOf(randomChar());
+        this.boardPosition = boardPosition;
     }
 
     private char randomChar() {
