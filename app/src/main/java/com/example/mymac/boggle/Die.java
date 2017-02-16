@@ -1,5 +1,6 @@
 package com.example.mymac.boggle;
 import java.util.Random;
+import android.widget.Button;
 /**
  * Created by brettchafin on 2/9/17.
  */
@@ -22,9 +23,5 @@ public class Die {
         return c;
     }
 
-    // TODO - Finish
-    public boolean isAdjacent(Die die) {
-        return true;
-    }
 
 }
