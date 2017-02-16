@@ -14,6 +14,52 @@ import java.util.Hashtable;
  */
 
 public class Dictionary extends AppCompatActivity {
+    Hashtable <String, String> wordDictionary;
+
+    //constructor
+    Dictionary(InputStream in) {//K-V
+        wordDictionary = new Hashtable <String, String> ();
+        createWordDictionary(in);
+    }
+
+    private boolean createWordDictionary(InputStream inputS) {
+        BufferedReader textReader = new BufferedReader(new InputStreamReader(inputS));
+        //StringBuilder sb = new StringBuilder();
+        String line = null;
+        try {
+            while ((line = textReader.readLine()) != null) {
+                if (!wordDictionary.containsKey(line)) {
+                    wordDictionary.put(line, line);
+                }
+            }
+            inputS.close();
+            //sb.toString();
+        }catch (Exception e) { }
+        return true;
+    }
+
+    public String[] findValidWords(String[] possibleString) {
+        ArrayList<String> possibleWords = new ArrayList<String>();
+        if(possibleString == null) return null;
+        for(int i = 0; i < possibleString.length; ++i){
+            if(isValid(possibleString[i]))
+                possibleWords.add(possibleString[i]);
+        }
+        Collections.sort(possibleWords, String.CASE_INSENSITIVE_ORDER);
+        return possibleWords.toArray(new String[0]);
+    }
+
+    public boolean isValid(String word) {
+        if(wordDictionary.containsKey(word)){
+            return true;
+        }
+        return false;
+    }
+}
+
+/*
+
+public class Dictionary extends AppCompatActivity {
     Hashtable <Integer, ArrayList<String>> wordDictionary;
 
     //constructor
@@ -85,3 +131,4 @@ public class Dictionary extends AppCompatActivity {
         return 10;
     }
 }
+ */
