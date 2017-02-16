@@ -1,6 +1,9 @@
 package com.example.mymac.boggle;
 
+
+import android.content.Intent;
 import android.content.res.AssetManager;
+
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -118,8 +121,6 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
         //todo Add difficulty levels
         if(englishWords == null) return false;
-        if(englishWords.length < 2) return false;
-
         //add these words to the list of possible words for the board
         possibleWords = englishWords;
 
@@ -135,6 +136,14 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
             dice[i] = new Die(i);
         }
         return true;
+    }
+
+    private void endGame(String[] possibleWords, String[] wordsFound, int userScore){
+        Intent i = new Intent(MainBoard.this, Results.class);
+        i.putExtra("possibleWords", possibleWords);
+        i.putExtra("wordsFound", wordsFound);
+        i.putExtra("userScore", userScore);
+        startActivity(i);
     }
 
     //todo
@@ -171,6 +180,10 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         @Override
         public void onFinish() {
             timerText.setText("TIME'S UP!");
+            String[] possibleWords = {"test", "one", "two", "three"};
+            String[] wordsFound = {"one"};
+            int user_score = 3242;
+            endGame(possibleWords, wordsFound, user_score);
         }
         @Override
         public void onTick(long millisUntilFinished) {
