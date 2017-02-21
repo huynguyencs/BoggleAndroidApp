@@ -94,10 +94,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
             wordsFound = new ArrayList<String>();
             possibleWords = new String[0];
             possibleWords = dictionary.findPossibleWords();
-            System.out.println("Here we go");
-            for(int i = 0; i < possibleWords.length; i++){
-                System.out.println(possibleWords[i]);
-            }
+            System.out.println(possibleWords.length);
             //if(!validateBoard(possibleWords))
             //        continue;
             //if (validateBoard(wordPossiblilities)) continue;

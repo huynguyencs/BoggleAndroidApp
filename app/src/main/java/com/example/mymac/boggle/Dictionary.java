@@ -51,21 +51,23 @@ public class Dictionary extends AppCompatActivity {
         return true;
     }
 
-    public void findWords(String board[][], boolean visited[][], int i, int j, String str) {
+
+    //utility function for finding all possible words
+    private void findWords(String board[][], boolean visited[][], int i, int j, String str) {
 
         //mark current die as visited and add the letter to the string
         visited[i][j] = true;
         str += board[i][j];
 
         //if this creates a new word, add it to possible words
-        if(isValid(str)){
+        if(str.length() > 2 && isValid(str)){
             possibleWords.add(str);
         }
 
         //traverse all the dice of the board
         for(int row = i-1; row <= i+1 && row < 4; row++){
             for(int col = j-1; col <= j+1 && col < 4; col++){
-                if(row >= 0 && col >= 0 && !visited[row][col]){
+                if(row >= 0 && col >= 0 && !visited[row][col] && str.length() < 8){
                     findWords(board, visited, row, col, str);
                 }
             }
@@ -78,6 +80,7 @@ public class Dictionary extends AppCompatActivity {
     }
 
 
+    //Helper function to find all possible words
     public String[] findPossibleWords() {
         boolean visited[][] = new boolean[4][4];
         for(int i = 0; i < 4; i++){
@@ -93,7 +96,6 @@ public class Dictionary extends AppCompatActivity {
                 findWords(board, visited, i, j, str);
             }
         }
-
 
         return possibleWords.toArray(new String[0]);
     }
