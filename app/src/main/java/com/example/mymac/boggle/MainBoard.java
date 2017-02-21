@@ -1,7 +1,17 @@
 package com.example.mymac.boggle;
 
+import android.annotation.TargetApi;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.os.Build;
+import android.util.DisplayMetrics;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ViewTreeObserver;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import java.util.Arrays;
 import android.content.Intent;
@@ -24,9 +34,10 @@ import java.util.Random;
 import java.util.Scanner;
 import java.io.File;
 
+import static com.example.mymac.boggle.R.id.button1;
 import static java.lang.System.in;
 
-public class MainBoard extends AppCompatActivity implements View.OnClickListener{
+public class MainBoard extends AppCompatActivity implements View.OnTouchListener{
     public TextView timerText;
     public TextView user_score;
     private CountDownTimer timer;
@@ -40,9 +51,20 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
     private int userScore;
     private boolean[] flag = new boolean[16];
+    private int [] BtnIds = {R.id.button1, R.id.button2, R.id.button3, R.id.button4,
+                             R.id.button5, R.id.button6, R.id.button7, R.id.button8,
+                             R.id.button9, R.id.button10, R.id.button11, R.id.button12,
+                             R.id.button13, R.id.button14, R.id.button15, R.id.button16};
+    private GestureDetector gestureDetector;
 
     int prevRow = 0;
     int prevCol = 0;
+    int curRow;
+    int curCol;
+    private Point[] BtnLocation;
+    RelativeLayout mainScreen;
+    Button object;
+    int offsetX, offsetY;
 
     Button p1_button; Button p2_button; Button p3_button; Button p4_button; Button p5_button; Button p6_button;
     Button p7_button; Button p8_button; Button p9_button; Button p10_button; Button p11_button; Button p12_button;
@@ -70,7 +92,27 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         //attach new board to UI Buttons
         buttonCreation();
 
+        resetBtnBackground();
         //get possibleWords from dictionary
+
+        //get location from buttons
+        BtnLocation = new Point [16];
+        mainScreen = (RelativeLayout) findViewById(R.id.activity_main_board);
+
+        mainScreen.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        // Layout has happened here.
+                        readLocation();
+                        // Don't forget to remove your listener when you are done with it.
+                        if (Build.VERSION.SDK_INT<16) {
+                            removeLayoutListenerPre16(mainScreen.getViewTreeObserver(),this);
+                        } else {
+                            removeLayoutListenerPost16(mainScreen.getViewTreeObserver(), this);
+                        }
+                    }
+                });
 
 
         timerText = (TextView) this.findViewById(R.id.timer);
@@ -183,58 +225,58 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
     }
 
     private void buttonCreation() {
-
-        p1_button = (Button)findViewById(R.id.button1);
+        p1_button = (Button)findViewById(button1);
         p1_button.setText((dice[0].topLetter));
-        p1_button.setOnClickListener(this);
+        p1_button.setOnTouchListener(this);
         p2_button = (Button)findViewById(R.id.button2);
         p2_button.setText((dice[1].topLetter));
-        p2_button.setOnClickListener(this);
+        p2_button.setOnTouchListener(this);
         p3_button = (Button)findViewById(R.id.button3);
         p3_button.setText((dice[2].topLetter));
-        p3_button.setOnClickListener(this);
+        p3_button.setOnTouchListener(this);
         p4_button = (Button)findViewById(R.id.button4);
         p4_button.setText((dice[3].topLetter));
-        p4_button.setOnClickListener(this);
+        p4_button.setOnTouchListener(this);
         p5_button = (Button)findViewById(R.id.button5);
         p5_button.setText((dice[4].topLetter));
-        p5_button.setOnClickListener(this);
+        p5_button.setOnTouchListener(this);
         p6_button = (Button)findViewById(R.id.button6);
         p6_button.setText((dice[5].topLetter));
-        p6_button.setOnClickListener(this);
+        p6_button.setOnTouchListener(this);
         p7_button = (Button)findViewById(R.id.button7);
         p7_button.setText((dice[6].topLetter));
-        p7_button.setOnClickListener(this);
+        p7_button.setOnTouchListener(this);
         p8_button = (Button)findViewById(R.id.button8);
         p8_button.setText((dice[7].topLetter));
-        p8_button.setOnClickListener(this);
+        p8_button.setOnTouchListener(this);
         p9_button = (Button)findViewById(R.id.button9);
         p9_button.setText((dice[8].topLetter));
-        p9_button.setOnClickListener(this);
+        p9_button.setOnTouchListener(this);
         p10_button = (Button)findViewById(R.id.button10);
         p10_button.setText((dice[9].topLetter));
-        p10_button.setOnClickListener(this);
+        p10_button.setOnTouchListener(this);
         p11_button = (Button)findViewById(R.id.button11);
         p11_button.setText((dice[10].topLetter));
-        p11_button.setOnClickListener(this);
+        p11_button.setOnTouchListener(this);
         p12_button = (Button)findViewById(R.id.button12);
         p12_button.setText((dice[11].topLetter));
-        p12_button.setOnClickListener(this);
+        p12_button.setOnTouchListener(this);
         p13_button = (Button)findViewById(R.id.button13);
         p13_button.setText((dice[12].topLetter));
-        p13_button.setOnClickListener(this);
+        p13_button.setOnTouchListener(this);
         p14_button = (Button)findViewById(R.id.button14);
         p14_button.setText((dice[13].topLetter));
-        p14_button.setOnClickListener(this);
+        p14_button.setOnTouchListener(this);
         p15_button = (Button)findViewById(R.id.button15);
         p15_button.setText((dice[14].topLetter));
-        p15_button.setOnClickListener(this);
+        p15_button.setOnTouchListener(this);
         p16_button = (Button)findViewById(R.id.button16);
         p16_button.setText((dice[15].topLetter));
-        p16_button.setOnClickListener(this);
+        p16_button.setOnTouchListener(this);
 
         Button submitBtn = (Button)findViewById(R.id.submit);
-        submitBtn.setOnClickListener(this);
+        submitBtn.setOnTouchListener(this);
+
     }
 
     private void resetBtnBackground(){
@@ -269,569 +311,312 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
     }
 
     @Override
-    public void onClick(View v) {
-        // default method for handling onClick Events.
-        int curRow;
-        int curCol;
-        switch (v.getId()) {
-            case R.id.submit:
-                System.out.println("Checking user's words to dictionary.");
-                //if user's submitted word is valid
-                //if(Arrays.asList(possibleWords).contains(selectingWord.toString())){
-                if(dictionary.isValid(selectingWord.toString())){
-                    //check if it's already in the list of found word
-                    if(wordsFound.contains(selectingWord.toString())){
-                        Toast.makeText(getApplicationContext(), "THIS WORD HAS ALREADY BEEN SUBMITTED!!!", Toast.LENGTH_SHORT).show();
-                        resetBtnBackground();
-                    }
-                    else{
-                        int pts = 0;
-                        wordsFound.add(selectingWord.toString());
-                        if (selectingWord.length() >= 3 && selectingWord.length() <= 4){
-                            pts = 1;
-                        }else if (selectingWord.length() == 5){
-                            pts = 2;
-                        }else if (selectingWord.length() == 6){
-                            pts = 3;
-                        }else if (selectingWord.length() == 7){
-                            pts = 5;
-                        }else if (selectingWord.length() >= 8) {
-                            pts = 10;
+
+    public boolean onTouch(View v, MotionEvent event) {
+            //TODO: Finger Sliding
+            int dieNo;
+            switch(event.getAction()) {
+                case MotionEvent.ACTION_DOWN:   // start here
+                    dieNo = trackLocation((int)event.getRawX(),(int)event.getRawY());
+                    if(dieNo != -1)
+                        ButtonHandler(dieNo);
+                    if(v.getId() == R.id.submit){
+                        System.out.println("Checking user's words to dictionary.");
+                        //if user's submitted word is valid
+                        //if(Arrays.asList(possibleWords).contains(selectingWord.toString())){
+                        if(dictionary.isValid(selectingWord.toString())){
+                            //check if it's already in the list of found word
+                            if(wordsFound.contains(selectingWord.toString())){
+                                Toast.makeText(getApplicationContext(), "THIS WORD HAS ALREADY BEEN SUBMITTED!!!", Toast.LENGTH_SHORT).show();
+                                resetBtnBackground();
+                            }
+                            else{
+                                int pts = 0;
+                                wordsFound.add(selectingWord.toString());
+                                if (selectingWord.length() >= 3 && selectingWord.length() <= 4){
+                                    pts = 1;
+                                }else if (selectingWord.length() == 5){
+                                    pts = 2;
+                                }else if (selectingWord.length() == 6){
+                                    pts = 3;
+                                }else if (selectingWord.length() == 7){
+                                    pts = 5;
+                                }else if (selectingWord.length() >= 8) {
+                                    pts = 10;
+                                }
+                                userScore += pts;
+                                CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
+                                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                                updateTextView();
+                                resetBtnBackground();
+                            }
                         }
-                        userScore += pts;
-                        CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
-                        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-                        updateTextView();
-                        resetBtnBackground();
+                        else{
+                            Toast.makeText(getApplicationContext(), "INVALID WORD!!!", Toast.LENGTH_SHORT).show();
+                            resetBtnBackground();
+                        }
+                        selectingWord.delete(0, selectingWord.length());
+                        flag = new boolean[16];
                     }
-                }
-                else{
-                    Toast.makeText(getApplicationContext(), "INVALID WORD!!!", Toast.LENGTH_SHORT).show();
-                    resetBtnBackground();
-                }
-                selectingWord.delete(0, selectingWord.length());
-                flag = new boolean[16];
-                break;
-            case R.id.button1:
-                curRow = 0;
-                curCol = 0;
-                if (flag[0] == true) {
+                    break;
+
+
+                case MotionEvent.ACTION_MOVE:
+                    dieNo = trackLocation((int)event.getRawX(),(int)event.getRawY());
+                    if(dieNo != -1)
+                        ButtonHandler(dieNo);
+                    break;
+            }
+
+
+
+        return true;
+    }
+
+    private void ButtonHandler(int dieNumber) {
+        curRow = dieNumber/4;
+        curCol = dieNumber%4;
+        View v = (View) findViewById(BtnIds[dieNumber]);
+
+        if (flag[dieNumber] == true) {
+            for(int i = 0; i <16; ++i){
+                System.out.print(flag[i] + " ");
+            }
+            selectingWord.delete(0, selectingWord.length());
+            flag = new boolean[16];
+            resetBtnBackground();
+            Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+
+        } else {
+            if (selectingWord.length() == 0) {
+                prevRow = curRow;
+                prevCol = curCol;
+                selectingWord.append(((Button)v).getText().toString());
+                flag[dieNumber] = true;
+                v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+            } else {
+                if (curRow - prevRow <= 1 && curRow - prevRow >= -1
+                        && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
+                    selectingWord.append(((Button)v).getText().toString());
+                    flag[dieNumber] = true;
+                    prevRow = curRow;
+                    prevCol = curCol;
+                    v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                } else {
                     selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
                     resetBtnBackground();
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 0;
-                        prevCol = 0;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[0] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        System.out.println(prevCol + " " + prevRow + " " + curRow + " " + curCol);
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[0] = true;
-                            prevCol = 0;
-                            prevRow = 0;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
+                    Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                 }
-                break;
-            case R.id.button2:
-                curRow = 0;
-                curCol = 1;
-                if (flag[1] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 0;
-                        prevCol = 1;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[1] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[1] = true;
-                            prevRow = 0;
-                            prevCol = 1;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button3:
-                curRow = 0;
-                curCol = 2;
-                if (flag[2] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 0;
-                        prevCol = 2;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[2] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[2] = true;
-                            prevRow = 0;
-                            prevCol = 2;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button4:
-                curRow = 0;
-                curCol = 3;
-                if (flag[3] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 0;
-                        prevCol = 3;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[3] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[3] = true;
-                            prevRow = 0;
-                            prevCol = 3;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button5:
-                curRow = 1;
-                curCol = 0;
-                if (flag[4] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 1;
-                        prevCol = 0;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[4] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[4] = true;
-                            prevRow = 1;
-                            prevCol = 0;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button6:
-                curRow = 1;
-                curCol = 1;
-                if (flag[5] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 1;
-                        prevCol = 1;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[5] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[5] = true;
-                            prevRow = 1;
-                            prevCol = 1;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button7:
-                curRow = 1;
-                curCol = 2;
-                if (flag[6] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 1;
-                        prevCol = 2;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[6] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[6] = true;
-                            prevRow = 1;
-                            prevCol = 2;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button8:
-                curRow = 1;
-                curCol = 3;
-                if (flag[7] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 1;
-                        prevCol = 3;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[7] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[7] = true;
-                            prevRow = 1;
-                            prevCol = 3;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button9:
-                curRow = 2;
-                curCol = 0;
-                if (flag[8] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 2;
-                        prevCol = 0;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[8] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[8] = true;
-                            prevRow = 2;
-                            prevCol = 0;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button10:
-                curRow = 2;
-                curCol = 1;
-                if (flag[9] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 2;
-                        prevCol = 1;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[9] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[9] = true;
-                            prevRow = 2;
-                            prevCol = 1;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button11:
-                curRow = 2;
-                curCol = 2;
-                if (flag[10] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 2;
-                        prevCol = 2;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[10] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[10] = true;
-                            prevRow = 2;
-                            prevCol = 2;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button12:
-                curRow = 2;
-                curCol = 3;
-                if (flag[11] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 2;
-                        prevCol = 3;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[11] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[11] = true;
-                            prevRow = 2;
-                            prevCol = 3;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button13:
-                curRow = 3;
-                curCol = 0;
-                if (flag[12] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 3;
-                        prevCol = 0;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[12] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[12] = true;
-                            prevRow = 3;
-                            prevCol = 0;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button14:
-                curRow = 3;
-                curCol = 1;
-                if (flag[13] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 3;
-                        prevCol = 1;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[13] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[13] = true;
-                            prevRow = 3;
-                            prevCol = 1;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button15:
-                curRow = 3;
-                curCol = 2;
-                if (flag[14] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 3;
-                        prevCol = 2;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[14] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[14] = true;
-                            prevRow = 3;
-                            prevCol = 2;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            case R.id.button16:
-                curRow = 3;
-                curCol = 3;
-                if (flag[15] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
-                    flag = new boolean[16];
-                    resetBtnBackground();
-                } else {
-                    if (selectingWord.length() == 0) {
-                        prevRow = 3;
-                        prevCol = 3;
-                        selectingWord.append(((Button)v).getText().toString());
-                        flag[15] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    } else {
-                        if (curRow - prevRow <= 1 && curRow - prevRow >= -1
-                                && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                            selectingWord.append(((Button)v).getText().toString());
-                            flag[15] = true;
-                            prevRow = 3;
-                            prevCol = 3;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                        } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
-                            flag = new boolean[16];
-                            resetBtnBackground();
-                        }
-                    }
-                }
-                break;
-            default:
-                break;
+            }
         }
         System.out.println(selectingWord);
+    }
+
+    private int trackLocation(int x, int y){
+        //System.out.println("X: " + x);
+        //System.out.println("Y: " + y);
+        for(int i = 0; i < 16; ++i){
+            if (x > (BtnLocation[i].x + offsetX/4) && x < (BtnLocation[i].x + offsetX* 3/4) &&
+                    y > (BtnLocation[i].y + offsetY/4) && y < (BtnLocation[i].y + offsetY * 3/4)){
+                    //System.out.println("true");
+                    //System.out.println("i: " + i);
+                    if(!flag[i]) {
+                        return i;
+                    }
+                }
+        }
+        return -1;
+    }
+
+    private void readLocation(){
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        //offsetX = displayMetrics.widthPixels - mainScreen.getMeasuredWidth();
+        //offsetY = displayMetrics.heightPixels - mainScreen.getMeasuredHeight();
+        offsetX = p1_button.getWidth();
+        offsetY = p1_button.getHeight();
+        int[] locationInWindow = new int[2];
+
+        p1_button.getLocationInWindow(locationInWindow);
+        BtnLocation[0] = new Point(locationInWindow[0], locationInWindow[1]);
+        p2_button.getLocationInWindow(locationInWindow);
+        BtnLocation[1] = new Point(locationInWindow[0], locationInWindow[1]);
+        p3_button.getLocationInWindow(locationInWindow);
+        BtnLocation[2] = new Point(locationInWindow[0], locationInWindow[1]);
+        p4_button.getLocationInWindow(locationInWindow);
+        BtnLocation[3] = new Point(locationInWindow[0], locationInWindow[1]);
+        p5_button.getLocationInWindow(locationInWindow);
+        BtnLocation[4] = new Point(locationInWindow[0], locationInWindow[1]);
+        p6_button.getLocationInWindow(locationInWindow);
+        BtnLocation[5] = new Point(locationInWindow[0], locationInWindow[1]);
+        p7_button.getLocationInWindow(locationInWindow);
+        BtnLocation[6] = new Point(locationInWindow[0], locationInWindow[1]);
+        p8_button.getLocationInWindow(locationInWindow);
+        BtnLocation[7] = new Point(locationInWindow[0], locationInWindow[1]);
+        p9_button.getLocationInWindow(locationInWindow);
+        BtnLocation[8] = new Point(locationInWindow[0], locationInWindow[1]);
+        p10_button.getLocationInWindow(locationInWindow);
+        BtnLocation[9] = new Point(locationInWindow[0], locationInWindow[1]);
+        p11_button.getLocationInWindow(locationInWindow);
+        BtnLocation[10] = new Point(locationInWindow[0], locationInWindow[1]);
+        p12_button.getLocationInWindow(locationInWindow);
+        BtnLocation[11] = new Point(locationInWindow[0], locationInWindow[1]);
+        p13_button.getLocationInWindow(locationInWindow);
+        BtnLocation[12] = new Point(locationInWindow[0], locationInWindow[1]);
+        p14_button.getLocationInWindow(locationInWindow);
+        BtnLocation[13] = new Point(locationInWindow[0], locationInWindow[1]);
+        p15_button.getLocationInWindow(locationInWindow);
+        BtnLocation[14] = new Point(locationInWindow[0], locationInWindow[1]);
+        p16_button.getLocationInWindow(locationInWindow);
+        BtnLocation[15] = new Point(locationInWindow[0], locationInWindow[1]);
+
+
+        //int[] locationOnScreen = new int[2];
+        //object.getLocationOnScreen(locationOnScreen);
+        for(int i = 0; i < 16; ++i) {
+            System.out.println(
+                    "\n"
+                            + "getLocationInWindow() - " + BtnLocation[i].x + " : " + BtnLocation[i].y + "\n"
+                            //+ "getLocationOnScreen() - " + locationOnScreen[0] + " : " + locationOnScreen[1] + "\n"
+                            + "Offset x: y - " + offsetX + " : " + offsetY);
+        }
+
+    }
+
+    @SuppressWarnings("deprecation")
+    private void removeLayoutListenerPre16(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener listener){
+        observer.removeGlobalOnLayoutListener(listener);
+    }
+
+    @TargetApi(16)
+    private void removeLayoutListenerPost16(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener listener){
+        observer.removeOnGlobalLayoutListener(listener);
+
     }
 }
 
 
 
+/*
+FOR BACKUP
+if (gestureDetector.onTouchEvent(event)) {
+            System.out.println("tap");
+            switch (v.getId()) {
+                case R.id.submit:
+                    System.out.println("Checking user's words to dictionary.");
+                    //if user's submitted word is valid
+                    //if(Arrays.asList(possibleWords).contains(selectingWord.toString())){
+                    if(dictionary.isValid(selectingWord.toString())){
+                        //check if it's already in the list of found word
+                        if(wordsFound.contains(selectingWord.toString())){
+                            Toast.makeText(getApplicationContext(), "THIS WORD HAS ALREADY BEEN SUBMITTED!!!", Toast.LENGTH_SHORT).show();
+                            resetBtnBackground();
+                        }
+                        else{
+                            int pts = 0;
+                            wordsFound.add(selectingWord.toString());
+                            if (selectingWord.length() >= 3 && selectingWord.length() <= 4){
+                                pts = 1;
+                            }else if (selectingWord.length() == 5){
+                                pts = 2;
+                            }else if (selectingWord.length() == 6){
+                                pts = 3;
+                            }else if (selectingWord.length() == 7){
+                                pts = 5;
+                            }else if (selectingWord.length() >= 8) {
+                                pts = 10;
+                            }
+                            userScore += pts;
+                            CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
+                            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                            updateTextView();
+                            resetBtnBackground();
+                        }
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(), "INVALID WORD!!!", Toast.LENGTH_SHORT).show();
+                        resetBtnBackground();
+                    }
+                    selectingWord.delete(0, selectingWord.length());
+                    flag = new boolean[16];
+                    break;
 
+                case R.id.button1:
+                    ButtonHandler(0);
+                    break;
+                case R.id.button2:
+                    ButtonHandler(1);
+                    break;
+                case R.id.button3:
+                    ButtonHandler(2);
+                    break;
+                case R.id.button4:
+                    ButtonHandler(3);
+                    break;
+                case R.id.button5:
+                    ButtonHandler(4);
+                    break;
+                case R.id.button6:
+                    ButtonHandler(5);
+                    break;
+                case R.id.button7:
+                    ButtonHandler(6);
+                    break;
+                case R.id.button8:
+                    ButtonHandler(7);
+                    break;
+                case R.id.button9:
+                    ButtonHandler(8);
+                    break;
+                case R.id.button10:
+                    ButtonHandler(9);
+                    break;
+                case R.id.button11:
+                    ButtonHandler(10);
+                    break;
+                case R.id.button12:
+                    ButtonHandler(11);
+                    break;
+                case R.id.button13:
+                    ButtonHandler(12);
+                    break;
+                case R.id.button14:
+                    ButtonHandler(13);
+                    break;
+                case R.id.button15:
+                    ButtonHandler(14);
+                    break;
+                case R.id.button16:
+                    ButtonHandler(15);
+                    break;
+                default:
+                    break;
+            }
+            System.out.println(selectingWord);
+            return false;
+        }
+
+        private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent event) {
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            //do something
+            return true;
+        }
+        @Override
+        public void onLongPress(MotionEvent e) {
+            super.onLongPress(e);
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            return super.onDoubleTap(e);
+        }
+    }
+ */
