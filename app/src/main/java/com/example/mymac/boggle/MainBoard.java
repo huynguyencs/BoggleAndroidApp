@@ -38,25 +38,37 @@ import static com.example.mymac.boggle.R.id.button1;
 import static java.lang.System.in;
 
 public class MainBoard extends AppCompatActivity implements View.OnTouchListener{
+
+
+    /*********************** Main Board Data elements **************************/
+
+
+    //TextViews and timer labels to populate the Gameboard View
     public TextView timerText;
     public TextView user_score;
+    private int userScore;
     private CountDownTimer timer;
 
+    //Set of 16 dice of the current board
     public Die[] dice;
 
+    //All possible words on the board, along with the user found words so far
     private String[] possibleWords;
     private ArrayList<String> wordsFound;
+
+    //Helper class to validate words and solve the board
     private Dictionary dictionary;
+
+    //For generating a word by the user
     private StringBuilder selectingWord = new StringBuilder();
 
-    private int userScore;
+    //Model for button selection
     private boolean[] flag = new boolean[16];
     private int [] BtnIds = {R.id.button1, R.id.button2, R.id.button3, R.id.button4,
                              R.id.button5, R.id.button6, R.id.button7, R.id.button8,
                              R.id.button9, R.id.button10, R.id.button11, R.id.button12,
                              R.id.button13, R.id.button14, R.id.button15, R.id.button16};
     private GestureDetector gestureDetector;
-
     int prevRow = 0;
     int prevCol = 0;
     int curRow;
@@ -70,13 +82,21 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
     Button p7_button; Button p8_button; Button p9_button; Button p10_button; Button p11_button; Button p12_button;
     Button p13_button; Button p14_button; Button p15_button; Button p16_button;
 
+
+    /*************************** Main Board Methods *****************************/
+
+
+    //Contructor
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_board);
 
-        randomDice();
+
+        randomDice(); //Generates a new set of random dice
+
+        //Grabs the Dictionary text file and creates an instance of Dictionary
         try {
             InputStream inputS = getResources().openRawResource(R.raw.dictionary);
             dictionary = new Dictionary(inputS, dice);
@@ -93,9 +113,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
 
         //attach new board to UI Buttons
         buttonCreation();
-
         resetBtnBackground();
-        //get possibleWords from dictionary
 
         //get location from buttons
         BtnLocation = new Point [16];
@@ -117,13 +135,11 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
                 });
 
 
+        //Create Board Timer + User Score
         timerText = (TextView) this.findViewById(R.id.timer);
         timer = new countDownTimer(60 * 1000, 1 * 1000);
         timer.start();
-
-
         user_score = (TextView) this.findViewById(R.id.score);
-
         user_score.setText("Your score: " + userScore);
     }
 
@@ -135,34 +151,14 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
             userScore = 0;
             wordsFound = new ArrayList<String>();
             possibleWords = new String[0];
-            possibleWords = dictionary.findPossibleWords();
+            possibleWords = dictionary.findPossibleWords(); //Runs a Boggle Solver
             System.out.println(possibleWords.length);
-            //if(!validateBoard(possibleWords))
-            //        continue;
-            //if (validateBoard(wordPossiblilities)) continue;
             return true;
         }
     }
 
 
-    /* Takes a list of word possibilities and checks with the Dictionary to get
-    a list of valid words back for the board. Returns false if the board
-    doesnt meet the difficulty criteria */
-    private boolean validateBoard(String[] wordPossibilities) {
-        String[] englishWords = dictionary.findValidWords(wordPossibilities);
-
-        //todo Add difficulty levels
-        if(englishWords == null) return false;
-        //add these words to the list of possible words for the board
-        //possibleWords = englishWords;
-
-        //success
-        return true;
-    }
-
-
-    //creates a new 2d array of Die objects
-
+    //Generates Random Dice for the board
     private boolean randomDice() {
         dice = new Die[16];
         for(int i = 0; i < dice.length ; i++) {
@@ -179,32 +175,6 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
         startActivity(i);
     }
 
-    //todo
-    private String[] possiblePaths() throws IOException{
-
-        List<String> generatedWords = new LinkedList<>();
-
-
-        Scanner filescan = new Scanner(getAssets().open("possible_paths.txt"));
-        while (filescan.hasNext()) {
-
-            String word = "";
-            String line = filescan.nextLine();
-            String parsedLine = line.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll("\\,", "");
-            for (String node: parsedLine.split(" ")) {
-                String letter = dice[Integer.parseInt(node) - 1].topLetter;
-                word += letter;
-            }
-            generatedWords.add(word);
-        }
-        System.out.println(generatedWords.toString());
-        return null;
-    }
-
-    protected char rndChar () {
-        Random rnd = new Random();
-        return (char) (65 + rnd.nextInt(26));
-    }
 
     public class countDownTimer extends CountDownTimer {
         public countDownTimer(long startTime, long interval) {
@@ -224,6 +194,25 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
         }
     }
 
+    //Update score, alternating colors
+    public void updateTextView() {
+        TextView textView = (TextView) findViewById(R.id.score);
+        textView.setText("Your score: " + userScore);
+        textView.setTextColor( getRandomColor());
+    }
+
+    public int getRandomColor(){
+        Random rnd = new Random();
+        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+
+    }
+
+
+    /****************************** Button Logic ********************************/
+
+
+
+    //Creates UI buttons and attaches them to the Game Board Dice
     private void buttonCreation() {
         p1_button = (Button)findViewById(button1);
         p1_button.setText((dice[0].topLetter));
@@ -298,20 +287,9 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
         p16_button.getBackground().clearColorFilter();
     }
 
-    public void updateTextView() {
-        TextView textView = (TextView) findViewById(R.id.score);
-        textView.setText("Your score: " + userScore);
-        textView.setTextColor( getRandomColor());
-    }
 
-    public int getRandomColor(){
-        Random rnd = new Random();
-        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-
-    }
-
+    //Fingerslide Selection Logic
     @Override
-
     public boolean onTouch(View v, MotionEvent event) {
             //TODO: Finger Sliding
             int dieNo;

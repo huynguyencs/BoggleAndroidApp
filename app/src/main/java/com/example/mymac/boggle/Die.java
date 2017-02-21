@@ -38,10 +38,5 @@ public class Die {
         return vowels[r.nextInt(vowels.length)];
     }
 
-    private char randomVowel() {
-        char[] vowels = {'a','e','i','o','u','y'};
-        Random r=new Random();
-        return vowels[r.nextInt(vowels.length)];
-    }
 
 }
