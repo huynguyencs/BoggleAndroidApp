@@ -21,9 +21,21 @@ public class Die {
     }
 
     private char randomChar() {
-        Random r = new Random();
-        char c = (char)(r.nextInt(26) + 'a');
-        return c;
+        while(true) {
+            Random r = new Random();
+            char c = (char) (r.nextInt(26) + 'a');
+
+            //eliminates low frequency letters
+            if(c == 'x' || c == 'q' || c == 'z' || c == 'v' || c == 'j' || c == 'k' || c == 'y')
+                continue;
+            return c;
+        }
+    }
+
+    private char randomVowel() {
+        char[] vowels = {'a','e','i','o','u','y'};
+        Random r=new Random();
+        return vowels[r.nextInt(vowels.length)];
     }
 
     private char randomVowel() {

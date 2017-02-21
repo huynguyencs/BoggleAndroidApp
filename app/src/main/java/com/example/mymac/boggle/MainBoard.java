@@ -91,6 +91,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
 
         //attach new board to UI Buttons
         buttonCreation();
+
         resetBtnBackground();
         //get possibleWords from dictionary
 
@@ -112,6 +113,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
                         }
                     }
                 });
+
 
         timerText = (TextView) this.findViewById(R.id.timer);
         timer = new countDownTimer(60 * 1000, 1 * 1000);
@@ -274,6 +276,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
 
         Button submitBtn = (Button)findViewById(R.id.submit);
         submitBtn.setOnTouchListener(this);
+
     }
 
     private void resetBtnBackground(){
@@ -308,6 +311,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
     }
 
     @Override
+
     public boolean onTouch(View v, MotionEvent event) {
             //TODO: Finger Sliding
             int dieNo;
@@ -488,6 +492,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
     @TargetApi(16)
     private void removeLayoutListenerPost16(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener listener){
         observer.removeOnGlobalLayoutListener(listener);
+
     }
 }
 
