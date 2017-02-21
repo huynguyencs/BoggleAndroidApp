@@ -15,11 +15,24 @@ import java.util.Hashtable;
 
 public class Dictionary extends AppCompatActivity {
     Hashtable <String, String> wordDictionary;
+    String board[][] = new String[4][4];
+    static ArrayList<String> possibleWords;
 
     //constructor
-    Dictionary(InputStream in) {//K-V
+    Dictionary(InputStream in, Die[] dice) {//K-V
         wordDictionary = new Hashtable <String, String> ();
         createWordDictionary(in);
+
+        possibleWords = new ArrayList<String>();
+
+        //set up the board with correct letters
+        int count = 0;
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                board[i][j] = dice[count].topLetter;
+                count++;
+            }
+        }
     }
 
     private boolean createWordDictionary(InputStream inputS) {
@@ -37,6 +50,55 @@ public class Dictionary extends AppCompatActivity {
         }catch (Exception e) { }
         return true;
     }
+
+    public void findWords(String board[][], boolean visited[][], int i, int j, String str) {
+
+        //mark current die as visited and add the letter to the string
+        visited[i][j] = true;
+        str += board[i][j];
+
+        //if this creates a new word, add it to possible words
+        if(isValid(str)){
+            possibleWords.add(str);
+        }
+
+        //traverse all the dice of the board
+        for(int row = i-1; row <= i+1 && row < 4; row++){
+            for(int col = j-1; col <= j+1 && col < 4; col++){
+                if(row >= 0 && col >= 0 && !visited[row][col]){
+                    findWords(board, visited, row, col, str);
+                }
+            }
+        }
+
+        //Erase the recently added char and marked die as unvisited
+        str = str.substring(0, str.length()-1);
+        visited[i][j] = false;
+
+    }
+
+
+    public String[] findPossibleWords() {
+        boolean visited[][] = new boolean[4][4];
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                visited[i][j] = false;
+            }
+        }
+
+        String str = "";
+
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                findWords(board, visited, i, j, str);
+            }
+        }
+
+
+        return possibleWords.toArray(new String[0]);
+    }
+
+
 
     public String[] findValidWords(String[] possibleString) {
         ArrayList<String> possibleWords = new ArrayList<String>();

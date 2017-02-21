@@ -53,9 +53,11 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_board);
+
+        randomDice();
         try {
             InputStream inputS = getResources().openRawResource(R.raw.dictionary);
-            dictionary = new Dictionary(inputS);
+            dictionary = new Dictionary(inputS, dice);
         } catch (Exception e) {
         }
 
@@ -90,11 +92,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
         while(true) {
             userScore = 0;
             wordsFound = new ArrayList<String>();
-            randomDice();
-            DiceGraph diceGraph = new DiceGraph();
-            String[] wordPossiblilities = possiblePaths();
-            possibleWords = dictionary.findValidWords(wordPossiblilities);
-            System.out.println(possibleWords);
+            possibleWords = new String[0];
+            possibleWords = dictionary.findPossibleWords();
+            System.out.println("Here we go");
+            for(int i = 0; i < possibleWords.length; i++){
+                System.out.println(possibleWords[i]);
+            }
             //if(!validateBoard(possibleWords))
             //        continue;
             //if (validateBoard(wordPossiblilities)) continue;
