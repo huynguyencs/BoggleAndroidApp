@@ -3,7 +3,7 @@ package com.example.mymac.boggle;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.widget.Toast;
-import java.util.Arrays;
+import java.util.ArrayList;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.CountDownTimer;
@@ -26,8 +26,9 @@ import java.io.File;
 
 import static java.lang.System.in;
 
-public class MainBoard extends AppCompatActivity implements View.OnClickListener{
+public class MainBoard extends AppCompatActivity implements /*ShakeDetector.Shakecallback,*/ View.OnClickListener{
     public TextView timerText;
+    public TextView correct_word;
     public TextView user_score;
     private CountDownTimer timer;
 
@@ -48,6 +49,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
     Button p7_button; Button p8_button; Button p9_button; Button p10_button; Button p11_button; Button p12_button;
     Button p13_button; Button p14_button; Button p15_button; Button p16_button;
 
+    //ShakeDetector shakeDetector = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -58,6 +61,9 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
             dictionary = new Dictionary(inputS);
         } catch (Exception e) {
         }
+
+        //shakeDetector = new ShakeDetector(this);
+
 
 
         //fully create a new Board
@@ -80,10 +86,22 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
         user_score = (TextView) this.findViewById(R.id.score);
 
-        user_score.setText("Your score: " + userScore);
+        user_score.setText("Your Score: " + userScore);
     }
 
 
+
+   /*
+    @Override
+    public void onShake() {
+        //fully create a new Board
+        try {
+            newBoard();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    */
 
     //Sets up the board with a number of helper functions
     private boolean newBoard() throws IOException {
@@ -178,7 +196,10 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
             long total_seconds = millisUntilFinished / 1000;
             long seconds = total_seconds % 60;
             long minutes = total_seconds / 60;
-            timerText.setText("TIME LEFT: " + minutes + ":" + seconds);
+            timerText.setText("Time Left: " + minutes + ":" + seconds);
+            if (minutes < 2 && seconds <= 15) {
+                timerText.setTextColor(Color.rgb(255,0,0));
+            }
         }
     }
 
@@ -235,6 +256,10 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
 
         Button submitBtn = (Button)findViewById(R.id.submit);
         submitBtn.setOnClickListener(this);
+
+        Button cancelBtn = (Button)findViewById(R.id.cancel);
+        cancelBtn.setOnClickListener(this);
+
     }
 
     private void resetBtnBackground(){
@@ -299,6 +324,8 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             pts = 10;
                         }
                         userScore += pts;
+                        correct_word = (TextView) this.findViewById(R.id.correctSubmission);
+                        correct_word.setText(wordsFound.get(wordsFound.size() - 1));
                         CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                         updateTextView();
@@ -312,13 +339,22 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 selectingWord.delete(0, selectingWord.length());
                 flag = new boolean[16];
                 break;
+
+            case R.id.cancel:
+                //TODO cancel case create
+                Toast.makeText(getApplicationContext(), "PREVIOUS SELECTIONS HAVE BEEN CANCELLED!!!", Toast.LENGTH_SHORT).show();
+                resetBtnBackground();
+                selectingWord.delete(0, selectingWord.length());
+                flag = new boolean[16];
+                break;
+
             case R.id.button1:
                 curRow = 0;
                 curCol = 0;
                 if (flag[0] == true) {
-                    selectingWord.delete(0, selectingWord.length());
+                   /* selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();*/
                     Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
@@ -326,7 +362,7 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                         prevCol = 0;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[0] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         System.out.println(prevCol + " " + prevRow + " " + curRow + " " + curCol);
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
@@ -335,11 +371,11 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[0] = true;
                             prevCol = 0;
                             prevRow = 0;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground(); */
                             Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -349,17 +385,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 0;
                 curCol = 1;
                 if (flag[1] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*  selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground(); */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 0;
                         prevCol = 1;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[1] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -367,12 +403,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[1] = true;
                             prevRow = 0;
                             prevCol = 1;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground(); */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -381,17 +417,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 0;
                 curCol = 2;
                 if (flag[2] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground(); */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 0;
                         prevCol = 2;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[2] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -399,12 +435,13 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[2] = true;
                             prevRow = 0;
                             prevCol = 2;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground(); */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+
                         }
                     }
                 }
@@ -413,17 +450,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 0;
                 curCol = 3;
                 if (flag[3] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 0;
                         prevCol = 3;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[3] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -431,12 +468,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[3] = true;
                             prevRow = 0;
                             prevCol = 3;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -445,17 +482,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 1;
                 curCol = 0;
                 if (flag[4] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 1;
                         prevCol = 0;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[4] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -463,12 +500,13 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[4] = true;
                             prevRow = 1;
                             prevCol = 0;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+
                         }
                     }
                 }
@@ -477,17 +515,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 1;
                 curCol = 1;
                 if (flag[5] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 1;
                         prevCol = 1;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[5] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -495,12 +533,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[5] = true;
                             prevRow = 1;
                             prevCol = 1;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -509,17 +547,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 1;
                 curCol = 2;
                 if (flag[6] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 1;
                         prevCol = 2;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[6] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -527,12 +565,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[6] = true;
                             prevRow = 1;
                             prevCol = 2;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -541,17 +579,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 1;
                 curCol = 3;
                 if (flag[7] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 1;
                         prevCol = 3;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[7] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -559,12 +597,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[7] = true;
                             prevRow = 1;
                             prevCol = 3;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -573,17 +611,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 2;
                 curCol = 0;
                 if (flag[8] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 2;
                         prevCol = 0;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[8] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -591,12 +629,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[8] = true;
                             prevRow = 2;
                             prevCol = 0;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -605,17 +643,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 2;
                 curCol = 1;
                 if (flag[9] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 2;
                         prevCol = 1;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[9] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -623,12 +661,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[9] = true;
                             prevRow = 2;
                             prevCol = 1;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -637,17 +675,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 2;
                 curCol = 2;
                 if (flag[10] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 2;
                         prevCol = 2;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[10] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -655,12 +693,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[10] = true;
                             prevRow = 2;
                             prevCol = 2;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -669,17 +707,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 2;
                 curCol = 3;
                 if (flag[11] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 2;
                         prevCol = 3;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[11] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -687,12 +725,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[11] = true;
                             prevRow = 2;
                             prevCol = 3;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -701,17 +739,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 3;
                 curCol = 0;
                 if (flag[12] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 3;
                         prevCol = 0;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[12] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -719,12 +757,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[12] = true;
                             prevRow = 3;
                             prevCol = 0;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                         /*   selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -733,17 +771,18 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 3;
                 curCol = 1;
                 if (flag[13] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 3;
                         prevCol = 1;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[13] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -751,12 +790,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[13] = true;
                             prevRow = 3;
                             prevCol = 1;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -765,17 +804,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 3;
                 curCol = 2;
                 if (flag[14] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 3;
                         prevCol = 2;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[14] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -783,12 +822,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[14] = true;
                             prevRow = 3;
                             prevCol = 2;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                        /*    selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -797,17 +836,17 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                 curRow = 3;
                 curCol = 3;
                 if (flag[15] == true) {
-                    selectingWord.delete(0, selectingWord.length());
-                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
+                /*    selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    resetBtnBackground();
+                    resetBtnBackground();   */
+                    Toast.makeText(getApplicationContext(), "THIS BUTTON HAS ALREADY BEEN PRESSED!!!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (selectingWord.length() == 0) {
                         prevRow = 3;
                         prevCol = 3;
                         selectingWord.append(((Button)v).getText().toString());
                         flag[15] = true;
-                        v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                     } else {
                         if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                                 && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
@@ -815,12 +854,12 @@ public class MainBoard extends AppCompatActivity implements View.OnClickListener
                             flag[15] = true;
                             prevRow = 3;
                             prevCol = 3;
-                            v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+                            v.getBackground().setColorFilter(Color.rgb(255,68,68), PorterDuff.Mode.MULTIPLY);
                         } else {
-                            selectingWord.delete(0, selectingWord.length());
-                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
+                         /*   selectingWord.delete(0, selectingWord.length());
                             flag = new boolean[16];
-                            resetBtnBackground();
+                            resetBtnBackground();   */
+                            Toast.makeText(getApplicationContext(), "TWO BUTTONS MUST BE ADJACENT!!!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
