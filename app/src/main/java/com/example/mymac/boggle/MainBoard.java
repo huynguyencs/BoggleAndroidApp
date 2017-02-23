@@ -358,6 +358,8 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
                                 }else if (selectingWord.length() >= 8) {
                                     pts = 10;
                                 }
+                                correct_word = (TextView) this.findViewById(R.id.correctSubmission);
+                                correct_word.setText(wordsFound.get(wordsFound.size() - 1));
                                 userScore += pts;
                                 CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                                 Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
