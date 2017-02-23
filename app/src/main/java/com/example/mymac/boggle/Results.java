@@ -47,7 +47,7 @@ public class Results extends ListActivity {
         for (String possWord : possibleWords) {
             wordScore = get_score(possWord);
             totalScore += wordScore;
-            if (!wordsFound.isEmpty() && !wordsFound.contains(possWord)) {
+            if (possibleWords != null && !wordsFound.contains(possWord)) {
                 String row = possWord + "       " + wordScore;
                 rAdapter.addItem(row);
             }

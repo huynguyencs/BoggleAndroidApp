@@ -28,12 +28,11 @@ public class Leaderboard {
     private void highscoreReader(Context context, String difficulty) {
 
         try {
-            filescan = new BufferedReader(
-                    new InputStreamReader(context.getAssets().open("highScores" + difficulty + ".txt"))
-            );
+            BufferedReader fileread = new BufferedReader(new InputStreamReader(
+                    context.openFileInput("highScores" + difficulty)));
 
-            String line = filescan.readLine();
-            while (line != null) {
+            String line;
+            while ((line = fileread.readLine()) != null) {
                 String player = "";
                 Integer score = null;
 
@@ -47,7 +46,6 @@ public class Leaderboard {
                     Log.e("Parsing scores", "Wrong input in text file: " + parsedLine);
                     continue;
                 }
-                line = filescan.readLine();
             }
         } catch (IOException e) {
             Log.e("error reading file", "" + e);
@@ -67,7 +65,7 @@ public class Leaderboard {
 
         try {
             filewrite = new BufferedWriter(
-                    new OutputStreamWriter(context.openFileOutput("highScores" + difficulty + ".txt",
+                    new OutputStreamWriter(context.openFileOutput("highScores" + difficulty,
                             context.MODE_PRIVATE))
             );
 
@@ -76,8 +74,7 @@ public class Leaderboard {
             }
 
             for (Highscore h : highscoreList) {
-                String output = h.score() + "," + h.player();
-                Log.i("output", output);
+                String output = h.score() + "," + h.player() + "\n";
                 filewrite.write(output);
             }
             filewrite.close();

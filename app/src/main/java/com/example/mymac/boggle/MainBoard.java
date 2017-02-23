@@ -172,8 +172,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
         String diff = GameDifficulty.getDifficulty();
         leaderboard = new Leaderboard(this, diff);
 
-        if (leaderboard.isHighscore(55554635)) {
-
+        if (leaderboard.isHighscore(userScore)) {
             //popup
             userName = "TESTNAME";
             Highscore newHS = new Highscore(userScore, userName);
