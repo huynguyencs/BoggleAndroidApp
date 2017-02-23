@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-import java.util.Arrays;
+import java.util.ArrayList;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.CountDownTimer;
@@ -34,6 +34,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.io.File;
 
+
 import static com.example.mymac.boggle.R.id.button1;
 import static java.lang.System.in;
 
@@ -45,6 +46,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
 
     //TextViews and timer labels to populate the Gameboard View
     public TextView timerText;
+    public TextView correct_word;
     public TextView user_score;
     private int userScore;
     private CountDownTimer timer;
@@ -83,6 +85,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
     Button p13_button; Button p14_button; Button p15_button; Button p16_button;
 
 
+
     /*************************** Main Board Methods *****************************/
 
 
@@ -102,6 +105,9 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
             dictionary = new Dictionary(inputS, dice);
         } catch (Exception e) {
         }
+
+        //shakeDetector = new ShakeDetector(this);
+
 
 
         //fully create a new Board
@@ -140,10 +146,24 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
         timer = new countDownTimer(60 * 1000, 1 * 1000);
         timer.start();
         user_score = (TextView) this.findViewById(R.id.score);
+
         user_score.setText("Your score: " + userScore);
+
     }
 
 
+
+   /*
+    @Override
+    public void onShake() {
+        //fully create a new Board
+        try {
+            newBoard();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    */
 
     //Sets up the board with a number of helper functions
     private boolean newBoard() throws IOException {
@@ -190,7 +210,10 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
             long total_seconds = millisUntilFinished / 1000;
             long seconds = total_seconds % 60;
             long minutes = total_seconds / 60;
-            timerText.setText("TIME LEFT: " + minutes + ":" + seconds);
+            timerText.setText("Time Left: " + minutes + ":" + seconds);
+            if (minutes < 2 && seconds <= 15) {
+                timerText.setTextColor(Color.rgb(255,0,0));
+            }
         }
     }
 
@@ -264,7 +287,13 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
         p16_button.setOnTouchListener(this);
 
         Button submitBtn = (Button)findViewById(R.id.submit);
+
+
+        Button cancelBtn = (Button)findViewById(R.id.cancel);
+      
+        cancelBtn.setOnTouchListener(this);
         submitBtn.setOnTouchListener(this);
+
 
     }
 
@@ -298,6 +327,13 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
                     dieNo = trackLocation((int)event.getRawX(),(int)event.getRawY());
                     if(dieNo != -1)
                         ButtonHandler(dieNo);
+                    if(v.getId() == R.id.cancel){
+                       //TODO cancel case create
+                Toast.makeText(getApplicationContext(), "PREVIOUS SELECTIONS HAVE BEEN CANCELLED!!!", Toast.LENGTH_SHORT).show();
+                resetBtnBackground();
+                selectingWord.delete(0, selectingWord.length());
+                flag = new boolean[16];
+                    }
                     if(v.getId() == R.id.submit){
                         System.out.println("Checking user's words to dictionary.");
                         //if user's submitted word is valid
@@ -336,6 +372,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
                         selectingWord.delete(0, selectingWord.length());
                         flag = new boolean[16];
                     }
+
                     break;
 
 
@@ -345,8 +382,6 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
                         ButtonHandler(dieNo);
                     break;
             }
-
-
 
         return true;
     }
@@ -573,6 +608,7 @@ if (gestureDetector.onTouchEvent(event)) {
             }
             System.out.println(selectingWord);
             return false;
+
         }
 
         private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {

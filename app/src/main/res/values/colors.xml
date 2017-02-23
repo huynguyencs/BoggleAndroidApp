@@ -3,4 +3,10 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="yellow">#fbe5a5</color>
+    <color name="star_yellow">#fcdd7f</color>
+    <color name="purple">#8965e9</color>
+    <color name="boggle_blue">#689cef</color>
+    <color name="boggle_purple">#bfabf4</color>
+    <color name="blue">#9fbff4</color>
 </resources>
