@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.io.File;
-
+   
 import static java.lang.System.in;
 
 public class MainBoard extends AppCompatActivity implements /*ShakeDetector.Shakecallback,*/ View.OnClickListener{
