@@ -13,9 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-import java.util.Arrays;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,8 +22,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import java.io.InputStream;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -61,6 +58,10 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
 
     //For generating a word by the user
     private StringBuilder selectingWord = new StringBuilder();
+
+    //Leaderboard and user object
+    private Leaderboard leaderboard;
+    private String userName;
 
     //Model for button selection
     private boolean[] flag = new boolean[16];
@@ -168,6 +169,17 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
     }
 
     private void endGame(){
+        String diff = GameDifficulty.getDifficulty();
+        leaderboard = new Leaderboard(this, diff);
+
+        if (leaderboard.isHighscore(55554635)) {
+
+            //popup
+            userName = "TESTNAME";
+            Highscore newHS = new Highscore(userScore, userName);
+            leaderboard.updateHighscore(this, newHS, diff);
+        }
+
         Intent i = new Intent(MainBoard.this, Results.class);
         i.putExtra("possibleWords", possibleWords);
         i.putExtra("wordsFound", wordsFound);

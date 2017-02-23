@@ -35,8 +35,8 @@ public class HomeScreen extends AppCompatActivity {
         final Button leaderBoardBtn = (Button) findViewById(R.id.leaderBoard);
         leaderBoardBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.i("clicks","You Clicked Leaderboard");
-                Intent i = new Intent(HomeScreen.this, Leaderboard.class);
+                Log.i("clicks","You Clicked LeaderboardDisplay");
+                Intent i = new Intent(HomeScreen.this, LeaderboardDisplay.class);
                 startActivity(i);
             }
         });
