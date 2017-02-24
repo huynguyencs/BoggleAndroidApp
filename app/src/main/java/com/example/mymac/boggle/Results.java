@@ -44,16 +44,16 @@ public class Results extends ListActivity {
             rAdapter.addBoldItem("No Words Found");
         }
 
-//        for (String possWord : possibleWords) {
-//            wordScore = get_score(possWord);
-//            totalScore += wordScore;
-//            if (!wordsFound.isEmpty() && !wordsFound.contains(possWord)) {
-//                String row = possWord + "       " + wordScore;
-//                rAdapter.addItem(row);
-//            }
-//        }
+        for (String possWord : possibleWords) {
+            wordScore = get_score(possWord);
+            totalScore += wordScore;
+            if (!wordsFound.isEmpty() && !wordsFound.contains(possWord)) {
+                String row = possWord + "       " + wordScore;
+                rAdapter.addItem(row);
+            }
+        }
 
-//        rAdapter.addSectionHeaderItem("Score: " + userScore + "/" + totalScore);
+        rAdapter.addSectionHeaderItem("Score: " + userScore + "/" + totalScore);
         rAdapter.addSectionHeaderItem("Score: " + userScore);
         setListAdapter(rAdapter);
 
