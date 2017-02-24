@@ -50,7 +50,7 @@ public class HomeScreen extends AppCompatActivity {
             }
         });
 
-        final Button exitGameBtn = (Button) findViewById(R.id.exitGameButton);
+   /*     final Button exitGameBtn = (Button) findViewById(R.id.exitGameButton);
         exitGameBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,7 +58,7 @@ public class HomeScreen extends AppCompatActivity {
                 System.exit(0);
             }
         });
-
+    */
 
     }
 }

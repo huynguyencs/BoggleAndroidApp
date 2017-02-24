@@ -8,34 +8,68 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@mipmap/pic7"
     tools:context="com.example.mymac.boggle.GameDifficulty">
 
-    <Button
-        android:text="Easy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="155dp"
-        android:id="@+id/easyDifficulty"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
 
-    <Button
-        android:text="Hard"
+    <ImageView
+        android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="26dp"
-        android:id="@+id/hardDifficulty"
-        android:layout_below="@+id/mediumDifficulty"
-        android:layout_alignLeft="@+id/mediumDifficulty"
-        android:layout_alignStart="@+id/mediumDifficulty" />
+        android:src="@mipmap/pic5"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="13dp" />
 
     <Button
         android:text="Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/mediumDifficulty"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@android:color/holo_orange_dark"
+        android:width="150dp"
+        android:height="60dp"
+        android:textSize="18sp"
+        android:textStyle="normal|bold"
         android:layout_below="@+id/easyDifficulty"
         android:layout_alignLeft="@+id/easyDifficulty"
         android:layout_alignStart="@+id/easyDifficulty"
-        android:layout_marginTop="24dp" />
+        android:textScaleX = "1.1"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:text="Hard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:id="@+id/hardDifficulty"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:width="150dp"
+        android:height="60dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/mediumDifficulty"
+        android:layout_alignLeft="@+id/mediumDifficulty"
+        android:layout_alignStart="@+id/mediumDifficulty"
+        android:textScaleX = "1.1"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:text="Easy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/easyDifficulty"
+        android:backgroundTint="@android:color/holo_orange_light"
+        android:textColor="@android:color/white"
+        android:width="150dp"
+        android:height="60dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textScaleX = "1.1"
+        android:layout_below="@+id/imageView1"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

@@ -8,63 +8,87 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@mipmap/pic7"
     tools:context="com.example.mymac.boggle.HomeScreen">
 
-    <Button
-        android:text="Instruction"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/instruction"
-        android:layout_below="@+id/leaderBoard"
-        android:layout_alignLeft="@+id/leaderBoard"
-        android:layout_alignStart="@+id/leaderBoard" />
-
-    <Button
-        android:text="2 Players"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/twoPlayer"
-        android:layout_below="@+id/onePlayer"
-        android:layout_alignLeft="@+id/leaderBoard"
-        android:layout_alignStart="@+id/leaderBoard" />
-
-    <Button
-        android:text="Leaderboard"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/leaderBoard"
-        android:layout_below="@+id/twoPlayer"
-        android:layout_centerHorizontal="true" />
 
     <Button
         android:text="1 Player"
-        android:layout_width="150dp"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:id="@+id/onePlayer"
-        android:layout_marginTop="147dp"
-        android:layout_alignParentTop="true"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_centerVertical="true"
         android:layout_alignLeft="@+id/twoPlayer"
         android:layout_alignStart="@+id/twoPlayer"
-        style="@style/Widget.AppCompat.Button" />
-
-    <TextView
-        android:text="WELCOME"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="41dp"
-        android:id="@+id/textView2"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+        android:backgroundTint="@android:color/holo_orange_light"
+        android:textColor="@android:color/white"
+        android:height="60dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textScaleX = "1.1"/>
 
     <Button
-        android:text="Quit"
-        android:layout_width="150dp"
+        android:text="2 Players"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:id="@+id/exitGameButton"
-        android:layout_marginBottom="18dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/instruction"
-        android:layout_alignStart="@+id/instruction" />
+        android:id="@+id/twoPlayer"
+        android:backgroundTint="@android:color/holo_orange_dark"
+        android:textColor="@android:color/white"
+        android:height="60dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/onePlayer"
+        android:layout_alignLeft="@+id/leaderBoard"
+        android:layout_alignStart="@+id/leaderBoard"
+        android:textScaleX = "1.1"/>
 
+    <Button
+        android:text="Leaderboard"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/leaderBoard"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:textColor="@android:color/white"
+        android:height="60dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/twoPlayer"
+        android:layout_centerHorizontal="true"
+        android:textScaleX = "1"/>
+
+    <Button
+        android:text="Instruction"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/instruction"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:textColor="@android:color/white"
+        android:height="60dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/leaderBoard"
+        android:layout_alignLeft="@+id/leaderBoard"
+        android:layout_alignStart="@+id/leaderBoard"
+        android:textScaleX = "1"/>
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/pic5"
+        android:layout_marginTop="13dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+    <!--
+        <Button
+            android:text="Quit"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/exitGameButton"
+            android:layout_marginTop="13dp"
+            android:layout_below="@+id/instruction"
+            android:layout_alignLeft="@+id/instruction"
+            android:layout_alignStart="@+id/instruction" />
+    -->
 </RelativeLayout>

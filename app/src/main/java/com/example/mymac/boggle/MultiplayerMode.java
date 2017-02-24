@@ -19,7 +19,7 @@ public class MultiplayerMode extends AppCompatActivity {
         basicModeBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i("clicks","You Clicked Basic Mode.");
-                Intent i = new Intent(MultiplayerMode.this, GameDifficulty.class);
+                Intent i = new Intent(MultiplayerMode.this, MultiplayerBoard.class);
                 startActivity(i);
             }
         });
@@ -28,7 +28,7 @@ public class MultiplayerMode extends AppCompatActivity {
         cutThroatBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i("clicks","You Clicked Cut Throat Mode.");
-                Intent i = new Intent(MultiplayerMode.this, GameDifficulty.class);
+                Intent i = new Intent(MultiplayerMode.this, MultiplayerBoard.class);
                 startActivity(i);
             }
         });

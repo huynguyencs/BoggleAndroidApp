@@ -13,7 +13,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import java.util.ArrayList;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,18 +24,49 @@ import android.widget.Button;
 import android.widget.TextView;
 import java.io.InputStream;
 import android.util.Log;
-
+import android.widget.Button;
+import android.widget.TextView;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
+import java.io.File;
+
 
 import static com.example.mymac.boggle.R.id.button1;
+import static java.lang.System.in;
 
-public class MainBoard extends AppCompatActivity implements View.OnTouchListener{
+/**
+ * Created by brettchafin on 2/23/17.
+ */
+
+
+
+public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchListener{
+
 
 
     /*********************** Main Board Data elements **************************/
 
+    //flags for bluetooth and game mode
+    public boolean flag_host;
+    public boolean flag_guest;
+    public boolean flag_basicMode;
+    public boolean flag_cutThroatMode;
+
+    /************ new varribles to be used for multiplayer ***********
+    public TextView p1_timerText;
+    public TextView p2_timerText;
+    public TextView correct_word;
+    public TextView p1_scoreText;
+    public TextView p2_scoreText;
+    private int p1_Score;
+    private int p2_Score;
+    private CountDownTimer p1_timer;
+    private CountDownTimer p2_timer;
+     */
 
     //TextViews and timer labels to populate the Gameboard View
     public TextView timerText;
@@ -55,16 +88,12 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
     //For generating a word by the user
     private StringBuilder selectingWord = new StringBuilder();
 
-    //Leaderboard and user object
-    private Leaderboard leaderboard;
-    private String userName;
-
     //Model for button selection
     private boolean[] flag = new boolean[16];
     private int [] BtnIds = {R.id.button1, R.id.button2, R.id.button3, R.id.button4,
-                             R.id.button5, R.id.button6, R.id.button7, R.id.button8,
-                             R.id.button9, R.id.button10, R.id.button11, R.id.button12,
-                             R.id.button13, R.id.button14, R.id.button15, R.id.button16};
+            R.id.button5, R.id.button6, R.id.button7, R.id.button8,
+            R.id.button9, R.id.button10, R.id.button11, R.id.button12,
+            R.id.button13, R.id.button14, R.id.button15, R.id.button16};
     private GestureDetector gestureDetector;
     int prevRow = 0;
     int prevCol = 0;
@@ -81,7 +110,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
 
 
 
-    /*************************** Main Board Methods *****************************/
+    /*************************** Multiplayer Board Methods *****************************/
 
 
     //Contructor
@@ -138,7 +167,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
 
         //Create Board Timer + User Score
         timerText = (TextView) this.findViewById(R.id.timer);
-        timer = new countDownTimer(60 * 1000, 1 * 1000);
+        timer = new MultiplayerBoard.countDownTimer(60 * 1000, 1 * 1000);
         timer.start();
         user_score = (TextView) this.findViewById(R.id.score);
 
@@ -183,17 +212,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
     }
 
     private void endGame(){
-        String diff = GameDifficulty.getDifficulty();
-        leaderboard = new Leaderboard(this, diff);
-
-        if (leaderboard.isHighscore(userScore)) {
-            //popup
-            userName = "TESTNAME";
-            Highscore newHS = new Highscore(userScore, userName);
-            leaderboard.updateHighscore(this, newHS, diff);
-        }
-
-        Intent i = new Intent(MainBoard.this, Results.class);
+        Intent i = new Intent(MultiplayerBoard.this, Results.class);
         i.putExtra("possibleWords", possibleWords);
         i.putExtra("wordsFound", wordsFound);
         i.putExtra("userScore", userScore);
@@ -295,7 +314,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
 
 
         Button cancelBtn = (Button)findViewById(R.id.cancel);
-      
+
         cancelBtn.setOnTouchListener(this);
         submitBtn.setOnTouchListener(this);
 
@@ -325,70 +344,70 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
     //Fingerslide Selection Logic
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-            //TODO: Finger Sliding
-            int dieNo;
-            switch(event.getAction()) {
-                case MotionEvent.ACTION_DOWN:   // start here
-                    dieNo = trackLocation((int)event.getRawX(),(int)event.getRawY());
-                    if(dieNo != -1)
-                        ButtonHandler(dieNo);
-                    if(v.getId() == R.id.cancel){
-                       //TODO cancel case create
-                Toast.makeText(getApplicationContext(), "PREVIOUS SELECTIONS HAVE BEEN CANCELLED!!!", Toast.LENGTH_SHORT).show();
-                resetBtnBackground();
-                selectingWord.delete(0, selectingWord.length());
-                flag = new boolean[16];
-                    }
-                    if(v.getId() == R.id.submit){
-                        System.out.println("Checking user's words to dictionary.");
-                        //if user's submitted word is valid
-                        //if(Arrays.asList(possibleWords).contains(selectingWord.toString())){
-                        if(dictionary.isValid(selectingWord.toString())){
-                            //check if it's already in the list of found word
-                            if(wordsFound.contains(selectingWord.toString())){
-                                Toast.makeText(getApplicationContext(), "THIS WORD HAS ALREADY BEEN SUBMITTED!!!", Toast.LENGTH_SHORT).show();
-                                resetBtnBackground();
-                            }
-                            else{
-                                int pts = 0;
-                                wordsFound.add(selectingWord.toString());
-                                if (selectingWord.length() >= 3 && selectingWord.length() <= 4){
-                                    pts = 1;
-                                }else if (selectingWord.length() == 5){
-                                    pts = 2;
-                                }else if (selectingWord.length() == 6){
-                                    pts = 3;
-                                }else if (selectingWord.length() == 7){
-                                    pts = 5;
-                                }else if (selectingWord.length() >= 8) {
-                                    pts = 10;
-                                }
-                                correct_word = (TextView) this.findViewById(R.id.correctSubmission);
-                                correct_word.setText(wordsFound.get(wordsFound.size() - 1));
-                                userScore += pts;
-                                CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
-                                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-                                updateTextView();
-                                resetBtnBackground();
-                            }
-                        }
-                        else{
-                            Toast.makeText(getApplicationContext(), "INVALID WORD!!!", Toast.LENGTH_SHORT).show();
+        //TODO: Finger Sliding
+        int dieNo;
+        switch(event.getAction()) {
+            case MotionEvent.ACTION_DOWN:   // start here
+                dieNo = trackLocation((int)event.getRawX(),(int)event.getRawY());
+                if(dieNo != -1)
+                    ButtonHandler(dieNo);
+                if(v.getId() == R.id.cancel){
+                    //TODO cancel case create
+                    Toast.makeText(getApplicationContext(), "PREVIOUS SELECTIONS HAVE BEEN CANCELLED!!!", Toast.LENGTH_SHORT).show();
+                    resetBtnBackground();
+                    selectingWord.delete(0, selectingWord.length());
+                    flag = new boolean[16];
+                }
+                if(v.getId() == R.id.submit){
+                    System.out.println("Checking user's words to dictionary.");
+                    //if user's submitted word is valid
+                    //if(Arrays.asList(possibleWords).contains(selectingWord.toString())){
+                    if(dictionary.isValid(selectingWord.toString())){
+                        //check if it's already in the list of found word
+                        if(wordsFound.contains(selectingWord.toString())){
+                            Toast.makeText(getApplicationContext(), "THIS WORD HAS ALREADY BEEN SUBMITTED!!!", Toast.LENGTH_SHORT).show();
                             resetBtnBackground();
                         }
-                        selectingWord.delete(0, selectingWord.length());
-                        flag = new boolean[16];
+                        else{
+                            int pts = 0;
+                            wordsFound.add(selectingWord.toString());
+                            if (selectingWord.length() >= 3 && selectingWord.length() <= 4){
+                                pts = 1;
+                            }else if (selectingWord.length() == 5){
+                                pts = 2;
+                            }else if (selectingWord.length() == 6){
+                                pts = 3;
+                            }else if (selectingWord.length() == 7){
+                                pts = 5;
+                            }else if (selectingWord.length() >= 8) {
+                                pts = 10;
+                            }
+                            correct_word = (TextView) this.findViewById(R.id.correctSubmission);
+                            correct_word.setText(wordsFound.get(wordsFound.size() - 1));
+                            userScore += pts;
+                            CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
+                            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                            updateTextView();
+                            resetBtnBackground();
+                        }
                     }
+                    else{
+                        Toast.makeText(getApplicationContext(), "INVALID WORD!!!", Toast.LENGTH_SHORT).show();
+                        resetBtnBackground();
+                    }
+                    selectingWord.delete(0, selectingWord.length());
+                    flag = new boolean[16];
+                }
 
-                    break;
+                break;
 
 
-                case MotionEvent.ACTION_MOVE:
-                    dieNo = trackLocation((int)event.getRawX(),(int)event.getRawY());
-                    if(dieNo != -1)
-                        ButtonHandler(dieNo);
-                    break;
-            }
+            case MotionEvent.ACTION_MOVE:
+                dieNo = trackLocation((int)event.getRawX(),(int)event.getRawY());
+                if(dieNo != -1)
+                    ButtonHandler(dieNo);
+                break;
+        }
 
         return true;
     }
@@ -439,12 +458,12 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
         for(int i = 0; i < 16; ++i){
             if (x > (BtnLocation[i].x + offsetX/4) && x < (BtnLocation[i].x + offsetX* 3/4) &&
                     y > (BtnLocation[i].y + offsetY/4) && y < (BtnLocation[i].y + offsetY * 3/4)){
-                    //System.out.println("true");
-                    //System.out.println("i: " + i);
-                    if(!flag[i]) {
-                        return i;
-                    }
+                //System.out.println("true");
+                //System.out.println("i: " + i);
+                if(!flag[i]) {
+                    return i;
                 }
+            }
         }
         return -1;
     }
@@ -517,127 +536,3 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
 }
 
 
-
-/*
-FOR BACKUP
-if (gestureDetector.onTouchEvent(event)) {
-            System.out.println("tap");
-            switch (v.getId()) {
-                case R.id.submit:
-                    System.out.println("Checking user's words to dictionary.");
-                    //if user's submitted word is valid
-                    //if(Arrays.asList(possibleWords).contains(selectingWord.toString())){
-                    if(dictionary.isValid(selectingWord.toString())){
-                        //check if it's already in the list of found word
-                        if(wordsFound.contains(selectingWord.toString())){
-                            Toast.makeText(getApplicationContext(), "THIS WORD HAS ALREADY BEEN SUBMITTED!!!", Toast.LENGTH_SHORT).show();
-                            resetBtnBackground();
-                        }
-                        else{
-                            int pts = 0;
-                            wordsFound.add(selectingWord.toString());
-                            if (selectingWord.length() >= 3 && selectingWord.length() <= 4){
-                                pts = 1;
-                            }else if (selectingWord.length() == 5){
-                                pts = 2;
-                            }else if (selectingWord.length() == 6){
-                                pts = 3;
-                            }else if (selectingWord.length() == 7){
-                                pts = 5;
-                            }else if (selectingWord.length() >= 8) {
-                                pts = 10;
-                            }
-                            userScore += pts;
-                            CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
-                            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-                            updateTextView();
-                            resetBtnBackground();
-                        }
-                    }
-                    else{
-                        Toast.makeText(getApplicationContext(), "INVALID WORD!!!", Toast.LENGTH_SHORT).show();
-                        resetBtnBackground();
-                    }
-                    selectingWord.delete(0, selectingWord.length());
-                    flag = new boolean[16];
-                    break;
-
-                case R.id.button1:
-                    ButtonHandler(0);
-                    break;
-                case R.id.button2:
-                    ButtonHandler(1);
-                    break;
-                case R.id.button3:
-                    ButtonHandler(2);
-                    break;
-                case R.id.button4:
-                    ButtonHandler(3);
-                    break;
-                case R.id.button5:
-                    ButtonHandler(4);
-                    break;
-                case R.id.button6:
-                    ButtonHandler(5);
-                    break;
-                case R.id.button7:
-                    ButtonHandler(6);
-                    break;
-                case R.id.button8:
-                    ButtonHandler(7);
-                    break;
-                case R.id.button9:
-                    ButtonHandler(8);
-                    break;
-                case R.id.button10:
-                    ButtonHandler(9);
-                    break;
-                case R.id.button11:
-                    ButtonHandler(10);
-                    break;
-                case R.id.button12:
-                    ButtonHandler(11);
-                    break;
-                case R.id.button13:
-                    ButtonHandler(12);
-                    break;
-                case R.id.button14:
-                    ButtonHandler(13);
-                    break;
-                case R.id.button15:
-                    ButtonHandler(14);
-                    break;
-                case R.id.button16:
-                    ButtonHandler(15);
-                    break;
-                default:
-                    break;
-            }
-            System.out.println(selectingWord);
-            return false;
-
-        }
-
-        private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent event) {
-            return true;
-        }
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            //do something
-            return true;
-        }
-        @Override
-        public void onLongPress(MotionEvent e) {
-            super.onLongPress(e);
-        }
-
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            return super.onDoubleTap(e);
-        }
-    }
- */
