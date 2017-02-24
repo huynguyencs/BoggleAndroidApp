@@ -17,7 +17,6 @@
         android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:id="@+id/onePlayer"
-        android:style="@style/Widget.AppCompat.Button"
         android:layout_centerVertical="true"
         android:layout_alignLeft="@+id/twoPlayer"
         android:layout_alignStart="@+id/twoPlayer"
