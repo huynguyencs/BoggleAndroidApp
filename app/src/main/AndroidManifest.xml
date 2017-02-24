@@ -22,6 +22,7 @@
         <activity android:name=".Instruction" />
         <activity android:name=".Leaderboard" />
         <activity android:name=".Results" />
+        <activity android:name=".BluetoothManager"></activity>
     </application>
 
 </manifest>
