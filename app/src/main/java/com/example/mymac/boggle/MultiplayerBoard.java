@@ -56,25 +56,18 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     public boolean flag_basicMode;
     public boolean flag_cutThroatMode;
 
-    /************ new varribles to be used for multiplayer ***********
+    /************ new varribles to be used for multiplayer ***********/
     public TextView p1_timerText;
     public TextView p2_timerText;
     public TextView correct_word;
     public TextView p1_scoreText;
     public TextView p2_scoreText;
-    private int p1_Score;
-    private int p2_Score;
+    private int p1_score;
+    private int p2_score;
     private CountDownTimer p1_timer;
     private CountDownTimer p2_timer;
-     */
 
-    //TextViews and timer labels to populate the Gameboard View
-    public TextView timerText;
-    public TextView correct_word;
-    public TextView user_score;
-    private int userScore;
-    private CountDownTimer timer;
-
+    
     //Set of 16 dice of the current board
     public Die[] dice;
 
@@ -118,7 +111,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_board);
+        setContentView(R.layout.activity_multiplayer_board);
 
 
         randomDice(); //Generates a new set of random dice
@@ -147,7 +140,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
         //get location from buttons
         BtnLocation = new Point [16];
-        mainScreen = (RelativeLayout) findViewById(R.id.activity_main_board);
+        mainScreen = (RelativeLayout) findViewById(R.id.activity_multiplayer_board);
 
         mainScreen.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -166,12 +159,19 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
 
         //Create Board Timer + User Score
-        timerText = (TextView) this.findViewById(R.id.timer);
-        timer = new MultiplayerBoard.countDownTimer(60 * 1000, 1 * 1000);
-        timer.start();
-        user_score = (TextView) this.findViewById(R.id.score);
+        p1_timerText = (TextView) this.findViewById(R.id.p1_timer);
+        p2_timerText = (TextView) this.findViewById(R.id.p2_timer);
 
-        user_score.setText("Your score: " + userScore);
+        //TODO: get the correct time/points from the prev round if nessesary
+        p1_timer = new MultiplayerBoard.countDownTimer(60 * 1000, 1 * 1000);
+        p2_timer = new MultiplayerBoard.countDownTimer(60 * 1000, 1 * 1000);
+        p1_timer.start();
+        p2_timer.start();
+
+        p1_scoreText = (TextView) this.findViewById(R.id.p1_score);
+        p2_scoreText = (TextView) this.findViewById(R.id.p2_score);
+        p1_scoreText.setText("Player1 score: " + p1_score);
+        p2_scoreText.setText("Player2 score: " + p2_score);
 
     }
 
@@ -192,7 +192,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     //Sets up the board with a number of helper functions
     private boolean newBoard() throws IOException {
         while(true) {
-            userScore = 0;
+            p1_score = 0;
+            p2_score = 0;
             wordsFound = new ArrayList<String>();
             possibleWords = new String[0];
             possibleWords = dictionary.findPossibleWords(); //Runs a Boggle Solver
@@ -215,7 +216,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         Intent i = new Intent(MultiplayerBoard.this, Results.class);
         i.putExtra("possibleWords", possibleWords);
         i.putExtra("wordsFound", wordsFound);
-        i.putExtra("userScore", userScore);
+        i.putExtra("userScore", p1_score);
         startActivity(i);
     }
 
@@ -226,7 +227,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         }
         @Override
         public void onFinish() {
-            timerText.setText("TIME'S UP!");
+            p1_timerText.setText("TIME'S UP!");
             endGame();
         }
         @Override
@@ -234,18 +235,22 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
             long total_seconds = millisUntilFinished / 1000;
             long seconds = total_seconds % 60;
             long minutes = total_seconds / 60;
-            timerText.setText("Time Left: " + minutes + ":" + seconds);
+            p1_timerText.setText("Time Left: " + minutes + ":" + seconds);
+            p2_timerText.setText("Time Left: " + minutes + ":" + seconds);
             if (minutes < 2 && seconds <= 15) {
-                timerText.setTextColor(Color.rgb(255,0,0));
+                p1_timerText.setTextColor(Color.rgb(255,0,0));
+                p2_timerText.setTextColor(Color.rgb(255,0,0));
             }
         }
     }
 
     //Update score, alternating colors
     public void updateTextView() {
-        TextView textView = (TextView) findViewById(R.id.score);
-        textView.setText("Your score: " + userScore);
-        textView.setTextColor( getRandomColor());
+        TextView p1_textView = (TextView) findViewById(R.id.p1_score);
+        TextView p2_textView = (TextView) findViewById(R.id.p2_score);
+        p1_textView.setText("Player1 score: " + p1_score);
+        p2_textView.setText("Player2 score: " + p2_score);
+        p1_textView.setTextColor( getRandomColor());
     }
 
     public int getRandomColor(){
@@ -384,7 +389,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                             }
                             correct_word = (TextView) this.findViewById(R.id.correctSubmission);
                             correct_word.setText(wordsFound.get(wordsFound.size() - 1));
-                            userScore += pts;
+                            p1_score += pts;
+                            //TODO: Notifiy the only player you found a word
                             CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                             updateTextView();
