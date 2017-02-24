@@ -34,23 +34,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/basicMode"
-        android:backgroundTint="@android:color/holo_orange_dark"
+        android:backgroundTint="@android:color/holo_orange_light"
         android:textColor="@android:color/white"
         android:width="160dp"
         android:height="60dp"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textScaleX = "1.1"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="230dp"
         android:layout_below="@+id/imageView1"
         android:layout_centerHorizontal="true" />
 
     <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/imageView3"
+        android:layout_width="350dp"
+        android:layout_height="200dp"
         android:src="@mipmap/pic5"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>

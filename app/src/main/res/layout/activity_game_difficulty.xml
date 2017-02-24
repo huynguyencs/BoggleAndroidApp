@@ -46,11 +46,12 @@
         android:textColor="@android:color/white" />
 
     <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/imageView2"
+        android:layout_width="350dp"
+        android:layout_height="200dp"
         android:src="@mipmap/pic5"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
@@ -68,5 +69,5 @@
         android:textScaleX = "1.1"
         android:layout_below="@+id/imageView1"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp" />
+        android:layout_marginTop="220dp" />
 </RelativeLayout>

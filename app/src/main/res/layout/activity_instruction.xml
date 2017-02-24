@@ -8,31 +8,20 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@mipmap/pic7"
+    android:background="@mipmap/pic2"
     tools:context="com.example.mymac.boggle.Instruction">
 
     <TextView
-        android:text="How to Play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tittle"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/boggle_purple"
-        android:textStyle="bold"
-        android:textSize="24sp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:text="There are 16 cubic dice with a letter on each side of a die. The game starts by shaking the dice. The dice fall into a 4x4 game board, therefore only top letter of each die is visible to the players. Players then have some 3 minutes to select as many words of 3 or more letters as they can. Repeated words only count once. The words must be formed from sequentially adjacent cubes. A cube is adjacent to another if they are horizontal, vertical or diagonal neighbors. See the following figure for an example, SUPER is a valid word. Words can be in singular, plural or other derived forms. Names and abbreviations are not valid. Each cube letter can be used only once in a single word. The score of each valid word is counted based on its length, 1 point for 3 or 4 letter words, 2 points for 5 letter words, 3 points for 6 letter words, 5 points for 7 letter words, and 10 points for words of 8 or more letters. A candidate word is submitted by sliding a finger over dice on the screen. "
-        android:layout_width="wrap_content"
+        android:text="The game starts by shaking the phone. The dice fall into a 4x4 game board. Players then have some 3 minutes to select as many words of 3 or more letters as they can. Repeated words only count once. The words must be formed from sequentially adjacent cubes, which are horizontal, vertical or diagonal neighbors. Words can be in singular, plural or other derived forms. Each cube letter can be used only once in a single word. A candidate word is submitted by sliding a finger over dice on the screen. "
+        android:layout_width="295dp"
         android:layout_height="wrap_content"
         android:id="@+id/instructionText"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
         android:textSize="16sp"
-        android:layout_below="@+id/tittle"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginBottom="61dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+
 </RelativeLayout>
