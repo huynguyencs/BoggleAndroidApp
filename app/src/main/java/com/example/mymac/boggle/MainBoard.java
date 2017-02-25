@@ -185,18 +185,21 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
     private void endGame(){
         String diff = GameDifficulty.getDifficulty();
         leaderboard = new Leaderboard(this, diff);
+        boolean isHighScore = false;
 
         if (leaderboard.isHighscore(userScore)) {
-            //popup
-            userName = "TESTNAME";
+            userName = GameDifficulty.getPlayerName();
             Highscore newHS = new Highscore(userScore, userName);
             leaderboard.updateHighscore(this, newHS, diff);
+            isHighScore = true;
         }
 
         Intent i = new Intent(MainBoard.this, Results.class);
         i.putExtra("possibleWords", possibleWords);
         i.putExtra("wordsFound", wordsFound);
         i.putExtra("userScore", userScore);
+        i.putExtra("isHighScore", isHighScore);
+
         startActivity(i);
     }
 

@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -22,6 +26,7 @@ public class Results extends ListActivity {
         String[] possibleWords = intent.getStringArrayExtra("possibleWords");
         ArrayList<String> wordsFound = intent.getStringArrayListExtra("wordsFound");
         int userScore = intent.getIntExtra("userScore", 0);
+        Boolean isHighScore = intent.getBooleanExtra("isHighScore", false);
 
         int wordScore = 0;
         int totalScore = 0;
@@ -52,10 +57,10 @@ public class Results extends ListActivity {
             }
         }
 
-        rAdapter.addSectionHeaderItem("Score: " + userScore + "/" + totalScore);
-        //rAdapter.addSectionHeaderItem("Score: " + userScore);
-
         setListAdapter(rAdapter);
+
+        TextView finalScore = (TextView) findViewById(R.id.textViewFinalScore);
+        finalScore.setText("Score: " + userScore + "/" + totalScore);
 
         final Button buttonDone = (Button) findViewById(R.id.buttonDone);
         buttonDone.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +77,12 @@ public class Results extends ListActivity {
                 startActivity(i);
             }
         });
+
+        if (isHighScore) {
+            Toast hsToast = Toast.makeText(this, "NEW HIGH SCORE!", Toast.LENGTH_LONG);
+            hsToast.show();
+        }
+
     }
 
     public int get_score(String word) {
