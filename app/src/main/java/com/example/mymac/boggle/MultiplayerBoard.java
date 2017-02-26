@@ -1,12 +1,19 @@
 package com.example.mymac.boggle;
 
 import android.annotation.TargetApi;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -44,11 +51,12 @@ import static java.lang.System.in;
 
 
 
-public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchListener{
+public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchListener {
 
 
-
-    /*********************** Main Board Data elements **************************/
+    /***********************
+     * Main Board Data elements
+     **************************/
 
     //flags for bluetooth and game mode
     public boolean flag_host;
@@ -56,16 +64,17 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     public boolean flag_basicMode;
     public boolean flag_cutThroatMode;
 
-    /************ new varribles to be used for multiplayer ***********
-    public TextView p1_timerText;
-    public TextView p2_timerText;
-    public TextView correct_word;
-    public TextView p1_scoreText;
-    public TextView p2_scoreText;
-    private int p1_Score;
-    private int p2_Score;
-    private CountDownTimer p1_timer;
-    private CountDownTimer p2_timer;
+    /************
+     * new varribles to be used for multiplayer ***********
+     * public TextView p1_timerText;
+     * public TextView p2_timerText;
+     * public TextView correct_word;
+     * public TextView p1_scoreText;
+     * public TextView p2_scoreText;
+     * private int p1_Score;
+     * private int p2_Score;
+     * private CountDownTimer p1_timer;
+     * private CountDownTimer p2_timer;
      */
 
     //TextViews and timer labels to populate the Gameboard View
@@ -80,6 +89,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     //All possible words on the board, along with the user found words so far
     private String[] possibleWords;
+    private String pairedDeviceName;
     private ArrayList<String> wordsFound;
 
     //Helper class to validate words and solve the board
@@ -90,7 +100,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     //Model for button selection
     private boolean[] flag = new boolean[16];
-    private int [] BtnIds = {R.id.button1, R.id.button2, R.id.button3, R.id.button4,
+    private int[] BtnIds = {R.id.button1, R.id.button2, R.id.button3, R.id.button4,
             R.id.button5, R.id.button6, R.id.button7, R.id.button8,
             R.id.button9, R.id.button10, R.id.button11, R.id.button12,
             R.id.button13, R.id.button14, R.id.button15, R.id.button16};
@@ -104,13 +114,50 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     Button object;
     int offsetX, offsetY;
 
-    Button p1_button; Button p2_button; Button p3_button; Button p4_button; Button p5_button; Button p6_button;
-    Button p7_button; Button p8_button; Button p9_button; Button p10_button; Button p11_button; Button p12_button;
-    Button p13_button; Button p14_button; Button p15_button; Button p16_button;
+    Button p1_button;
+    Button p2_button;
+    Button p3_button;
+    Button p4_button;
+    Button p5_button;
+    Button p6_button;
+    Button p7_button;
+    Button p8_button;
+    Button p9_button;
+    Button p10_button;
+    Button p11_button;
+    Button p12_button;
+    Button p13_button;
+    Button p14_button;
+    Button p15_button;
+    Button p16_button;
 
 
+    // Local Bluetooth adapter
 
-    /*************************** Multiplayer Board Methods *****************************/
+    private BluetoothAdapter mBluetoothAdapter = null;
+
+    // Member object for the chat services
+    private BluetoothManager mBluetoothManager = null;
+
+    // Message types sent from the BluetoothChatService Handler
+    public static final int MESSAGE_STATE_CHANGE = 1;
+    public static final int MESSAGE_READ = 2;
+    public static final int MESSAGE_WRITE = 3;
+    public static final int MESSAGE_DEVICE_NAME = 4;
+    public static final int MESSAGE_TOAST = 5;
+
+
+    // Key names received from the BluetoothChatService Handler
+    public static final String DEVICE_NAME = "device_name";
+    public static final String TOAST = "toast";
+
+    // Intent request codes
+    private static final int REQUEST_CONNECT_DEVICE = 1;
+    private static final int REQUEST_ENABLE_BT = 2;
+
+    /***************************
+     * Multiplayer Board Methods
+     *****************************/
 
 
     //Contructor
@@ -133,7 +180,6 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         //shakeDetector = new ShakeDetector(this);
 
 
-
         //fully create a new Board
         try {
             newBoard();
@@ -146,7 +192,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         resetBtnBackground();
 
         //get location from buttons
-        BtnLocation = new Point [16];
+        BtnLocation = new Point[16];
         mainScreen = (RelativeLayout) findViewById(R.id.activity_main_board);
 
         mainScreen.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -156,8 +202,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                         // Layout has happened here.
                         readLocation();
                         // Don't forget to remove your listener when you are done with it.
-                        if (Build.VERSION.SDK_INT<16) {
-                            removeLayoutListenerPre16(mainScreen.getViewTreeObserver(),this);
+                        if (Build.VERSION.SDK_INT < 16) {
+                            removeLayoutListenerPre16(mainScreen.getViewTreeObserver(), this);
                         } else {
                             removeLayoutListenerPost16(mainScreen.getViewTreeObserver(), this);
                         }
@@ -165,15 +211,37 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                 });
 
 
+
+        // Get local Bluetooth adapter
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        // If the adapter is null, then Bluetooth is not supported
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         //Create Board Timer + User Score
         timerText = (TextView) this.findViewById(R.id.timer);
-        timer = new MultiplayerBoard.countDownTimer(60 * 1000, 1 * 1000);
+        timer = new MultiplayerBoard.countDownTimer(60 * 60 * 1000, 1 * 1000);
         timer.start();
         user_score = (TextView) this.findViewById(R.id.score);
-
         user_score.setText("Your score: " + userScore);
-
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        } else {
+            if (mBluetoothManager == null)
+                mBluetoothManager = new BluetoothManager(this, mHandler);
+        }
+    }
+
 
 
 
@@ -191,7 +259,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     //Sets up the board with a number of helper functions
     private boolean newBoard() throws IOException {
-        while(true) {
+        while (true) {
             userScore = 0;
             wordsFound = new ArrayList<String>();
             possibleWords = new String[0];
@@ -205,13 +273,13 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     //Generates Random Dice for the board
     private boolean randomDice() {
         dice = new Die[16];
-        for(int i = 0; i < dice.length ; i++) {
+        for (int i = 0; i < dice.length; i++) {
             dice[i] = new Die(i);
         }
         return true;
     }
 
-    private void endGame(){
+    private void endGame() {
         Intent i = new Intent(MultiplayerBoard.this, Results.class);
         i.putExtra("possibleWords", possibleWords);
         i.putExtra("wordsFound", wordsFound);
@@ -224,11 +292,13 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         public countDownTimer(long startTime, long interval) {
             super(startTime, interval);
         }
+
         @Override
         public void onFinish() {
             timerText.setText("TIME'S UP!");
             endGame();
         }
+
         @Override
         public void onTick(long millisUntilFinished) {
             long total_seconds = millisUntilFinished / 1000;
@@ -236,7 +306,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
             long minutes = total_seconds / 60;
             timerText.setText("Time Left: " + minutes + ":" + seconds);
             if (minutes < 2 && seconds <= 15) {
-                timerText.setTextColor(Color.rgb(255,0,0));
+                timerText.setTextColor(Color.rgb(255, 0, 0));
             }
         }
     }
@@ -245,83 +315,82 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     public void updateTextView() {
         TextView textView = (TextView) findViewById(R.id.score);
         textView.setText("Your score: " + userScore);
-        textView.setTextColor( getRandomColor());
+        textView.setTextColor(getRandomColor());
     }
 
-    public int getRandomColor(){
+    public int getRandomColor() {
         Random rnd = new Random();
         return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 
     }
 
 
-    /****************************** Button Logic ********************************/
-
+    /******************************
+     * Button Logic
+     ********************************/
 
 
     //Creates UI buttons and attaches them to the Game Board Dice
     private void buttonCreation() {
-        p1_button = (Button)findViewById(button1);
+        p1_button = (Button) findViewById(button1);
         p1_button.setText((dice[0].topLetter));
         p1_button.setOnTouchListener(this);
-        p2_button = (Button)findViewById(R.id.button2);
+        p2_button = (Button) findViewById(R.id.button2);
         p2_button.setText((dice[1].topLetter));
         p2_button.setOnTouchListener(this);
-        p3_button = (Button)findViewById(R.id.button3);
+        p3_button = (Button) findViewById(R.id.button3);
         p3_button.setText((dice[2].topLetter));
         p3_button.setOnTouchListener(this);
-        p4_button = (Button)findViewById(R.id.button4);
+        p4_button = (Button) findViewById(R.id.button4);
         p4_button.setText((dice[3].topLetter));
         p4_button.setOnTouchListener(this);
-        p5_button = (Button)findViewById(R.id.button5);
+        p5_button = (Button) findViewById(R.id.button5);
         p5_button.setText((dice[4].topLetter));
         p5_button.setOnTouchListener(this);
-        p6_button = (Button)findViewById(R.id.button6);
+        p6_button = (Button) findViewById(R.id.button6);
         p6_button.setText((dice[5].topLetter));
         p6_button.setOnTouchListener(this);
-        p7_button = (Button)findViewById(R.id.button7);
+        p7_button = (Button) findViewById(R.id.button7);
         p7_button.setText((dice[6].topLetter));
         p7_button.setOnTouchListener(this);
-        p8_button = (Button)findViewById(R.id.button8);
+        p8_button = (Button) findViewById(R.id.button8);
         p8_button.setText((dice[7].topLetter));
         p8_button.setOnTouchListener(this);
-        p9_button = (Button)findViewById(R.id.button9);
+        p9_button = (Button) findViewById(R.id.button9);
         p9_button.setText((dice[8].topLetter));
         p9_button.setOnTouchListener(this);
-        p10_button = (Button)findViewById(R.id.button10);
+        p10_button = (Button) findViewById(R.id.button10);
         p10_button.setText((dice[9].topLetter));
         p10_button.setOnTouchListener(this);
-        p11_button = (Button)findViewById(R.id.button11);
+        p11_button = (Button) findViewById(R.id.button11);
         p11_button.setText((dice[10].topLetter));
         p11_button.setOnTouchListener(this);
-        p12_button = (Button)findViewById(R.id.button12);
+        p12_button = (Button) findViewById(R.id.button12);
         p12_button.setText((dice[11].topLetter));
         p12_button.setOnTouchListener(this);
-        p13_button = (Button)findViewById(R.id.button13);
+        p13_button = (Button) findViewById(R.id.button13);
         p13_button.setText((dice[12].topLetter));
         p13_button.setOnTouchListener(this);
-        p14_button = (Button)findViewById(R.id.button14);
+        p14_button = (Button) findViewById(R.id.button14);
         p14_button.setText((dice[13].topLetter));
         p14_button.setOnTouchListener(this);
-        p15_button = (Button)findViewById(R.id.button15);
+        p15_button = (Button) findViewById(R.id.button15);
         p15_button.setText((dice[14].topLetter));
         p15_button.setOnTouchListener(this);
-        p16_button = (Button)findViewById(R.id.button16);
+        p16_button = (Button) findViewById(R.id.button16);
         p16_button.setText((dice[15].topLetter));
         p16_button.setOnTouchListener(this);
 
-        Button submitBtn = (Button)findViewById(R.id.submit);
+        Button submitBtn = (Button) findViewById(R.id.submit);
 
 
-        Button cancelBtn = (Button)findViewById(R.id.cancel);
+        Button cancelBtn = (Button) findViewById(R.id.cancel);
 
         cancelBtn.setOnTouchListener(this);
         submitBtn.setOnTouchListener(this);
-
-
     }
 
-    private void resetBtnBackground(){
+    private void resetBtnBackground() {
         p1_button.getBackground().clearColorFilter();
         p2_button.getBackground().clearColorFilter();
         p3_button.getBackground().clearColorFilter();
@@ -346,40 +415,42 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     public boolean onTouch(View v, MotionEvent event) {
         //TODO: Finger Sliding
         int dieNo;
-        switch(event.getAction()) {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:   // start here
-                dieNo = trackLocation((int)event.getRawX(),(int)event.getRawY());
-                if(dieNo != -1)
+                dieNo = trackLocation((int) event.getRawX(), (int) event.getRawY());
+                if (dieNo != -1)
                     ButtonHandler(dieNo);
-                if(v.getId() == R.id.cancel){
+                if (v.getId() == R.id.cancel) {
                     //TODO cancel case create
+                    /*
                     Toast.makeText(getApplicationContext(), "PREVIOUS SELECTIONS HAVE BEEN CANCELLED!!!", Toast.LENGTH_SHORT).show();
                     resetBtnBackground();
                     selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
+                    */
+                    sendMessage("CANCEL BUTTON SENT");
                 }
-                if(v.getId() == R.id.submit){
+                if (v.getId() == R.id.submit) {
                     System.out.println("Checking user's words to dictionary.");
                     //if user's submitted word is valid
                     //if(Arrays.asList(possibleWords).contains(selectingWord.toString())){
-                    if(dictionary.isValid(selectingWord.toString())){
+                    if (dictionary.isValid(selectingWord.toString())) {
                         //check if it's already in the list of found word
-                        if(wordsFound.contains(selectingWord.toString())){
+                        if (wordsFound.contains(selectingWord.toString())) {
                             Toast.makeText(getApplicationContext(), "THIS WORD HAS ALREADY BEEN SUBMITTED!!!", Toast.LENGTH_SHORT).show();
                             resetBtnBackground();
-                        }
-                        else{
+                        } else {
                             int pts = 0;
                             wordsFound.add(selectingWord.toString());
-                            if (selectingWord.length() >= 3 && selectingWord.length() <= 4){
+                            if (selectingWord.length() >= 3 && selectingWord.length() <= 4) {
                                 pts = 1;
-                            }else if (selectingWord.length() == 5){
+                            } else if (selectingWord.length() == 5) {
                                 pts = 2;
-                            }else if (selectingWord.length() == 6){
+                            } else if (selectingWord.length() == 6) {
                                 pts = 3;
-                            }else if (selectingWord.length() == 7){
+                            } else if (selectingWord.length() == 7) {
                                 pts = 5;
-                            }else if (selectingWord.length() >= 8) {
+                            } else if (selectingWord.length() >= 8) {
                                 pts = 10;
                             }
                             correct_word = (TextView) this.findViewById(R.id.correctSubmission);
@@ -390,8 +461,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                             updateTextView();
                             resetBtnBackground();
                         }
-                    }
-                    else{
+                    } else {
                         Toast.makeText(getApplicationContext(), "INVALID WORD!!!", Toast.LENGTH_SHORT).show();
                         resetBtnBackground();
                     }
@@ -403,8 +473,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
 
             case MotionEvent.ACTION_MOVE:
-                dieNo = trackLocation((int)event.getRawX(),(int)event.getRawY());
-                if(dieNo != -1)
+                dieNo = trackLocation((int) event.getRawX(), (int) event.getRawY());
+                if (dieNo != -1)
                     ButtonHandler(dieNo);
                 break;
         }
@@ -413,12 +483,12 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     }
 
     private void ButtonHandler(int dieNumber) {
-        curRow = dieNumber/4;
-        curCol = dieNumber%4;
+        curRow = dieNumber / 4;
+        curCol = dieNumber % 4;
         View v = (View) findViewById(BtnIds[dieNumber]);
 
         if (flag[dieNumber] == true) {
-            for(int i = 0; i <16; ++i){
+            for (int i = 0; i < 16; ++i) {
                 System.out.print(flag[i] + " ");
             }
             selectingWord.delete(0, selectingWord.length());
@@ -430,13 +500,13 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
             if (selectingWord.length() == 0) {
                 prevRow = curRow;
                 prevCol = curCol;
-                selectingWord.append(((Button)v).getText().toString());
+                selectingWord.append(((Button) v).getText().toString());
                 flag[dieNumber] = true;
                 v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
             } else {
                 if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                         && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                    selectingWord.append(((Button)v).getText().toString());
+                    selectingWord.append(((Button) v).getText().toString());
                     flag[dieNumber] = true;
                     prevRow = curRow;
                     prevCol = curCol;
@@ -452,15 +522,15 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         System.out.println(selectingWord);
     }
 
-    private int trackLocation(int x, int y){
+    private int trackLocation(int x, int y) {
         //System.out.println("X: " + x);
         //System.out.println("Y: " + y);
-        for(int i = 0; i < 16; ++i){
-            if (x > (BtnLocation[i].x + offsetX/4) && x < (BtnLocation[i].x + offsetX* 3/4) &&
-                    y > (BtnLocation[i].y + offsetY/4) && y < (BtnLocation[i].y + offsetY * 3/4)){
+        for (int i = 0; i < 16; ++i) {
+            if (x > (BtnLocation[i].x + offsetX / 4) && x < (BtnLocation[i].x + offsetX * 3 / 4) &&
+                    y > (BtnLocation[i].y + offsetY / 4) && y < (BtnLocation[i].y + offsetY * 3 / 4)) {
                 //System.out.println("true");
                 //System.out.println("i: " + i);
-                if(!flag[i]) {
+                if (!flag[i]) {
                     return i;
                 }
             }
@@ -468,7 +538,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         return -1;
     }
 
-    private void readLocation(){
+    private void readLocation() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         //offsetX = displayMetrics.widthPixels - mainScreen.getMeasuredWidth();
@@ -513,7 +583,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
         //int[] locationOnScreen = new int[2];
         //object.getLocationOnScreen(locationOnScreen);
-        for(int i = 0; i < 16; ++i) {
+        for (int i = 0; i < 16; ++i) {
             System.out.println(
                     "\n"
                             + "getLocationInWindow() - " + BtnLocation[i].x + " : " + BtnLocation[i].y + "\n"
@@ -524,15 +594,183 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     }
 
     @SuppressWarnings("deprecation")
-    private void removeLayoutListenerPre16(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener listener){
+    private void removeLayoutListenerPre16(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener listener) {
         observer.removeGlobalOnLayoutListener(listener);
     }
 
     @TargetApi(16)
-    private void removeLayoutListenerPost16(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener listener){
+    private void removeLayoutListenerPost16(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener listener) {
         observer.removeOnGlobalLayoutListener(listener);
 
     }
+
+
+
+    /*
+    *****HENRY ADDED******
+     */
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mBluetoothManager != null) {
+            mBluetoothManager.stop();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Performing this check in onResume() covers the case in which BT was
+        // not enabled during onStart(), so we were paused to enable it...
+        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
+        if (mBluetoothManager != null) {
+            // Only if the state is STATE_NONE, do we know that we haven't started already
+            if (mBluetoothManager.getState() == BluetoothManager.STATE_NONE) {
+                // Start the Bluetooth chat services
+                mBluetoothManager.start();
+            }
+        }
+    }
+
+    private void ensureDiscoverable() {
+        if (mBluetoothAdapter.getScanMode() !=
+                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            startActivity(discoverableIntent);
+        }
+    }
+
+    /**
+     * Sends a message.
+     *
+     * @param message A string of text to send.
+     */
+    private void sendMessage(String message) {
+        // Check that we're actually connected before trying anything
+        if (mBluetoothManager.getState() != BluetoothManager.STATE_CONNECTED) {
+            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothChatService to write
+            byte[] send = message.getBytes();
+            mBluetoothManager.write(send);
+        }
+    }
+
+    /*
+    Receive a message from a paired device
+     */
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                //report the state of connection between 2 devices
+                case MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BluetoothManager.STATE_CONNECTED:
+                            Toast.makeText(getApplicationContext(), R.string.status_connected_to, Toast.LENGTH_SHORT).show();
+                            break;
+                        case BluetoothManager.STATE_CONNECTING:
+                            Toast.makeText(getApplicationContext(), R.string.status_connecting, Toast.LENGTH_SHORT).show();
+                            flag_host = true;
+                            break;
+                        case BluetoothManager.STATE_LISTEN:
+                        case BluetoothManager.STATE_NONE:
+                            Toast.makeText(getApplicationContext(), R.string.status_not_connected, Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                    break;
+
+                // save the connected device's name
+                case MESSAGE_DEVICE_NAME:
+                    //do something
+                    pairedDeviceName = msg.getData().getString(DEVICE_NAME);
+                    Toast.makeText(getApplicationContext(), "Connected to "
+                            + pairedDeviceName, Toast.LENGTH_SHORT).show();
+                    break;
+
+                case MESSAGE_TOAST:
+                    Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
+                            Toast.LENGTH_SHORT).show();
+                    break;
+
+                //read a message from a bluetooth device
+                case MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String rawMessage = new String(readBuf, 0, msg.arg1);
+                    //do something
+                    Toast.makeText(getApplicationContext(), rawMessage, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+
+    public void connect(View v) {
+        Intent serverIntent = new Intent(this, BluetoothDeviceList.class);
+        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+    }
+
+    public void discoverable(View v) {
+        ensureDiscoverable();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_mp_boggle, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.connect_scan: {
+                // Launch the DeviceListActivity to see devices and do scan
+                Intent serverIntent = new Intent(this, BluetoothDeviceList.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+                return true;
+            }
+            case R.id.discoverable: {
+                // Ensure this device is discoverable by others
+                ensureDiscoverable();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == RESULT_OK) {
+                    // Get the device MAC address
+                    String address = data.getExtras().getString(BluetoothDeviceList.EXTRA_DEVICE_ADDRESS);
+                    // Get the BluetoothDevice object
+                    BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+                    // Attempt to connect to the device
+                    mBluetoothManager.connect(device);
+                }
+                break;
+            case REQUEST_ENABLE_BT:
+                // When the request to enable Bluetooth returns
+                if (resultCode == this.RESULT_OK) {
+                    // Bluetooth is now enabled, so set up a chat session
+                    mBluetoothManager = new BluetoothManager(this, mHandler);
+                } else {
+                    // User did not enable Bluetooth or an error occured
+                    Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+        }
+    }
+
 }
 
 
