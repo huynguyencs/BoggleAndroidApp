@@ -2,6 +2,7 @@ package com.example.mymac.boggle;
 
 import android.os.Bundle;
 import android.app.ListActivity;
+import android.view.View;
 
 
 public class Leaderboard extends ListActivity {
@@ -24,6 +25,7 @@ public class Leaderboard extends ListActivity {
         mAdapter.addSectionHeaderItem("Hard Mode");
 
         setListAdapter(mAdapter);
+
     }
 
 }

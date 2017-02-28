@@ -39,7 +39,7 @@ import java.io.File;
 import static com.example.mymac.boggle.R.id.button1;
 import static java.lang.System.in;
 
-public class MainBoard extends AppCompatActivity implements View.OnTouchListener{
+public class MainBoard extends AppCompatActivity implements View.OnTouchListener {
 
 
     /*********************** Main Board Data elements **************************/
@@ -154,8 +154,8 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
 
 
 
-   /*
-    @Override
+
+    /* @Override
     public void onShake() {
         //fully create a new Board
         try {
