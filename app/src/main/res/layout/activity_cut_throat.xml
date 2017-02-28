@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main_board"
+    android:id="@+id/activity_cut_throat"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -12,13 +12,29 @@
     tools:context="com.example.mymac.boggle.MultiplayerBoard">
 
     <Button
+        android:id="@+id/button1"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:backgroundTint="@color/star_yellow"
+        android:layout_marginTop="35dp"
+        android:layout_below="@+id/p1_timer"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
+
+    <Button
         android:layout_alignTop="@+id/button1"
         android:layout_toRightOf="@+id/button1"
         android:layout_toEndOf="@+id/button1"
         android:id="@+id/button2"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_toRightOf="@+id/button2"
@@ -27,7 +43,9 @@
         android:layout_alignBottom="@+id/button2"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_width="75dp"
@@ -36,7 +54,9 @@
         android:layout_toEndOf="@+id/button3"
         android:id="@+id/button4"
         android:layout_height="75dp"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:id="@+id/button5"
@@ -45,7 +65,9 @@
         android:layout_alignStart="@+id/button1"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_below="@+id/button2"
@@ -54,7 +76,9 @@
         android:id="@+id/button6"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_width="75dp"
@@ -63,7 +87,9 @@
         android:layout_toRightOf="@+id/button6"
         android:layout_toEndOf="@+id/button6"
         android:id="@+id/button7"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_width="75dp"
@@ -72,7 +98,9 @@
         android:layout_toRightOf="@+id/button7"
         android:layout_toEndOf="@+id/button7"
         android:id="@+id/button8"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_width="75dp"
@@ -81,7 +109,9 @@
         android:layout_alignLeft="@+id/button5"
         android:layout_alignStart="@+id/button5"
         android:id="@+id/button9"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_width="75dp"
@@ -90,7 +120,9 @@
         android:layout_toRightOf="@+id/button9"
         android:layout_toEndOf="@+id/button9"
         android:id="@+id/button10"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_width="75dp"
@@ -99,7 +131,9 @@
         android:layout_toRightOf="@+id/button10"
         android:layout_toEndOf="@+id/button10"
         android:id="@+id/button11"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_width="75dp"
@@ -108,7 +142,9 @@
         android:layout_toRightOf="@+id/button7"
         android:layout_toEndOf="@+id/button7"
         android:id="@+id/button12"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_width="75dp"
@@ -117,7 +153,9 @@
         android:layout_alignLeft="@+id/button9"
         android:layout_alignStart="@+id/button9"
         android:id="@+id/button13"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_width="75dp"
@@ -126,7 +164,9 @@
         android:layout_toRightOf="@+id/button13"
         android:layout_toEndOf="@+id/button13"
         android:id="@+id/button14"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_width="75dp"
@@ -135,7 +175,9 @@
         android:layout_toRightOf="@+id/button14"
         android:layout_toEndOf="@+id/button14"
         android:id="@+id/button15"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <Button
         android:layout_width="75dp"
@@ -144,48 +186,63 @@
         android:layout_toRightOf="@+id/button11"
         android:layout_toEndOf="@+id/button11"
         android:id="@+id/button16"
-        android:backgroundTint="@color/star_yellow"/>
+        android:backgroundTint="@color/star_yellow"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
-    <Button
-        android:text="Cancel"
+    <TextView
+        android:text="Your Timer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/submit"
-        android:layout_alignRight="@+id/button16"
-        android:layout_alignEnd="@+id/button16"
-        android:id="@+id/cancel"
-        android:backgroundTint="@android:color/holo_red_dark"
-        android:width="100dp"
-        android:height="55dp"
-        android:textSize="18sp"
+        android:layout_marginTop="15dp"
+        android:id="@+id/p1_timer"
+        android:layout_alignParentTop="true"
+        android:textColor="@android:color/white"
         android:textStyle="bold"
-        android:textColor="@android:color/white" />
+        android:textSize="18sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_alignLeft="@+id/button1"
+        android:layout_alignStart="@+id/button1"
+        android:backgroundTint="@color/star_yellow" />
 
     <TextView
         android:text="Timer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:id="@+id/timer"
+        android:id="@+id/p2_timer"
         android:layout_alignParentTop="true"
         android:textColor="@android:color/white"
         android:textStyle="bold"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_alignRight="@+id/button4"
+        android:layout_alignEnd="@+id/button4" />
+
+    <TextView
+        android:text="Your Score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/p1_timer"
         android:layout_alignLeft="@+id/button1"
-        android:layout_alignStart="@+id/button1" />
+        android:layout_alignStart="@+id/button1"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:id="@+id/p1_score"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     <TextView
         android:text="Score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/timer"
+        android:layout_below="@+id/p2_timer"
         android:layout_alignRight="@+id/button4"
         android:layout_alignEnd="@+id/button4"
         android:textColor="@android:color/white"
         android:textStyle="bold"
-        android:textSize="20sp"
-        android:id="@+id/score"
+        android:textSize="18sp"
+        android:id="@+id/p2_score"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     <Button
@@ -194,9 +251,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/submit"
         android:backgroundTint="@android:color/holo_orange_dark"
-        android:width="100dp"
+        android:width="90dp"
         android:height="55dp"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="normal|bold"
         android:textColor="@android:color/white"
         android:layout_below="@+id/button13"
@@ -205,18 +262,37 @@
         android:layout_marginTop="12dp" />
 
     <Button
-        android:id="@+id/button1"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginStart="24dp"
-        android:backgroundTint="@color/star_yellow"
-        android:layout_marginTop="18dp"
-        android:layout_below="@+id/timer"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:text="Cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/submit"
+        android:layout_toRightOf="@+id/submit"
+        android:layout_toEndOf="@+id/submit"
+        android:id="@+id/cancel"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:width="90dp"
+        android:height="55dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:text="Stop Timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/submit"
+        android:layout_toRightOf="@+id/cancel"
+        android:layout_toEndOf="@+id/cancel"
+        android:id="@+id/stopTimer"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:width="120dp"
+        android:height="55dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white" />
 
     <TextView
+        android:text="Word List"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/correctSubmission"
@@ -226,7 +302,11 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:layout_below="@+id/submit"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:scrollbars="vertical"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:maxLines="8"
+        android:gravity="bottom"/>
 
 
 </RelativeLayout>

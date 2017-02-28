@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/cutThroatMode"
         android:layout_marginTop="10dp"
-        android:backgroundTint="@android:color/holo_red_light"
+        android:backgroundTint="@android:color/holo_red_dark"
         android:width="160dp"
         android:height="60dp"
         android:textSize="18sp"
