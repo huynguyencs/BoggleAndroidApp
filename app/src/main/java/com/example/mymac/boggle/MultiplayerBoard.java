@@ -1,13 +1,20 @@
 package com.example.mymac.boggle;
 
 import android.annotation.TargetApi;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -52,35 +59,29 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     /*********************** Main Board Data elements **************************/
 
     //flags for bluetooth and game mode
-    public boolean flag_host;
+    public boolean flag_host = false;
     public boolean flag_guest;
     public boolean flag_basicMode;
     public boolean flag_cutThroatMode;
 
-    /************ new varribles to be used for multiplayer ***********
+    /************ new varribles to be used for multiplayer ***********/
     public TextView p1_timerText;
     public TextView p2_timerText;
     public TextView correct_word;
     public TextView p1_scoreText;
     public TextView p2_scoreText;
-    private int p1_Score;
-    private int p2_Score;
+    private int p1_score;
+    private int p2_score;
     private CountDownTimer p1_timer;
     private CountDownTimer p2_timer;
-     */
 
-    //TextViews and timer labels to populate the Gameboard View
-    public TextView timerText;
-    public TextView correct_word;
-    public TextView user_score;
-    private int userScore;
-    private CountDownTimer timer;
 
     //Set of 16 dice of the current board
     public Die[] dice;
 
     //All possible words on the board, along with the user found words so far
     private String[] possibleWords;
+    private String pairedDeviceName;
     private ArrayList<String> wordsFound;
 
     //Helper class to validate words and solve the board
@@ -105,13 +106,50 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     Button object;
     int offsetX, offsetY;
 
-    Button p1_button; Button p2_button; Button p3_button; Button p4_button; Button p5_button; Button p6_button;
-    Button p7_button; Button p8_button; Button p9_button; Button p10_button; Button p11_button; Button p12_button;
-    Button p13_button; Button p14_button; Button p15_button; Button p16_button;
+    Button p1_button;
+    Button p2_button;
+    Button p3_button;
+    Button p4_button;
+    Button p5_button;
+    Button p6_button;
+    Button p7_button;
+    Button p8_button;
+    Button p9_button;
+    Button p10_button;
+    Button p11_button;
+    Button p12_button;
+    Button p13_button;
+    Button p14_button;
+    Button p15_button;
+    Button p16_button;
 
 
+    // Local Bluetooth adapter
 
-    /*************************** Multiplayer Board Methods *****************************/
+    private BluetoothAdapter mBluetoothAdapter = null;
+
+    // Member object for the chat services
+    private BluetoothManager mBluetoothManager = null;
+
+    // Message types sent from the BluetoothChatService Handler
+    public static final int MESSAGE_STATE_CHANGE = 1;
+    public static final int MESSAGE_READ = 2;
+    public static final int MESSAGE_WRITE = 3;
+    public static final int MESSAGE_DEVICE_NAME = 4;
+    public static final int MESSAGE_TOAST = 5;
+
+
+    // Key names received from the BluetoothChatService Handler
+    public static final String DEVICE_NAME = "device_name";
+    public static final String TOAST = "toast";
+
+    // Intent request codes
+    private static final int REQUEST_CONNECT_DEVICE = 1;
+    private static final int REQUEST_ENABLE_BT = 2;
+
+    /***************************
+     * Multiplayer Board Methods
+     *****************************/
 
 
     //Contructor
@@ -119,7 +157,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_board);
+        setContentView(R.layout.activity_multiplayer_board);
 
 
         randomDice(); //Generates a new set of random dice
@@ -148,7 +186,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
         //get location from buttons
         BtnLocation = new Point [16];
-        mainScreen = (RelativeLayout) findViewById(R.id.activity_main_board);
+        mainScreen = (RelativeLayout) findViewById(R.id.activity_multiplayer_board);
 
         mainScreen.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -157,8 +195,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                         // Layout has happened here.
                         readLocation();
                         // Don't forget to remove your listener when you are done with it.
-                        if (Build.VERSION.SDK_INT<16) {
-                            removeLayoutListenerPre16(mainScreen.getViewTreeObserver(),this);
+                        if (Build.VERSION.SDK_INT < 16) {
+                            removeLayoutListenerPre16(mainScreen.getViewTreeObserver(), this);
                         } else {
                             removeLayoutListenerPost16(mainScreen.getViewTreeObserver(), this);
                         }
@@ -166,15 +204,46 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                 });
 
 
-        //Create Board Timer + User Score
-        timerText = (TextView) this.findViewById(R.id.timer);
-        timer = new MultiplayerBoard.countDownTimer(60 * 1000, 1 * 1000);
-        timer.start();
-        user_score = (TextView) this.findViewById(R.id.score);
 
-        user_score.setText("Your score: " + userScore);
+        // Get local Bluetooth adapter
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        // If the adapter is null, then Bluetooth is not supported
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        //Create Board Timer + User Score
+        p1_timerText = (TextView) this.findViewById(R.id.p1_timer);
+        p2_timerText = (TextView) this.findViewById(R.id.p2_timer);
+
+        //TODO: get the correct time/points from the prev round if nessesary
+        p1_timer = new MultiplayerBoard.countDownTimer(60 * 1000, 1 * 1000);
+        p2_timer = new MultiplayerBoard.countDownTimer(60 * 1000, 1 * 1000);
+        p1_timer.start();
+        p2_timer.start();
+
+        p1_scoreText = (TextView) this.findViewById(R.id.p1_score);
+        p2_scoreText = (TextView) this.findViewById(R.id.p2_score);
+        p1_scoreText.setText("Player1 score: " + p1_score);
+        p2_scoreText.setText("Player2 score: " + p2_score);
 
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        } else {
+            if (mBluetoothManager == null)
+                mBluetoothManager = new BluetoothManager(this, mHandler);
+        }
+    }
+
 
 
 
@@ -193,7 +262,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     //Sets up the board with a number of helper functions
     private boolean newBoard() throws IOException {
         while(true) {
-            userScore = 0;
+            p1_score = 0;
+            p2_score = 0;
             wordsFound = new ArrayList<String>();
             possibleWords = new String[0];
             possibleWords = dictionary.findPossibleWords(); //Runs a Boggle Solver
@@ -216,7 +286,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         Intent i = new Intent(MultiplayerBoard.this, Results.class);
         i.putExtra("possibleWords", possibleWords);
         i.putExtra("wordsFound", wordsFound);
-        i.putExtra("userScore", userScore);
+        i.putExtra("userScore", p1_score);
         startActivity(i);
     }
 
@@ -227,7 +297,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         }
         @Override
         public void onFinish() {
-            timerText.setText("TIME'S UP!");
+            p1_timerText.setText("TIME'S UP!");
             endGame();
         }
         @Override
@@ -235,18 +305,22 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
             long total_seconds = millisUntilFinished / 1000;
             long seconds = total_seconds % 60;
             long minutes = total_seconds / 60;
-            timerText.setText("Time Left: " + minutes + ":" + seconds);
+            p1_timerText.setText("Time Left: " + minutes + ":" + seconds);
+            p2_timerText.setText("Time Left: " + minutes + ":" + seconds);
             if (minutes < 2 && seconds <= 15) {
-                timerText.setTextColor(Color.rgb(255,0,0));
+                p1_timerText.setTextColor(Color.rgb(255,0,0));
+                p2_timerText.setTextColor(Color.rgb(255,0,0));
             }
         }
     }
 
     //Update score, alternating colors
     public void updateTextView() {
-        TextView textView = (TextView) findViewById(R.id.score);
-        textView.setText("Your score: " + userScore);
-        textView.setTextColor( getRandomColor());
+        TextView p1_textView = (TextView) findViewById(R.id.p1_score);
+        TextView p2_textView = (TextView) findViewById(R.id.p2_score);
+        p1_textView.setText("Player1 score: " + p1_score);
+        p2_textView.setText("Player2 score: " + p2_score);
+        p1_textView.setTextColor( getRandomColor());
     }
 
     public int getRandomColor(){
@@ -383,14 +457,20 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                             }else if (selectingWord.length() >= 8) {
                                 pts = 10;
                             }
-                            correct_word = (TextView) this.findViewById(R.id.correctSubmission);
+                            correct_word = (TextView) this.findViewById(R.id.correctSubmission);                          
+
+                            //TODO: Increment points and notifiy other player
+                            p1_score += pts;
+                            notifyWordFound(selectingWord.toString(), pts);
+
+
                             correct_word.setMovementMethod(new ScrollingMovementMethod());
                             String wordList = "";
                             for (int i = 0; i < wordsFound.size(); i++) {
                                 wordList = wordList.concat(wordsFound.get(i) + '\n');
                             }
                             correct_word.setText(wordList);
-                            userScore += pts;
+                         
                             CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                             updateTextView();
@@ -539,6 +619,298 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         observer.removeOnGlobalLayoutListener(listener);
 
     }
+
+
+
+    /*
+    *****HENRY ADDED******
+     */
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mBluetoothManager != null) {
+            mBluetoothManager.stop();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Performing this check in onResume() covers the case in which BT was
+        // not enabled during onStart(), so we were paused to enable it...
+        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
+        if (mBluetoothManager != null) {
+            // Only if the state is STATE_NONE, do we know that we haven't started already
+            if (mBluetoothManager.getState() == BluetoothManager.STATE_NONE) {
+                // Start the Bluetooth chat services
+                mBluetoothManager.start();
+            }
+        }
+    }
+
+    private void ensureDiscoverable() {
+        if (mBluetoothAdapter.getScanMode() !=
+                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            startActivity(discoverableIntent);
+        }
+    }
+
+    /**
+     * Sends a message.
+     *
+     * @param message A string of text to send.
+     */
+    private void sendMessage(String message) {
+        // Check that we're actually connected before trying anything
+        if (mBluetoothManager.getState() != BluetoothManager.STATE_CONNECTED) {
+            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothChatService to write
+            byte[] send = message.getBytes();
+            mBluetoothManager.write(send);
+        }
+    }
+
+    //Called when user finds a valid word
+    private void notifyWordFound(String wordFound, int pointValue){
+        String str = NOTIFY_WORD_FOUND + " " + wordFound + " " + String.valueOf(pointValue);
+        sendMessage(str);
+    }
+
+    //Called when the Host has already created the board and needs to send to to the guest player
+    private void sendBoardData(String diceAsString, String[] possibleWords, int myScore, int myTimer, int yourScore, int yourTimer) {
+        String str = SEND_BOARD_DATA + diceAsString + myScore + myTimer + yourScore + yourTimer + possibleWords.toString();
+        sendMessage(str);
+    }
+
+    //converts local dice to string
+    String diceAsString() {
+        String str = "";
+        for(int i = 0; i < dice.length; i++){
+            str += dice[i].topLetter;
+        }
+        return str;
+    }
+
+    //Guest sends the ending results of their round to the host for computations
+    private void sendResults() {
+        String str = END_GAME_GUEST + p1_score + p1_timer + wordsFound;
+        sendMessage(str);
+    }
+
+    public void endGameGuest() {
+        sendResults();
+    }
+
+    /**
+    Receive a message from a paired device
+     */
+
+    //Message codes for Handler switch statement
+    static final String NOTIFY_WORD_FOUND = "NOTIFY_WORD_FOUND";
+    static final String SEND_BOARD_DATA = "SEND_BOARD_DATA";
+    static final String END_GAME_GUEST = "END_GAME_GUEST";
+
+    public void endGameHost(String[] argTokens) {
+        //String str = END_GAME_GUEST + p1_score + p1_timer + wordsFound;
+
+        int opponentScore = Integer.getInteger(argTokens[1]);
+        int opponentTimer = Integer.getInteger(argTokens[2]);
+
+        String[] opponentWordsFound = new String[argTokens.length - 2];
+        for(int i = 3; i > argTokens.length; i ++){
+            opponentWordsFound[i - 3] = argTokens[i];
+        }
+
+        int myRemainingTime = 0; //grab remaining time
+
+        int myNextRoundTime = p1_score + myRemainingTime;
+
+        /**
+
+        //display results of round
+        yourFoundWords = //parsed arg
+                // Display(yourFoundWords, myWordsFound);
+
+        yourPoints = //parsed arg
+                yourRemainingTime = //parsed arg
+                        yourNextRoundTime = yourPoints + yourRemainingTime;
+        myNextRoundTime = p1_points + myRemainingTime;
+
+        createNewBoard();
+
+        sendBoardData(diceAsString, possibleWords, myScore, myNextRoundTime, yourScore, yourNextRoundTimer);
+
+        //begin new round?
+
+        //updates global points for the whole multiplayer session
+        updateTotalPoints(myPoints, yourPoints);
+
+         */
+    }
+
+    //Handler Helper Functions
+    private void updateOpponentScore(String[] argTokens) {
+        wordsFound.add(argTokens[1]);
+        p2_score += Integer.getInteger(argTokens[2]);
+        updateTextView();
+        Toast.makeText(getApplicationContext(),"Player 2 Found a Word!", Toast.LENGTH_SHORT).show();
+    }
+
+    //used by guest to create a local board
+    private void receiveBoardData(String[] argTokens) {
+
+        String diceAsString = argTokens[1];
+        int myScore = Integer.getInteger(argTokens[2]);
+        int myTimer = Integer.getInteger(argTokens[3]);
+        int yourScore = Integer.getInteger(argTokens[4]);
+        int yourTimer = Integer.getInteger(argTokens[5]);
+
+        String[] receivedPossibleWords = new String[argTokens.length - 5];
+        for(int i = 6; i > argTokens.length; i ++){
+            receivedPossibleWords[i - 6] = argTokens[i];
+        }
+
+        //Now create your board from this information
+
+
+        //
+        //
+        // SEND_BOARD_DATA + diceAsString + myScore + myTimer + yourScore + yourTimer + possibleWords.toString()
+    }
+
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                //report the state of connection between 2 devices
+                case MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BluetoothManager.STATE_CONNECTED:
+                            Toast.makeText(getApplicationContext(), R.string.status_connected_to, Toast.LENGTH_SHORT).show();
+                            if(flag_host)
+                                Toast.makeText(getApplicationContext(), "You're host.", Toast.LENGTH_SHORT).show();
+                            else
+                                Toast.makeText(getApplicationContext(), "You're guest.", Toast.LENGTH_SHORT).show();
+                            //TODO: send init board to the guest
+                            break;
+                        case BluetoothManager.STATE_CONNECTING:
+                            Toast.makeText(getApplicationContext(), R.string.status_connecting, Toast.LENGTH_SHORT).show();
+                            flag_host = true;
+                            break;
+                        case BluetoothManager.STATE_LISTEN:
+                        case BluetoothManager.STATE_NONE:
+                            Toast.makeText(getApplicationContext(), R.string.status_not_connected, Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                    break;
+
+                // save the connected device's name
+                case MESSAGE_DEVICE_NAME:
+                    //do something
+                    pairedDeviceName = msg.getData().getString(DEVICE_NAME);
+                    Toast.makeText(getApplicationContext(), "Connected to "
+                            + pairedDeviceName, Toast.LENGTH_SHORT).show();
+                    break;
+
+                case MESSAGE_TOAST:
+                    Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
+                            Toast.LENGTH_SHORT).show();
+                    break;
+
+                //read a message from a bluetooth device
+                case MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String rawMessage = new String(readBuf, 0, msg.arg1);
+                    String[] argTokens = rawMessage.split(" ");
+                    switch (argTokens[0]) {
+                        case NOTIFY_WORD_FOUND:
+                            updateOpponentScore(argTokens);
+                            break;
+
+                        case SEND_BOARD_DATA:
+                            //receiveBoardData(argTokens);
+                            break;
+
+                        case END_GAME_GUEST:
+                           // endGameHost(argTokens);
+                            break;
+                    }
+                    //do something
+                    Toast.makeText(getApplicationContext(), rawMessage, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+
+    public void connect(View v) {
+        Intent serverIntent = new Intent(this, BluetoothDeviceList.class);
+        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+    }
+
+    public void discoverable(View v) {
+        ensureDiscoverable();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_mp_boggle, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.connect_scan: {
+                // Launch the DeviceListActivity to see devices and do scan
+                Intent serverIntent = new Intent(this, BluetoothDeviceList.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+                return true;
+            }
+            case R.id.discoverable: {
+                // Ensure this device is discoverable by others
+                ensureDiscoverable();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == RESULT_OK) {
+                    // Get the device MAC address
+                    String address = data.getExtras().getString(BluetoothDeviceList.EXTRA_DEVICE_ADDRESS);
+                    // Get the BluetoothDevice object
+                    BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+                    // Attempt to connect to the device
+                    mBluetoothManager.connect(device);
+                }
+                break;
+            case REQUEST_ENABLE_BT:
+                // When the request to enable Bluetooth returns
+                if (resultCode == this.RESULT_OK) {
+                    // Bluetooth is now enabled, so set up a chat session
+                    mBluetoothManager = new BluetoothManager(this, mHandler);
+                } else {
+                    // User did not enable Bluetooth or an error occured
+                    Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+        }
+    }
+
 }
 
 

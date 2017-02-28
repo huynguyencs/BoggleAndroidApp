@@ -14,9 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-import java.util.ArrayList;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,19 +23,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import java.io.InputStream;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
-import java.io.File;
-
 
 import static com.example.mymac.boggle.R.id.button1;
-import static java.lang.System.in;
 
 public class MainBoard extends AppCompatActivity implements View.OnTouchListener {
 
@@ -64,6 +55,10 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
 
     //For generating a word by the user
     private StringBuilder selectingWord = new StringBuilder();
+
+    //Leaderboard and user object
+    private Leaderboard leaderboard;
+    private String userName;
 
     //Model for button selection
     private boolean[] flag = new boolean[16];
@@ -189,10 +184,23 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
     }
 
     private void endGame(){
+        String diff = GameDifficulty.getDifficulty();
+        leaderboard = new Leaderboard(this, diff);
+        boolean isHighScore = false;
+
+        if (leaderboard.isHighscore(userScore)) {
+            userName = GameDifficulty.getPlayerName();
+            Highscore newHS = new Highscore(userScore, userName);
+            leaderboard.updateHighscore(this, newHS, diff);
+            isHighScore = true;
+        }
+
         Intent i = new Intent(MainBoard.this, Results.class);
         i.putExtra("possibleWords", possibleWords);
         i.putExtra("wordsFound", wordsFound);
         i.putExtra("userScore", userScore);
+        i.putExtra("isHighScore", isHighScore);
+
         startActivity(i);
     }
 
