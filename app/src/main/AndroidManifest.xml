@@ -29,7 +29,7 @@
         <activity android:name=".MultiplayerMode" />
         <activity android:name=".MultiplayerBoard" />
         <activity android:name=".Instruction" />
-        <activity android:name=".Leaderboard" />
+        <activity android:name=".LeaderboardDisplay" />
         <activity android:name=".Results" />
         <activity android:name=".BluetoothDeviceList"></activity>
     </application>
