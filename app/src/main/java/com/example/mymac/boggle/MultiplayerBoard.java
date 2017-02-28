@@ -9,6 +9,7 @@ import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -456,13 +457,20 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                             }else if (selectingWord.length() >= 8) {
                                 pts = 10;
                             }
-                            correct_word = (TextView) this.findViewById(R.id.correctSubmission);
-                            correct_word.setText(wordsFound.get(wordsFound.size() - 1));
+                            correct_word = (TextView) this.findViewById(R.id.correctSubmission);                          
 
                             //TODO: Increment points and notifiy other player
                             p1_score += pts;
                             notifyWordFound(selectingWord.toString(), pts);
 
+
+                            correct_word.setMovementMethod(new ScrollingMovementMethod());
+                            String wordList = "";
+                            for (int i = 0; i < wordsFound.size(); i++) {
+                                wordList = wordList.concat(wordsFound.get(i) + '\n');
+                            }
+                            correct_word.setText(wordList);
+                         
                             CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                             updateTextView();

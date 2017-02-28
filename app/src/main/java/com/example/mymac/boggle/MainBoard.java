@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.os.Build;
+import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -29,7 +30,7 @@ import java.util.Random;
 
 import static com.example.mymac.boggle.R.id.button1;
 
-public class MainBoard extends AppCompatActivity implements View.OnTouchListener{
+public class MainBoard extends AppCompatActivity implements View.OnTouchListener {
 
 
     /*********************** Main Board Data elements **************************/
@@ -148,8 +149,8 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
 
 
 
-   /*
-    @Override
+
+    /* @Override
     public void onShake() {
         //fully create a new Board
         try {
@@ -367,7 +368,12 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
                                     pts = 10;
                                 }
                                 correct_word = (TextView) this.findViewById(R.id.correctSubmission);
-                                correct_word.setText(wordsFound.get(wordsFound.size() - 1));
+                                correct_word.setMovementMethod(new ScrollingMovementMethod());
+                                String wordList = "";
+                                for (int i = 0; i < wordsFound.size(); i++) {
+                                    wordList = wordList.concat(wordsFound.get(i) + '\n');
+                                }
+                                correct_word.setText(wordList);
                                 userScore += pts;
                                 CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                                 Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();

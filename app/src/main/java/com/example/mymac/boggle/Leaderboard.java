@@ -2,6 +2,10 @@ package com.example.mymac.boggle;
 
 import android.content.Context;
 import android.util.Log;
+import android.os.Bundle;
+import android.app.ListActivity;
+import android.view.View;
+
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -100,6 +104,7 @@ public class Leaderboard {
         }
     }
 
+
     public boolean isHighscore(int score) {
         highscoreSort();
         if (highscoreList == null || highscoreList.size() < 5) {
@@ -111,6 +116,9 @@ public class Leaderboard {
             }
         }
         return false;
+        setListAdapter(mAdapter);
+
+
     }
 
     public boolean updateHighscore(Context context, Highscore hs, String diff) {
