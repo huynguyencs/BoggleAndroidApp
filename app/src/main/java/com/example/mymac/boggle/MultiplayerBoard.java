@@ -670,12 +670,38 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         }
     }
 
+    //Called when user finds a valid word
     private void notifyWordFound(String wordFound, int pointValue){
         String str = NOTIFY_WORD_FOUND + " " + wordFound + " " + String.valueOf(pointValue);
         sendMessage(str);
     }
 
-    /*
+    //Called when the Host has already created the board and needs to send to to the guest player
+    private void sendBoardData(String diceAsString, String[] possibleWords, int myScore, int myTimer, int yourScore, int yourTimer) {
+        String str = SEND_BOARD_DATA + diceAsString + myScore + myTimer + yourScore + yourTimer + possibleWords.toString();
+        sendMessage(str);
+    }
+
+    //converts local dice to string
+    String diceAsString() {
+        String str = "";
+        for(int i = 0; i < dice.length; i++){
+            str += dice[i].topLetter;
+        }
+        return str;
+    }
+
+    //Guest sends the ending results of their round to the host for computations
+    private void sendResults() {
+        String str = END_GAME_GUEST + p1_score + p1_timer + wordsFound;
+        sendMessage(str);
+    }
+
+    public void endGameGuest() {
+        sendResults();
+    }
+
+    /**
     Receive a message from a paired device
      */
 
@@ -684,12 +710,72 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     static final String SEND_BOARD_DATA = "SEND_BOARD_DATA";
     static final String END_GAME_GUEST = "END_GAME_GUEST";
 
+    public void endGameHost(String[] argTokens) {
+        //String str = END_GAME_GUEST + p1_score + p1_timer + wordsFound;
+
+        int opponentScore = Integer.getInteger(argTokens[1]);
+        int opponentTimer = Integer.getInteger(argTokens[2]);
+
+        String[] opponentWordsFound = new String[argTokens.length - 2];
+        for(int i = 3; i > argTokens.length; i ++){
+            opponentWordsFound[i - 3] = argTokens[i];
+        }
+
+        int myRemainingTime = 0; //grab remaining time
+
+        int myNextRoundTime = p1_score + myRemainingTime;
+
+        /**
+
+        //display results of round
+        yourFoundWords = //parsed arg
+                // Display(yourFoundWords, myWordsFound);
+
+        yourPoints = //parsed arg
+                yourRemainingTime = //parsed arg
+                        yourNextRoundTime = yourPoints + yourRemainingTime;
+        myNextRoundTime = p1_points + myRemainingTime;
+
+        createNewBoard();
+
+        sendBoardData(diceAsString, possibleWords, myScore, myNextRoundTime, yourScore, yourNextRoundTimer);
+
+        //begin new round?
+
+        //updates global points for the whole multiplayer session
+        updateTotalPoints(myPoints, yourPoints);
+
+         */
+    }
+
     //Handler Helper Functions
     private void updateOpponentScore(String[] argTokens) {
         wordsFound.add(argTokens[1]);
         p2_score += Integer.getInteger(argTokens[2]);
         updateTextView();
         Toast.makeText(getApplicationContext(),"Player 2 Found a Word!", Toast.LENGTH_SHORT).show();
+    }
+
+    //used by guest to create a local board
+    private void receiveBoardData(String[] argTokens) {
+
+        String diceAsString = argTokens[1];
+        int myScore = Integer.getInteger(argTokens[2]);
+        int myTimer = Integer.getInteger(argTokens[3]);
+        int yourScore = Integer.getInteger(argTokens[4]);
+        int yourTimer = Integer.getInteger(argTokens[5]);
+
+        String[] receivedPossibleWords = new String[argTokens.length - 5];
+        for(int i = 6; i > argTokens.length; i ++){
+            receivedPossibleWords[i - 6] = argTokens[i];
+        }
+
+        //Now create your board from this information
+
+
+        //
+        //
+        // SEND_BOARD_DATA + diceAsString + myScore + myTimer + yourScore + yourTimer + possibleWords.toString()
     }
 
     private final Handler mHandler = new Handler() {
