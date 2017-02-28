@@ -1,12 +1,19 @@
 package com.example.mymac.boggle;
 
 import android.annotation.TargetApi;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -67,12 +74,13 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     private CountDownTimer p1_timer;
     private CountDownTimer p2_timer;
 
-    
+
     //Set of 16 dice of the current board
     public Die[] dice;
 
     //All possible words on the board, along with the user found words so far
     private String[] possibleWords;
+    private String pairedDeviceName;
     private ArrayList<String> wordsFound;
 
     //Helper class to validate words and solve the board
@@ -97,13 +105,50 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     Button object;
     int offsetX, offsetY;
 
-    Button p1_button; Button p2_button; Button p3_button; Button p4_button; Button p5_button; Button p6_button;
-    Button p7_button; Button p8_button; Button p9_button; Button p10_button; Button p11_button; Button p12_button;
-    Button p13_button; Button p14_button; Button p15_button; Button p16_button;
+    Button p1_button;
+    Button p2_button;
+    Button p3_button;
+    Button p4_button;
+    Button p5_button;
+    Button p6_button;
+    Button p7_button;
+    Button p8_button;
+    Button p9_button;
+    Button p10_button;
+    Button p11_button;
+    Button p12_button;
+    Button p13_button;
+    Button p14_button;
+    Button p15_button;
+    Button p16_button;
 
 
+    // Local Bluetooth adapter
 
-    /*************************** Multiplayer Board Methods *****************************/
+    private BluetoothAdapter mBluetoothAdapter = null;
+
+    // Member object for the chat services
+    private BluetoothManager mBluetoothManager = null;
+
+    // Message types sent from the BluetoothChatService Handler
+    public static final int MESSAGE_STATE_CHANGE = 1;
+    public static final int MESSAGE_READ = 2;
+    public static final int MESSAGE_WRITE = 3;
+    public static final int MESSAGE_DEVICE_NAME = 4;
+    public static final int MESSAGE_TOAST = 5;
+
+
+    // Key names received from the BluetoothChatService Handler
+    public static final String DEVICE_NAME = "device_name";
+    public static final String TOAST = "toast";
+
+    // Intent request codes
+    private static final int REQUEST_CONNECT_DEVICE = 1;
+    private static final int REQUEST_ENABLE_BT = 2;
+
+    /***************************
+     * Multiplayer Board Methods
+     *****************************/
 
 
     //Contructor
@@ -149,14 +194,25 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                         // Layout has happened here.
                         readLocation();
                         // Don't forget to remove your listener when you are done with it.
-                        if (Build.VERSION.SDK_INT<16) {
-                            removeLayoutListenerPre16(mainScreen.getViewTreeObserver(),this);
+                        if (Build.VERSION.SDK_INT < 16) {
+                            removeLayoutListenerPre16(mainScreen.getViewTreeObserver(), this);
                         } else {
                             removeLayoutListenerPost16(mainScreen.getViewTreeObserver(), this);
                         }
                     }
                 });
 
+
+
+        // Get local Bluetooth adapter
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        // If the adapter is null, then Bluetooth is not supported
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
 
         //Create Board Timer + User Score
         p1_timerText = (TextView) this.findViewById(R.id.p1_timer);
@@ -174,6 +230,19 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         p2_scoreText.setText("Player2 score: " + p2_score);
 
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        } else {
+            if (mBluetoothManager == null)
+                mBluetoothManager = new BluetoothManager(this, mHandler);
+        }
+    }
+
 
 
 
@@ -389,8 +458,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                             }
                             correct_word = (TextView) this.findViewById(R.id.correctSubmission);
                             correct_word.setText(wordsFound.get(wordsFound.size() - 1));
+                            //TODO: Increment points and notifiy other player
                             p1_score += pts;
-                            //TODO: Notifiy the only player you found a word
                             CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                             updateTextView();
@@ -539,6 +608,174 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         observer.removeOnGlobalLayoutListener(listener);
 
     }
+
+
+
+    /*
+    *****HENRY ADDED******
+     */
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mBluetoothManager != null) {
+            mBluetoothManager.stop();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Performing this check in onResume() covers the case in which BT was
+        // not enabled during onStart(), so we were paused to enable it...
+        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
+        if (mBluetoothManager != null) {
+            // Only if the state is STATE_NONE, do we know that we haven't started already
+            if (mBluetoothManager.getState() == BluetoothManager.STATE_NONE) {
+                // Start the Bluetooth chat services
+                mBluetoothManager.start();
+            }
+        }
+    }
+
+    private void ensureDiscoverable() {
+        if (mBluetoothAdapter.getScanMode() !=
+                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            startActivity(discoverableIntent);
+        }
+    }
+
+    /**
+     * Sends a message.
+     *
+     * @param message A string of text to send.
+     */
+    private void sendMessage(String message) {
+        // Check that we're actually connected before trying anything
+        if (mBluetoothManager.getState() != BluetoothManager.STATE_CONNECTED) {
+            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothChatService to write
+            byte[] send = message.getBytes();
+            mBluetoothManager.write(send);
+        }
+    }
+
+    /*
+    Receive a message from a paired device
+     */
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                //report the state of connection between 2 devices
+                case MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BluetoothManager.STATE_CONNECTED:
+                            Toast.makeText(getApplicationContext(), R.string.status_connected_to, Toast.LENGTH_SHORT).show();
+                            break;
+                        case BluetoothManager.STATE_CONNECTING:
+                            Toast.makeText(getApplicationContext(), R.string.status_connecting, Toast.LENGTH_SHORT).show();
+                            flag_host = true;
+                            break;
+                        case BluetoothManager.STATE_LISTEN:
+                        case BluetoothManager.STATE_NONE:
+                            Toast.makeText(getApplicationContext(), R.string.status_not_connected, Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                    break;
+
+                // save the connected device's name
+                case MESSAGE_DEVICE_NAME:
+                    //do something
+                    pairedDeviceName = msg.getData().getString(DEVICE_NAME);
+                    Toast.makeText(getApplicationContext(), "Connected to "
+                            + pairedDeviceName, Toast.LENGTH_SHORT).show();
+                    break;
+
+                case MESSAGE_TOAST:
+                    Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
+                            Toast.LENGTH_SHORT).show();
+                    break;
+
+                //read a message from a bluetooth device
+                case MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String rawMessage = new String(readBuf, 0, msg.arg1);
+                    //do something
+                    Toast.makeText(getApplicationContext(), rawMessage, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+
+    public void connect(View v) {
+        Intent serverIntent = new Intent(this, BluetoothDeviceList.class);
+        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+    }
+
+    public void discoverable(View v) {
+        ensureDiscoverable();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_mp_boggle, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.connect_scan: {
+                // Launch the DeviceListActivity to see devices and do scan
+                Intent serverIntent = new Intent(this, BluetoothDeviceList.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+                return true;
+            }
+            case R.id.discoverable: {
+                // Ensure this device is discoverable by others
+                ensureDiscoverable();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == RESULT_OK) {
+                    // Get the device MAC address
+                    String address = data.getExtras().getString(BluetoothDeviceList.EXTRA_DEVICE_ADDRESS);
+                    // Get the BluetoothDevice object
+                    BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+                    // Attempt to connect to the device
+                    mBluetoothManager.connect(device);
+                }
+                break;
+            case REQUEST_ENABLE_BT:
+                // When the request to enable Bluetooth returns
+                if (resultCode == this.RESULT_OK) {
+                    // Bluetooth is now enabled, so set up a chat session
+                    mBluetoothManager = new BluetoothManager(this, mHandler);
+                } else {
+                    // User did not enable Bluetooth or an error occured
+                    Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+        }
+    }
+
 }
 
 
