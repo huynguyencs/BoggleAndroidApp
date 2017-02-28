@@ -157,7 +157,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_multiplayer_board);
+        setContentView(R.layout.activity_basic_mode);
 
 
         randomDice(); //Generates a new set of random dice
@@ -186,7 +186,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
         //get location from buttons
         BtnLocation = new Point [16];
-        mainScreen = (RelativeLayout) findViewById(R.id.activity_multiplayer_board);
+        mainScreen = (RelativeLayout) findViewById(R.id.activity_basic_mode);
 
         mainScreen.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {

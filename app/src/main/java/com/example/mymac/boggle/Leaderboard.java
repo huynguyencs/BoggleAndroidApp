@@ -116,7 +116,7 @@ public class Leaderboard {
             }
         }
         return false;
-        setListAdapter(mAdapter);
+        //setListAdapter(mAdapter);
 
 
     }
