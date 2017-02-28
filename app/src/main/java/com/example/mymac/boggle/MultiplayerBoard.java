@@ -458,8 +458,11 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                             }
                             correct_word = (TextView) this.findViewById(R.id.correctSubmission);
                             correct_word.setText(wordsFound.get(wordsFound.size() - 1));
+
                             //TODO: Increment points and notifiy other player
                             p1_score += pts;
+                            notifyWordFound(selectingWord.toString(), pts);
+
                             CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                             updateTextView();
@@ -667,9 +670,28 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         }
     }
 
+    private void notifyWordFound(String wordFound, int pointValue){
+        String str = NOTIFY_WORD_FOUND + " " + wordFound + " " + String.valueOf(pointValue);
+        sendMessage(str);
+    }
+
     /*
     Receive a message from a paired device
      */
+
+    //Message codes for Handler switch statement
+    static final String NOTIFY_WORD_FOUND = "NOTIFY_WORD_FOUND";
+    static final String SEND_BOARD_DATA = "SEND_BOARD_DATA";
+    static final String END_GAME_GUEST = "END_GAME_GUEST";
+
+    //Handler Helper Functions
+    private void updateOpponentScore(String[] argTokens) {
+        wordsFound.add(argTokens[1]);
+        p2_score += Integer.getInteger(argTokens[2]);
+        updateTextView();
+        Toast.makeText(getApplicationContext(),"Player 2 Found a Word!", Toast.LENGTH_SHORT).show();
+    }
+
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -709,6 +731,20 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String rawMessage = new String(readBuf, 0, msg.arg1);
+                    String[] argTokens = rawMessage.split(" ");
+                    switch (argTokens[0]) {
+                        case NOTIFY_WORD_FOUND:
+                            updateOpponentScore(argTokens);
+                            break;
+
+                        case SEND_BOARD_DATA:
+                            //receiveBoardData(argTokens);
+                            break;
+
+                        case END_GAME_GUEST:
+                           // endGameHost(argTokens);
+                            break;
+                    }
                     //do something
                     Toast.makeText(getApplicationContext(), rawMessage, Toast.LENGTH_SHORT).show();
                     break;
