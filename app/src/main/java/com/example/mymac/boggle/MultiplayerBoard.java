@@ -58,7 +58,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     /*********************** Main Board Data elements **************************/
 
     //flags for bluetooth and game mode
-    public boolean flag_host;
+    public boolean flag_host = false;
     public boolean flag_guest;
     public boolean flag_basicMode;
     public boolean flag_cutThroatMode;
@@ -787,6 +787,11 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                     switch (msg.arg1) {
                         case BluetoothManager.STATE_CONNECTED:
                             Toast.makeText(getApplicationContext(), R.string.status_connected_to, Toast.LENGTH_SHORT).show();
+                            if(flag_host)
+                                Toast.makeText(getApplicationContext(), "You're host.", Toast.LENGTH_SHORT).show();
+                            else
+                                Toast.makeText(getApplicationContext(), "You're guest.", Toast.LENGTH_SHORT).show();
+                            //TODO: send init board to the guest
                             break;
                         case BluetoothManager.STATE_CONNECTING:
                             Toast.makeText(getApplicationContext(), R.string.status_connecting, Toast.LENGTH_SHORT).show();
