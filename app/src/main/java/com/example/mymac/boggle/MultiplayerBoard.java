@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
@@ -34,6 +35,12 @@ import java.io.InputStream;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -44,6 +51,7 @@ import java.io.File;
 
 
 import static com.example.mymac.boggle.R.id.button1;
+import static com.example.mymac.boggle.R.id.p1_timer;
 import static java.lang.System.in;
 
 /**
@@ -51,12 +59,12 @@ import static java.lang.System.in;
  */
 
 
-
-public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchListener{
-
+public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchListener {
 
 
-    /*********************** Main Board Data elements **************************/
+    /***********************
+     * Main Board Data elements
+     **************************/
 
     //flags for bluetooth and game mode
     public boolean flag_host = false;
@@ -64,7 +72,9 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     public boolean flag_basicMode;
     public boolean flag_cutThroatMode;
 
-    /************ new varribles to be used for multiplayer ***********/
+    /************
+     * new varribles to be used for multiplayer
+     ***********/
     public TextView p1_timerText;
     public TextView p2_timerText;
     public TextView correct_word;
@@ -72,7 +82,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     public TextView p2_scoreText;
     private int p1_score;
     private int p2_score;
-    private CountDownTimer p1_timer;
+    public CountDownTimer p1_timer;
     private CountDownTimer p2_timer;
 
 
@@ -92,7 +102,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     //Model for button selection
     private boolean[] flag = new boolean[16];
-    private int [] BtnIds = {R.id.button1, R.id.button2, R.id.button3, R.id.button4,
+    private int[] BtnIds = {R.id.button1, R.id.button2, R.id.button3, R.id.button4,
             R.id.button5, R.id.button6, R.id.button7, R.id.button8,
             R.id.button9, R.id.button10, R.id.button11, R.id.button12,
             R.id.button13, R.id.button14, R.id.button15, R.id.button16};
@@ -147,6 +157,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
 
+
     /***************************
      * Multiplayer Board Methods
      *****************************/
@@ -160,49 +171,12 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         setContentView(R.layout.activity_basic_mode);
 
 
-        randomDice(); //Generates a new set of random dice
-
-        //Grabs the Dictionary text file and creates an instance of Dictionary
-        try {
-            InputStream inputS = getResources().openRawResource(R.raw.dictionary);
-            dictionary = new Dictionary(inputS, dice);
-        } catch (Exception e) {
-        }
-
         //shakeDetector = new ShakeDetector(this);
 
 
-
-        //fully create a new Board
-        try {
-            newBoard();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //attach new board to UI Buttons
-        buttonCreation();
-        resetBtnBackground();
-
         //get location from buttons
-        BtnLocation = new Point [16];
+        BtnLocation = new Point[16];
         mainScreen = (RelativeLayout) findViewById(R.id.activity_basic_mode);
-
-        mainScreen.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // Layout has happened here.
-                        readLocation();
-                        // Don't forget to remove your listener when you are done with it.
-                        if (Build.VERSION.SDK_INT < 16) {
-                            removeLayoutListenerPre16(mainScreen.getViewTreeObserver(), this);
-                        } else {
-                            removeLayoutListenerPost16(mainScreen.getViewTreeObserver(), this);
-                        }
-                    }
-                });
-
 
 
         // Get local Bluetooth adapter
@@ -220,8 +194,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         p2_timerText = (TextView) this.findViewById(R.id.p2_timer);
 
         //TODO: get the correct time/points from the prev round if nessesary
-        p1_timer = new MultiplayerBoard.countDownTimer(60 * 1000, 1 * 1000);
-        p2_timer = new MultiplayerBoard.countDownTimer(60 * 1000, 1 * 1000);
+        p1_timer = new countDownTimer(60 * 1000, 1 * 1000);
+        p2_timer = new countDownTimer(60 * 1000, 1 * 1000);
         p1_timer.start();
         p2_timer.start();
 
@@ -229,6 +203,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         p2_scoreText = (TextView) this.findViewById(R.id.p2_score);
         p1_scoreText.setText("Player1 score: " + p1_score);
         p2_scoreText.setText("Player2 score: " + p2_score);
+
 
     }
 
@@ -242,6 +217,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
             if (mBluetoothManager == null)
                 mBluetoothManager = new BluetoothManager(this, mHandler);
         }
+
     }
 
 
@@ -260,14 +236,35 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     */
 
     //Sets up the board with a number of helper functions
-    private boolean newBoard() throws IOException {
-        while(true) {
-            p1_score = 0;
-            p2_score = 0;
+    private boolean newBoard(Die[] dice, int P1_score, int P2_score) throws IOException {
+        while (true) {
+
+            //Grabs the Dictionary text file and creates an instance of Dictionary
+            try {
+                InputStream inputS = getResources().openRawResource(R.raw.dictionary);
+                dictionary = new Dictionary(inputS, dice);
+            } catch (Exception e) {
+            }
+            p1_score = P1_score;
+            p2_score = P2_score;
             wordsFound = new ArrayList<String>();
             possibleWords = new String[0];
             possibleWords = dictionary.findPossibleWords(); //Runs a Boggle Solver
-            System.out.println(possibleWords.length);
+
+            mainScreen.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            // Layout has happened here.
+                            readLocation();
+                            // Don't forget to remove your listener when you are done with it.
+                            if (Build.VERSION.SDK_INT < 16) {
+                                removeLayoutListenerPre16(mainScreen.getViewTreeObserver(), this);
+                            } else {
+                                removeLayoutListenerPost16(mainScreen.getViewTreeObserver(), this);
+                            }
+                        }
+                    });
             return true;
         }
     }
@@ -276,13 +273,13 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     //Generates Random Dice for the board
     private boolean randomDice() {
         dice = new Die[16];
-        for(int i = 0; i < dice.length ; i++) {
+        for (int i = 0; i < dice.length; i++) {
             dice[i] = new Die(i);
         }
         return true;
     }
 
-    private void endGame(){
+    private void endGame() {
         Intent i = new Intent(MultiplayerBoard.this, Results.class);
         i.putExtra("possibleWords", possibleWords);
         i.putExtra("wordsFound", wordsFound);
@@ -291,25 +288,45 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     }
 
 
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
+
+
     public class countDownTimer extends CountDownTimer {
+
+        public long secondsRemaining = 0;
+
+        public long getSecondsRemaining() {
+            return secondsRemaining;
+        }
+
         public countDownTimer(long startTime, long interval) {
             super(startTime, interval);
         }
+
         @Override
         public void onFinish() {
             p1_timerText.setText("TIME'S UP!");
-            endGame();
+            p2_timerText.setText("TIME'S UP!");
+            if (!flag_host)
+                endGameGuest();
         }
+
         @Override
         public void onTick(long millisUntilFinished) {
             long total_seconds = millisUntilFinished / 1000;
+            secondsRemaining = total_seconds;
             long seconds = total_seconds % 60;
             long minutes = total_seconds / 60;
             p1_timerText.setText("Time Left: " + minutes + ":" + seconds);
             p2_timerText.setText("Time Left: " + minutes + ":" + seconds);
             if (minutes < 2 && seconds <= 15) {
-                p1_timerText.setTextColor(Color.rgb(255,0,0));
-                p2_timerText.setTextColor(Color.rgb(255,0,0));
+                p1_timerText.setTextColor(Color.rgb(255, 0, 0));
+                p2_timerText.setTextColor(Color.rgb(255, 0, 0));
             }
         }
     }
@@ -320,75 +337,76 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         TextView p2_textView = (TextView) findViewById(R.id.p2_score);
         p1_textView.setText("Player1 score: " + p1_score);
         p2_textView.setText("Player2 score: " + p2_score);
-        p1_textView.setTextColor( getRandomColor());
+        p1_textView.setTextColor(getRandomColor());
     }
 
-    public int getRandomColor(){
+    public int getRandomColor() {
         Random rnd = new Random();
         return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 
     }
 
 
-    /****************************** Button Logic ********************************/
-
+    /******************************
+     * Button Logic
+     ********************************/
 
 
     //Creates UI buttons and attaches them to the Game Board Dice
     private void buttonCreation() {
-        p1_button = (Button)findViewById(button1);
+        p1_button = (Button) findViewById(button1);
         p1_button.setText((dice[0].topLetter));
         p1_button.setOnTouchListener(this);
-        p2_button = (Button)findViewById(R.id.button2);
+        p2_button = (Button) findViewById(R.id.button2);
         p2_button.setText((dice[1].topLetter));
         p2_button.setOnTouchListener(this);
-        p3_button = (Button)findViewById(R.id.button3);
+        p3_button = (Button) findViewById(R.id.button3);
         p3_button.setText((dice[2].topLetter));
         p3_button.setOnTouchListener(this);
-        p4_button = (Button)findViewById(R.id.button4);
+        p4_button = (Button) findViewById(R.id.button4);
         p4_button.setText((dice[3].topLetter));
         p4_button.setOnTouchListener(this);
-        p5_button = (Button)findViewById(R.id.button5);
+        p5_button = (Button) findViewById(R.id.button5);
         p5_button.setText((dice[4].topLetter));
         p5_button.setOnTouchListener(this);
-        p6_button = (Button)findViewById(R.id.button6);
+        p6_button = (Button) findViewById(R.id.button6);
         p6_button.setText((dice[5].topLetter));
         p6_button.setOnTouchListener(this);
-        p7_button = (Button)findViewById(R.id.button7);
+        p7_button = (Button) findViewById(R.id.button7);
         p7_button.setText((dice[6].topLetter));
         p7_button.setOnTouchListener(this);
-        p8_button = (Button)findViewById(R.id.button8);
+        p8_button = (Button) findViewById(R.id.button8);
         p8_button.setText((dice[7].topLetter));
         p8_button.setOnTouchListener(this);
-        p9_button = (Button)findViewById(R.id.button9);
+        p9_button = (Button) findViewById(R.id.button9);
         p9_button.setText((dice[8].topLetter));
         p9_button.setOnTouchListener(this);
-        p10_button = (Button)findViewById(R.id.button10);
+        p10_button = (Button) findViewById(R.id.button10);
         p10_button.setText((dice[9].topLetter));
         p10_button.setOnTouchListener(this);
-        p11_button = (Button)findViewById(R.id.button11);
+        p11_button = (Button) findViewById(R.id.button11);
         p11_button.setText((dice[10].topLetter));
         p11_button.setOnTouchListener(this);
-        p12_button = (Button)findViewById(R.id.button12);
+        p12_button = (Button) findViewById(R.id.button12);
         p12_button.setText((dice[11].topLetter));
         p12_button.setOnTouchListener(this);
-        p13_button = (Button)findViewById(R.id.button13);
+        p13_button = (Button) findViewById(R.id.button13);
         p13_button.setText((dice[12].topLetter));
         p13_button.setOnTouchListener(this);
-        p14_button = (Button)findViewById(R.id.button14);
+        p14_button = (Button) findViewById(R.id.button14);
         p14_button.setText((dice[13].topLetter));
         p14_button.setOnTouchListener(this);
-        p15_button = (Button)findViewById(R.id.button15);
+        p15_button = (Button) findViewById(R.id.button15);
         p15_button.setText((dice[14].topLetter));
         p15_button.setOnTouchListener(this);
-        p16_button = (Button)findViewById(R.id.button16);
+        p16_button = (Button) findViewById(R.id.button16);
         p16_button.setText((dice[15].topLetter));
         p16_button.setOnTouchListener(this);
 
-        Button submitBtn = (Button)findViewById(R.id.submit);
+        Button submitBtn = (Button) findViewById(R.id.submit);
 
 
-        Button cancelBtn = (Button)findViewById(R.id.cancel);
+        Button cancelBtn = (Button) findViewById(R.id.cancel);
 
         cancelBtn.setOnTouchListener(this);
         submitBtn.setOnTouchListener(this);
@@ -396,7 +414,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     }
 
-    private void resetBtnBackground(){
+    private void resetBtnBackground() {
         p1_button.getBackground().clearColorFilter();
         p2_button.getBackground().clearColorFilter();
         p3_button.getBackground().clearColorFilter();
@@ -421,43 +439,42 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     public boolean onTouch(View v, MotionEvent event) {
         //TODO: Finger Sliding
         int dieNo;
-        switch(event.getAction()) {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:   // start here
-                dieNo = trackLocation((int)event.getRawX(),(int)event.getRawY());
-                if(dieNo != -1)
+                dieNo = trackLocation((int) event.getRawX(), (int) event.getRawY());
+                if (dieNo != -1)
                     ButtonHandler(dieNo);
-                if(v.getId() == R.id.cancel){
+                if (v.getId() == R.id.cancel) {
                     //TODO cancel case create
                     Toast.makeText(getApplicationContext(), "PREVIOUS SELECTIONS HAVE BEEN CANCELLED!!!", Toast.LENGTH_SHORT).show();
                     resetBtnBackground();
                     selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
                 }
-                if(v.getId() == R.id.submit){
+                if (v.getId() == R.id.submit) {
                     System.out.println("Checking user's words to dictionary.");
                     //if user's submitted word is valid
                     //if(Arrays.asList(possibleWords).contains(selectingWord.toString())){
-                    if(dictionary.isValid(selectingWord.toString())){
+                    if (dictionary.isValid(selectingWord.toString())) {
                         //check if it's already in the list of found word
-                        if(wordsFound.contains(selectingWord.toString())){
+                        if (wordsFound.contains(selectingWord.toString())) {
                             Toast.makeText(getApplicationContext(), "THIS WORD HAS ALREADY BEEN SUBMITTED!!!", Toast.LENGTH_SHORT).show();
                             resetBtnBackground();
-                        }
-                        else{
+                        } else {
                             int pts = 0;
                             wordsFound.add(selectingWord.toString());
-                            if (selectingWord.length() >= 3 && selectingWord.length() <= 4){
+                            if (selectingWord.length() >= 3 && selectingWord.length() <= 4) {
                                 pts = 1;
-                            }else if (selectingWord.length() == 5){
+                            } else if (selectingWord.length() == 5) {
                                 pts = 2;
-                            }else if (selectingWord.length() == 6){
+                            } else if (selectingWord.length() == 6) {
                                 pts = 3;
-                            }else if (selectingWord.length() == 7){
+                            } else if (selectingWord.length() == 7) {
                                 pts = 5;
-                            }else if (selectingWord.length() >= 8) {
+                            } else if (selectingWord.length() >= 8) {
                                 pts = 10;
                             }
-                            correct_word = (TextView) this.findViewById(R.id.correctSubmission);                          
+                            correct_word = (TextView) this.findViewById(R.id.correctSubmission);
 
                             //TODO: Increment points and notifiy other player
                             p1_score += pts;
@@ -470,14 +487,13 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                                 wordList = wordList.concat(wordsFound.get(i) + '\n');
                             }
                             correct_word.setText(wordList);
-                         
+
                             CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                             updateTextView();
                             resetBtnBackground();
                         }
-                    }
-                    else{
+                    } else {
                         Toast.makeText(getApplicationContext(), "INVALID WORD!!!", Toast.LENGTH_SHORT).show();
                         resetBtnBackground();
                     }
@@ -489,8 +505,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
 
             case MotionEvent.ACTION_MOVE:
-                dieNo = trackLocation((int)event.getRawX(),(int)event.getRawY());
-                if(dieNo != -1)
+                dieNo = trackLocation((int) event.getRawX(), (int) event.getRawY());
+                if (dieNo != -1)
                     ButtonHandler(dieNo);
                 break;
         }
@@ -499,12 +515,12 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     }
 
     private void ButtonHandler(int dieNumber) {
-        curRow = dieNumber/4;
-        curCol = dieNumber%4;
+        curRow = dieNumber / 4;
+        curCol = dieNumber % 4;
         View v = (View) findViewById(BtnIds[dieNumber]);
 
         if (flag[dieNumber] == true) {
-            for(int i = 0; i <16; ++i){
+            for (int i = 0; i < 16; ++i) {
                 System.out.print(flag[i] + " ");
             }
             selectingWord.delete(0, selectingWord.length());
@@ -516,13 +532,13 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
             if (selectingWord.length() == 0) {
                 prevRow = curRow;
                 prevCol = curCol;
-                selectingWord.append(((Button)v).getText().toString());
+                selectingWord.append(((Button) v).getText().toString());
                 flag[dieNumber] = true;
                 v.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
             } else {
                 if (curRow - prevRow <= 1 && curRow - prevRow >= -1
                         && curCol - prevCol <= 1 && curCol - prevCol >= -1) {
-                    selectingWord.append(((Button)v).getText().toString());
+                    selectingWord.append(((Button) v).getText().toString());
                     flag[dieNumber] = true;
                     prevRow = curRow;
                     prevCol = curCol;
@@ -538,15 +554,15 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         System.out.println(selectingWord);
     }
 
-    private int trackLocation(int x, int y){
+    private int trackLocation(int x, int y) {
         //System.out.println("X: " + x);
         //System.out.println("Y: " + y);
-        for(int i = 0; i < 16; ++i){
-            if (x > (BtnLocation[i].x + offsetX/4) && x < (BtnLocation[i].x + offsetX* 3/4) &&
-                    y > (BtnLocation[i].y + offsetY/4) && y < (BtnLocation[i].y + offsetY * 3/4)){
+        for (int i = 0; i < 16; ++i) {
+            if (x > (BtnLocation[i].x + offsetX / 4) && x < (BtnLocation[i].x + offsetX * 3 / 4) &&
+                    y > (BtnLocation[i].y + offsetY / 4) && y < (BtnLocation[i].y + offsetY * 3 / 4)) {
                 //System.out.println("true");
                 //System.out.println("i: " + i);
-                if(!flag[i]) {
+                if (!flag[i]) {
                     return i;
                 }
             }
@@ -554,7 +570,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         return -1;
     }
 
-    private void readLocation(){
+    private void readLocation() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         //offsetX = displayMetrics.widthPixels - mainScreen.getMeasuredWidth();
@@ -599,7 +615,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
         //int[] locationOnScreen = new int[2];
         //object.getLocationOnScreen(locationOnScreen);
-        for(int i = 0; i < 16; ++i) {
+        for (int i = 0; i < 16; ++i) {
             System.out.println(
                     "\n"
                             + "getLocationInWindow() - " + BtnLocation[i].x + " : " + BtnLocation[i].y + "\n"
@@ -610,12 +626,12 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     }
 
     @SuppressWarnings("deprecation")
-    private void removeLayoutListenerPre16(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener listener){
+    private void removeLayoutListenerPre16(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener listener) {
         observer.removeGlobalOnLayoutListener(listener);
     }
 
     @TargetApi(16)
-    private void removeLayoutListenerPost16(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener listener){
+    private void removeLayoutListenerPost16(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener listener) {
         observer.removeOnGlobalLayoutListener(listener);
 
     }
@@ -679,29 +695,30 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     }
 
     //Called when user finds a valid word
-    private void notifyWordFound(String wordFound, int pointValue){
+    private void notifyWordFound(String wordFound, int pointValue) {
         String str = NOTIFY_WORD_FOUND + " " + wordFound + " " + String.valueOf(pointValue);
         sendMessage(str);
     }
 
     //Called when the Host has already created the board and needs to send to to the guest player
-    private void sendBoardData(String diceAsString, String[] possibleWords, int myScore, int myTimer, int yourScore, int yourTimer) {
-        String str = SEND_BOARD_DATA + diceAsString + myScore + myTimer + yourScore + yourTimer + possibleWords.toString();
+    private void sendBoardData(String diceAsString, int myScore, int myTimer, int yourScore, int yourTimer) {
+        String str = SEND_BOARD_DATA + " " + diceAsString + " " + myScore + " " + myTimer + " " + yourScore + " " + yourTimer;
         sendMessage(str);
     }
 
     //converts local dice to string
     String diceAsString() {
         String str = "";
-        for(int i = 0; i < dice.length; i++){
+        for (int i = 0; i < dice.length; i++) {
             str += dice[i].topLetter;
         }
         return str;
     }
 
     //Guest sends the ending results of their round to the host for computations
-    private void sendResults() {
-        String str = END_GAME_GUEST + p1_score + p1_timer + wordsFound;
+    public void sendResults() {
+        long myTimeRemaining = ((countDownTimer) p1_timer).secondsRemaining;
+        String str = END_GAME_GUEST + " " + p1_score + " " + String.valueOf(myTimeRemaining) + " " + wordsFound;
         sendMessage(str);
     }
 
@@ -710,7 +727,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     }
 
     /**
-    Receive a message from a paired device
+     * Receive a message from a paired device
      */
 
     //Message codes for Handler switch statement
@@ -721,62 +738,101 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     public void endGameHost(String[] argTokens) {
         //String str = END_GAME_GUEST + p1_score + p1_timer + wordsFound;
 
-        int opponentScore = Integer.getInteger(argTokens[1]);
-        int opponentTimer = Integer.getInteger(argTokens[2]);
+        int opponentScore = Integer.valueOf(argTokens[1]);
+        long opponentTimer = Long.valueOf(argTokens[2]);
 
+        /*
         String[] opponentWordsFound = new String[argTokens.length - 2];
         for(int i = 3; i > argTokens.length; i ++){
             opponentWordsFound[i - 3] = argTokens[i];
         }
+        */
 
-        int myRemainingTime = 0; //grab remaining time
+        long myTimer = ((countDownTimer) p1_timer).secondsRemaining;
+        int myRemainingTime = (int) myTimer;
+        int opponentRemainingTime = (int) opponentTimer;
 
         int myNextRoundTime = p1_score + myRemainingTime;
+        int opponentNextRoundTime = p2_score + opponentRemainingTime;
 
+
+        //create board for next round
+        randomDice();
+        try {
+            newBoard(dice, 0, 0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Show your current Board
+        buttonCreation();
+        resetBtnBackground();
+
+        //Send your board information over to guest
+        sendBoardData(diceAsString(), p1_score, 0, p2_score, 0);
         /**
 
-        //display results of round
-        yourFoundWords = //parsed arg
-                // Display(yourFoundWords, myWordsFound);
+         //display results of round
+         yourFoundWords = //parsed arg
+         // Display(yourFoundWords, myWordsFound);
 
-        yourPoints = //parsed arg
-                yourRemainingTime = //parsed arg
-                        yourNextRoundTime = yourPoints + yourRemainingTime;
-        myNextRoundTime = p1_points + myRemainingTime;
+         yourPoints = //parsed arg
+         yourRemainingTime = //parsed arg
+         yourNextRoundTime = yourPoints + yourRemainingTime;
+         myNextRoundTime = p1_points + myRemainingTime;
 
-        createNewBoard();
+         createNewBoard();
 
-        sendBoardData(diceAsString, possibleWords, myScore, myNextRoundTime, yourScore, yourNextRoundTimer);
+         sendBoardData(diceAsString, possibleWords, myScore, myNextRoundTime, yourScore, yourNextRoundTimer);
 
-        //begin new round?
+         //begin new round?
 
-        //updates global points for the whole multiplayer session
-        updateTotalPoints(myPoints, yourPoints);
+         //updates global points for the whole multiplayer session
+         updateTotalPoints(myPoints, yourPoints);
 
          */
     }
 
     //Handler Helper Functions
     private void updateOpponentScore(String[] argTokens) {
+        //String str = NOTIFY_WORD_FOUND + " " + wordFound + " " + String.valueOf(pointValue);
+
         wordsFound.add(argTokens[1]);
-        p2_score += Integer.getInteger(argTokens[2]);
+        p2_score += Integer.valueOf(argTokens[2]);
         updateTextView();
-        Toast.makeText(getApplicationContext(),"Player 2 Found a Word!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Player 2 Found a Word!", Toast.LENGTH_SHORT).show();
     }
 
     //used by guest to create a local board
     private void receiveBoardData(String[] argTokens) {
+        //String str = SEND_BOARD_DATA + " " + diceAsString + " " + myScore + " " + myTimer + " " + yourScore + " " + yourTimer;
+
+        Toast.makeText(getApplicationContext(), "Receiving Board Data", Toast.LENGTH_SHORT).show();
 
         String diceAsString = argTokens[1];
-        int myScore = Integer.getInteger(argTokens[2]);
-        int myTimer = Integer.getInteger(argTokens[3]);
-        int yourScore = Integer.getInteger(argTokens[4]);
-        int yourTimer = Integer.getInteger(argTokens[5]);
+        int myScore = Integer.valueOf(argTokens[2]);
+        long myTimer = Long.valueOf(argTokens[3]);
+        int yourScore = Integer.valueOf(argTokens[4]);
+        long yourTimer = Long.valueOf(argTokens[5]);
 
-        String[] receivedPossibleWords = new String[argTokens.length - 5];
-        for(int i = 6; i > argTokens.length; i ++){
-            receivedPossibleWords[i - 6] = argTokens[i];
+
+        //to make sure dice are initailized
+        randomDice();
+
+        char[] diceArray = diceAsString.toCharArray();
+        for (int i = 0; i < dice.length; i++) {
+            dice[i].topLetter = String.valueOf(diceArray[i]);
         }
+
+        try {
+            newBoard(dice, myScore, yourScore);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        buttonCreation();
+        resetBtnBackground();
+
+        Toast.makeText(getApplicationContext(), "Board Created!", Toast.LENGTH_SHORT).show();
 
         //Now create your board from this information
 
@@ -795,9 +851,21 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                     switch (msg.arg1) {
                         case BluetoothManager.STATE_CONNECTED:
                             Toast.makeText(getApplicationContext(), R.string.status_connected_to, Toast.LENGTH_SHORT).show();
-                            if(flag_host)
+                            if (flag_host) {
                                 Toast.makeText(getApplicationContext(), "You're host.", Toast.LENGTH_SHORT).show();
-                            else
+                                randomDice();
+                                try {
+                                    newBoard(dice, 0, 0);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                //Show your current Board
+                                buttonCreation();
+                                resetBtnBackground();
+
+                                //Send your board information over to guest
+                                sendBoardData(diceAsString(), p1_score, 0, p2_score, 0);
+                            } else
                                 Toast.makeText(getApplicationContext(), "You're guest.", Toast.LENGTH_SHORT).show();
                             //TODO: send init board to the guest
                             break;
@@ -837,11 +905,11 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                             break;
 
                         case SEND_BOARD_DATA:
-                            //receiveBoardData(argTokens);
+                            receiveBoardData(argTokens);
                             break;
 
                         case END_GAME_GUEST:
-                           // endGameHost(argTokens);
+                            endGameHost(argTokens);
                             break;
                     }
                     //do something
