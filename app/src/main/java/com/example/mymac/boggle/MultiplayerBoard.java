@@ -53,6 +53,7 @@ import java.io.File;
 import static com.example.mymac.boggle.R.id.button1;
 import static com.example.mymac.boggle.R.id.cutThroatMode;
 import static com.example.mymac.boggle.R.id.p1_timer;
+import static com.example.mymac.boggle.R.id.stopTimer;
 import static java.lang.System.in;
 
 /**
@@ -486,7 +487,6 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                         p1_timer.cancel();
                         myTimerStopped = true;
                         Toast.makeText(getApplicationContext(), "You've Stopped Your Timer!", Toast.LENGTH_SHORT).show();
-
                         //It your the first to stop the timer, notify opponenet
                         if(!opponentTimerStopped)
                             playerStoppedTimer(String.valueOf(myTimer));
