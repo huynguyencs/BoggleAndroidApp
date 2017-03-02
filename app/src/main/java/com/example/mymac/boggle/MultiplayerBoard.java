@@ -822,6 +822,11 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         sendMessage(str);
     }
 
+    private void sendGuestMatchResults(String didWin){
+        String str = SEND_GUEST_MATCH_RESULTS + didWin;
+        sendMessage(str);
+    }
+
     /**
      * Receive a message from a paired device
      */
@@ -833,6 +838,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     static final String PLAYER_STOPPED_TIMER = "PLAYER_STOPPED_TIMER";
     static final String REQUEST_RESULTS_FROM_GUEST = "REQUEST_RESULTS_FROM_GUEST";
     static final String READY_TO_PLAY = "READY_TO_PLAY";
+    static final String SEND_GUEST_MATCH_RESULTS = "SEND_GUEST_MATCH_RESULTS";
 
     public void endGameHost(String[] argTokens) {
         //String str = END_GAME_GUEST + p1_score + p1_timer + wordsFound;
@@ -869,10 +875,15 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         if(gameOver || myRemainingTime < 2 ){
             Toast.makeText(getApplicationContext(), "The Game has ended!", Toast.LENGTH_SHORT).show();
 
-            if(myTotalGameScore < opponentTotalGameScore)
+
+            if(myTotalGameScore < opponentTotalGameScore) {
                 Toast.makeText(getApplicationContext(), "You Lost!", Toast.LENGTH_SHORT).show();
-            else
+                sendGuestMatchResults("won");
+            }
+            else {
                 Toast.makeText(getApplicationContext(), "You Won!", Toast.LENGTH_SHORT).show();
+                sendGuestMatchResults("lost");
+            }
         }
 
         //Start a new round
@@ -917,6 +928,19 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
         p1_timer.start();
         p2_timer.start();
+    }
+
+    private void displayEndGameResults(String[] argTokens) {
+
+        //this function is not for host, what you doing here???
+        if(flag_host)
+            return;
+
+        String result = argTokens[1];
+        if(result == "won")
+            Toast.makeText(getApplicationContext(), "You won!", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(getApplicationContext(), "You lost!", Toast.LENGTH_SHORT).show();
     }
 
     private void opponentStoppedTimer(String[] argTokens) {
@@ -1074,6 +1098,10 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
                         case READY_TO_PLAY:
                             beginGame();
+                            break;
+
+                        case SEND_GUEST_MATCH_RESULTS:
+                            displayEndGameResults(argTokens);
                             break;
                     }
                     //do something

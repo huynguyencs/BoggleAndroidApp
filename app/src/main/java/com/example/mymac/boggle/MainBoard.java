@@ -369,11 +369,9 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
                                 }
                                 correct_word = (TextView) this.findViewById(R.id.correctSubmission);
                                 correct_word.setMovementMethod(new ScrollingMovementMethod());
-                                String wordList = "";
-                                for (int i = 0; i < wordsFound.size(); i++) {
-                                    wordList = wordList.concat(wordsFound.get(i) + '\n');
-                                }
-                                correct_word.setText(wordList);
+
+                                correct_word.setText(wordsFound.get(wordsFound.size() - 1));
+
                                 userScore += pts;
                                 CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                                 Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
