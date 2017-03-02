@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.example.mymac.boggle.R.id.button1;
+import static com.example.mymac.boggle.R.id.wordsFound;
 
 public class MainBoard extends AppCompatActivity implements View.OnTouchListener {
 
@@ -371,6 +372,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
                                 correct_word.setMovementMethod(new ScrollingMovementMethod());
 
                                 correct_word.setText(wordsFound.get(wordsFound.size() - 1));
+
 
                                 userScore += pts;
                                 CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
