@@ -14,22 +14,22 @@
 
     <Button
         android:text="1 Player"
-        android:layout_width="160dp"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
         android:id="@+id/onePlayer"
         android:layout_centerVertical="true"
         android:layout_alignLeft="@+id/twoPlayer"
         android:layout_alignStart="@+id/twoPlayer"
         android:backgroundTint="@android:color/holo_orange_light"
-        android:textColor="@android:color/white"
         android:height="60dp"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="@android:color/white"
         android:textScaleX = "1.1"/>
 
     <Button
         android:text="2 Players"
-        android:layout_width="160dp"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
         android:id="@+id/twoPlayer"
         android:backgroundTint="@android:color/holo_orange_dark"
@@ -44,7 +44,7 @@
 
     <Button
         android:text="Leaderboard"
-        android:layout_width="160dp"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
         android:id="@+id/leaderBoard"
         android:backgroundTint="@android:color/holo_red_light"
@@ -58,7 +58,7 @@
 
     <Button
         android:text="Instruction"
-        android:layout_width="160dp"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
         android:id="@+id/instruction"
         android:backgroundTint="@android:color/holo_red_dark"
