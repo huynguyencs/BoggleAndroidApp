@@ -104,7 +104,6 @@ public class Leaderboard {
         }
     }
 
-
     public boolean isHighscore(int score) {
         highscoreSort();
         if (highscoreList == null || highscoreList.size() < 5) {
@@ -116,9 +115,6 @@ public class Leaderboard {
             }
         }
         return false;
-        setListAdapter(mAdapter);
-
-
     }
 
     public boolean updateHighscore(Context context, Highscore hs, String diff) {

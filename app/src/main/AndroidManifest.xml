@@ -31,6 +31,7 @@
         <activity android:name=".Instruction" />
         <activity android:name=".LeaderboardDisplay" />
         <activity android:name=".Results" />
+        <activity android:name=".MultiroundResults" />
         <activity android:name=".BluetoothDeviceList"></activity>
     </application>
 
