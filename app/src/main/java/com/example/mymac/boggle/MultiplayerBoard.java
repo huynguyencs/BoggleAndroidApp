@@ -35,12 +35,12 @@ import java.io.InputStream;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
-
+/*
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
-
+*/
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -53,6 +53,7 @@ import java.io.File;
 import static com.example.mymac.boggle.R.id.button1;
 import static com.example.mymac.boggle.R.id.cutThroatMode;
 import static com.example.mymac.boggle.R.id.p1_timer;
+import static com.example.mymac.boggle.R.id.stopTimer;
 import static java.lang.System.in;
 
 /**
@@ -514,7 +515,6 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                         p1_timer.cancel();
                         myTimerStopped = true;
                         Toast.makeText(getApplicationContext(), "You've Stopped Your Timer!", Toast.LENGTH_SHORT).show();
-
                         //It your the first to stop the timer, notify opponenet
                         if(!opponentTimerStopped)
                             playerStoppedTimer(String.valueOf(myTimer));
