@@ -6,7 +6,9 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="462dp"
+
         android:id="@android:id/list" />
+
 
     <LinearLayout
         android:orientation="horizontal"

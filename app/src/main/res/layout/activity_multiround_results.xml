@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"></LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="57dp"
+        android:layout_weight="0.08">
+
+        <TextView
+            android:text="player one score"
+            android:id="@+id/playerOneTitle"
+            android:layout_weight="1"
+            android:layout_width="191dp"
+            android:layout_height="match_parent"
+            android:textAppearance="@android:style/TextAppearance.Large"
+            android:fontFamily="sans-serif"
+            android:textAllCaps="true"
+            android:textStyle="normal|bold"
+            android:textAlignment="center" />
+
+        <TextView
+            android:text="player Two Score"
+            android:layout_height="match_parent"
+            android:id="@+id/playerTwoTitle"
+            android:layout_weight="1"
+            android:layout_width="191dp"
+            android:textAppearance="@android:style/TextAppearance.Large"
+            android:fontFamily="sans-serif"
+            android:textAllCaps="true"
+            android:textStyle="normal|bold"
+            android:textAlignment="center" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="61dp"
+        android:layout_weight="0.28">
+
+        <TextView
+            android:text="TextView"
+            android:layout_height="match_parent"
+            android:id="@+id/playerOneScore"
+            android:layout_weight="1"
+            android:layout_width="191dp"
+            android:textAppearance="@android:style/TextAppearance.Large"
+            android:fontFamily="sans-serif"
+            android:textAllCaps="true"
+            android:textStyle="normal|bold"
+            android:textAlignment="center" />
+
+        <TextView
+            android:text="TextView"
+            android:layout_height="match_parent"
+            android:id="@+id/playerTwoScore"
+            android:layout_weight="1"
+            android:layout_width="191dp"
+            android:textAppearance="@android:style/TextAppearance.Large"
+            android:fontFamily="sans-serif"
+            android:textAllCaps="true"
+            android:textStyle="normal|bold"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nextRoundTimerTitle"
+        android:layout_weight="0.08"
+        android:textAppearance="@android:style/TextAppearance.Large"
+        android:fontFamily="sans-serif"
+        android:textStyle="normal|bold"
+        android:textAlignment="center" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/timerNextRound"
+        android:layout_weight="0.39"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+        android:textAlignment="center"
+        android:textStyle="normal|bold"
+        android:textAllCaps="true" />
+
+    <Button
+        android:text="Done"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonEndGameResults"
+        android:layout_width="150dp"
+        android:textAlignment="center"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>
