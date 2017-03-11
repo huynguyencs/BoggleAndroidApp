@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 
 public class GameDifficulty extends AppCompatActivity {
-
+    String gameLevel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,8 +18,9 @@ public class GameDifficulty extends AppCompatActivity {
         easyDifficulty.setOnClickListener (new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i("clicks","You Clicked Easy Difficulty.");
-                Intent i = new Intent(GameDifficulty.this, MainBoard.class);
-                startActivity(i);
+                gameLevel = "Easy";
+                Intent in = ShakeActivity.newIntent(GameDifficulty.this, gameLevel);
+                startActivity(in);
             }
         });
 
@@ -27,8 +28,9 @@ public class GameDifficulty extends AppCompatActivity {
         mediumDifficulty.setOnClickListener (new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i("clicks","You Clicked Medium Difficulty.");
-                Intent i = new Intent(GameDifficulty.this, MainBoard.class);
-                startActivity(i);
+                gameLevel = "Medium";
+                Intent in = ShakeActivity.newIntent(GameDifficulty.this, gameLevel);
+                startActivity(in);
             }
         });
 
@@ -36,8 +38,9 @@ public class GameDifficulty extends AppCompatActivity {
         hardDifficulty.setOnClickListener (new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i("clicks","You Clicked Hard Difficulty.");
-                Intent i = new Intent(GameDifficulty.this, MainBoard.class);
-                startActivity(i);
+                gameLevel = "Hard";
+                Intent in = ShakeActivity.newIntent(GameDifficulty.this, gameLevel);
+                startActivity(in);
             }
         });
     }

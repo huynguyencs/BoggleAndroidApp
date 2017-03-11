@@ -31,7 +31,8 @@
         <activity android:name=".Instruction" />
         <activity android:name=".Leaderboard" />
         <activity android:name=".Results" />
-        <activity android:name=".BluetoothDeviceList"></activity>
+        <activity android:name=".BluetoothDeviceList" />
+        <activity android:name=".ShakeActivity"></activity>
     </application>
 
 </manifest>

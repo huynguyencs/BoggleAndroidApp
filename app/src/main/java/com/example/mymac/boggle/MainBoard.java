@@ -1,6 +1,7 @@
 package com.example.mymac.boggle;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
@@ -96,6 +97,8 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_board);
 
+        Bundle extras = getIntent().getExtras();
+        String gameLevel = extras.getString("LEVEL");
 
         randomDice(); //Generates a new set of random dice
 
@@ -508,6 +511,12 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
     private void removeLayoutListenerPost16(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener listener){
         observer.removeOnGlobalLayoutListener(listener);
 
+    }
+
+    public static Intent newIntent(Context packageContext, String gameLevel) {
+        Intent i = new Intent(packageContext, MainBoard.class);
+        i.putExtra("LEVEL", gameLevel);
+        return i;
     }
 }
 
