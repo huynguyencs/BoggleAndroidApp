@@ -281,9 +281,13 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
             possibleWords = new String[0];
             possibleWords = dictionary.findPossibleWords(); //Runs a Boggle Solver
 
-            p1_timer = new countDownTimer(P1_time * 1000, 1 * 1000);
-            p2_timer = new countDownTimer(P2_time * 1000, 1 * 1000);
+            p1_timer.onTick(P1_time * 1000);
+            p2_timer.onTick(P2_time * 1000);
 
+            //p1_timer = new countDownTimer(P1_time * 1000, 1 * 1000);
+            //p2_timer = new countDownTimer(P2_time * 1000, 1 * 1000);
+
+            buttonCreation();
             mainScreen.getViewTreeObserver().addOnGlobalLayoutListener(
                     new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
@@ -912,7 +916,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     private void beginGame() {
         //Show your current Board
-        buttonCreation();
+        //buttonCreation();
         resetBtnBackground();
 
         p1_timer.start();
@@ -980,7 +984,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         //Notifies other player that the board setup is complete
         sendReadyToPlay();
 
-        buttonCreation();
+        //buttonCreation();
         resetBtnBackground();
 
         p1_timer.start();
@@ -1073,7 +1077,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                             break;
 
                         case READY_TO_PLAY:
-                            beginGame();
+                             beginGame();
                             break;
                     }
                     //do something
