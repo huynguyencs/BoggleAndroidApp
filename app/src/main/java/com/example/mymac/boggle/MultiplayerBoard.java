@@ -61,6 +61,11 @@ import static java.lang.System.in;
  */
 
 
+//Intent i = new Intent(MultiplayerBoard.this, MultiroundResults.class);
+//i.putExtra("p1_score", 10);
+//i.putExtra("p2_score", 24);
+//i.putExtra("isMidGame", true);
+//startActivity(i);
 public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchListener {
 
 
