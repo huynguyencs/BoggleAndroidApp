@@ -14,7 +14,7 @@
 
     <Button
         android:text="1 Player"
-        android:layout_width="160dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:id="@+id/onePlayer"
         android:layout_centerVertical="true"
@@ -29,7 +29,7 @@
 
     <Button
         android:text="2 Players"
-        android:layout_width="160dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:id="@+id/twoPlayer"
         android:backgroundTint="@android:color/holo_orange_dark"
@@ -44,7 +44,7 @@
 
     <Button
         android:text="Leaderboard"
-        android:layout_width="160dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:id="@+id/leaderBoard"
         android:backgroundTint="@android:color/holo_red_light"
@@ -58,7 +58,7 @@
 
     <Button
         android:text="Instruction"
-        android:layout_width="160dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:id="@+id/instruction"
         android:backgroundTint="@android:color/holo_red_dark"
