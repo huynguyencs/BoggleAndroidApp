@@ -6,9 +6,11 @@ import android.bluetooth.BluetoothDevice;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -33,6 +35,12 @@ import java.io.InputStream;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+/*
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
+*/
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -43,6 +51,9 @@ import java.io.File;
 
 
 import static com.example.mymac.boggle.R.id.button1;
+import static com.example.mymac.boggle.R.id.cutThroatMode;
+import static com.example.mymac.boggle.R.id.p1_timer;
+import static com.example.mymac.boggle.R.id.stopTimer;
 import static java.lang.System.in;
 
 /**
@@ -50,7 +61,11 @@ import static java.lang.System.in;
  */
 
 
-
+//Intent i = new Intent(MultiplayerBoard.this, MultiroundResults.class);
+//i.putExtra("p1_score", 10);
+//i.putExtra("p2_score", 24);
+//i.putExtra("isMidGame", true);
+//startActivity(i);
 public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchListener {
 
 
@@ -59,30 +74,39 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
      **************************/
 
     //flags for bluetooth and game mode
-    public boolean flag_host;
+    public boolean flag_host = false;
     public boolean flag_guest;
     public boolean flag_basicMode;
-    public boolean flag_cutThroatMode;
+    boolean modeCutThroat = false;
+    boolean gameOver = false;
+    static int roundCount = 0;
 
     /************
-     * new varribles to be used for multiplayer ***********
-     * public TextView p1_timerText;
-     * public TextView p2_timerText;
-     * public TextView correct_word;
-     * public TextView p1_scoreText;
-     * public TextView p2_scoreText;
-     * private int p1_Score;
-     * private int p2_Score;
-     * private CountDownTimer p1_timer;
-     * private CountDownTimer p2_timer;
-     */
 
-    //TextViews and timer labels to populate the Gameboard View
-    public TextView timerText;
+     * new varribles to be used for multiplayer
+     ***********/
+    public TextView p1_timerText;
+    public TextView p2_timerText;
     public TextView correct_word;
-    public TextView user_score;
-    private int userScore;
-    private CountDownTimer timer;
+    public TextView p1_scoreText;
+    public TextView p2_scoreText;
+    private int p1_score;
+    private int p2_score;
+
+    private static int myTotalGameScore = 0;
+    private static int opponentTotalGameScore = 0;
+
+    private static CountDownTimer p1_timer;
+    private static CountDownTimer p2_timer;
+    private boolean timersRunning;
+
+
+
+    //Flags to tell if players are still finding words
+    boolean myTimerStopped = false;
+    boolean opponentTimerStopped = false;
+
+
 
     //Set of 16 dice of the current board
     public Die[] dice;
@@ -136,6 +160,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     private BluetoothAdapter mBluetoothAdapter = null;
 
+
     // Member object for the chat services
     private BluetoothManager mBluetoothManager = null;
 
@@ -146,6 +171,9 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
 
+    // Member object for the chat services
+    private BluetoothManager mBluetoothManager = null;
+
 
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
@@ -154,6 +182,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
+
 
     /***************************
      * Multiplayer Board Methods
@@ -165,51 +194,20 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_board);
+        setContentView(R.layout.activity_basic_mode);
 
 
-        randomDice(); //Generates a new set of random dice
-
-        //Grabs the Dictionary text file and creates an instance of Dictionary
-        try {
-            InputStream inputS = getResources().openRawResource(R.raw.dictionary);
-            dictionary = new Dictionary(inputS, dice);
-        } catch (Exception e) {
-        }
+        myTimerStopped = false;
+        opponentTimerStopped = false;
+        gameOver = false;
 
         //shakeDetector = new ShakeDetector(this);
 
 
-        //fully create a new Board
-        try {
-            newBoard();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //attach new board to UI Buttons
-        buttonCreation();
-        resetBtnBackground();
 
         //get location from buttons
         BtnLocation = new Point[16];
-        mainScreen = (RelativeLayout) findViewById(R.id.activity_main_board);
-
-        mainScreen.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // Layout has happened here.
-                        readLocation();
-                        // Don't forget to remove your listener when you are done with it.
-                        if (Build.VERSION.SDK_INT < 16) {
-                            removeLayoutListenerPre16(mainScreen.getViewTreeObserver(), this);
-                        } else {
-                            removeLayoutListenerPost16(mainScreen.getViewTreeObserver(), this);
-                        }
-                    }
-                });
-
+        mainScreen = (RelativeLayout) findViewById(R.id.activity_basic_mode);
 
 
         // Get local Bluetooth adapter
@@ -223,12 +221,33 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         }
 
         //Create Board Timer + User Score
-        timerText = (TextView) this.findViewById(R.id.timer);
-        timer = new MultiplayerBoard.countDownTimer(60 * 60 * 1000, 1 * 1000);
-        timer.start();
-        user_score = (TextView) this.findViewById(R.id.score);
-        user_score.setText("Your score: " + userScore);
+        p1_timerText = (TextView) this.findViewById(R.id.p1_timer);
+        p2_timerText = (TextView) this.findViewById(R.id.p2_timer);
+
+
+        //p1_timer = new countDownTimer(60 * 1000, 1 * 1000);
+        //p2_timer = new countDownTimer(60 * 1000, 1 * 1000);
+
+
+
+        p1_scoreText = (TextView) this.findViewById(R.id.p1_score);
+        p2_scoreText = (TextView) this.findViewById(R.id.p2_score);
+        p1_scoreText.setText("Player1 score: " + p1_score);
+        p2_scoreText.setText("Player2 score: " + p2_score);
+
+
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        } else {
+            if (mBluetoothManager == null)
+                mBluetoothManager = new BluetoothManager(this, mHandler);
+        }
 
     @Override
     public void onStart() {
@@ -258,13 +277,78 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     */
 
     //Sets up the board with a number of helper functions
-    private boolean newBoard() throws IOException {
+
+    private boolean newBoard(Die[] dice, int P1_score, int P2_score, int P1_time, int P2_time) throws IOException {
         while (true) {
-            userScore = 0;
+
+            //Grabs the Dictionary text file and creates an instance of Dictionary
+            try {
+                InputStream inputS = getResources().openRawResource(R.raw.dictionary);
+                dictionary = new Dictionary(inputS, dice);
+            } catch (Exception e) {
+            }
+            p1_score = P1_score;
+            p2_score = P2_score;
+
+            if(roundCount > 1) {
+                p1_scoreText = (TextView) this.findViewById(R.id.p1_score);
+                p2_scoreText = (TextView) this.findViewById(R.id.p2_score);
+                p1_scoreText.setText("Player1 score: " + p1_score);
+                p2_scoreText.setText("Player2 score: " + p2_score);
+            }
+
+
+
+            //resets stop timer flags
+            myTimerStopped = false;
+            opponentTimerStopped = false;
+
             wordsFound = new ArrayList<String>();
             possibleWords = new String[0];
             possibleWords = dictionary.findPossibleWords(); //Runs a Boggle Solver
-            System.out.println(possibleWords.length);
+
+            //if this is the first round
+            if(roundCount < 1) {
+                if(timersRunning) {
+                    p1_timer.cancel();
+                    p2_timer.cancel();
+                    timersRunning = false;
+                }
+                p1_timer = new countDownTimer(60 * 1000, 1 * 1000);
+                p2_timer = new countDownTimer(60 * 1000, 1 * 1000);
+                p1_timer.start();
+                p2_timer.start();
+            }
+
+            else {
+                if(timersRunning) {
+                    p1_timer.cancel();
+                    p2_timer.cancel();
+                    timersRunning = false;
+                }
+                p1_timer = new countDownTimer(P1_time * 1000, 1 * 1000);
+                p2_timer = new countDownTimer(P2_time * 1000, 1 * 1000);
+                p1_timer.start();
+                p2_timer.start();
+            }
+
+
+
+            buttonCreation();
+            mainScreen.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            // Layout has happened here.
+                            readLocation();
+                            // Don't forget to remove your listener when you are done with it.
+                            if (Build.VERSION.SDK_INT < 16) {
+                                removeLayoutListenerPre16(mainScreen.getViewTreeObserver(), this);
+                            } else {
+                                removeLayoutListenerPost16(mainScreen.getViewTreeObserver(), this);
+                            }
+                        }
+                    });
             return true;
         }
     }
@@ -283,39 +367,74 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         Intent i = new Intent(MultiplayerBoard.this, Results.class);
         i.putExtra("possibleWords", possibleWords);
         i.putExtra("wordsFound", wordsFound);
-        i.putExtra("userScore", userScore);
+        i.putExtra("userScore", p1_score);
         startActivity(i);
     }
 
 
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
+
+    /******************* Count Down Timer Class *****************/
+
     public class countDownTimer extends CountDownTimer {
+
+        public long secondsRemaining = 0;
+
         public countDownTimer(long startTime, long interval) {
             super(startTime, interval);
         }
 
         @Override
         public void onFinish() {
-            timerText.setText("TIME'S UP!");
-            endGame();
+
+            timersRunning = false;
+            //mark that someone has ran out of time
+            gameOver = true;
+
+            p1_timerText.setText("TIME'S UP!");
+            p2_timerText.setText("TIME'S UP!");
+
+            //Im the guest and i just lost
+            if (!flag_host)
+                endGameGuest();
+            else {
+                requestResultsFromGuest();
+            }
         }
 
         @Override
         public void onTick(long millisUntilFinished) {
+            timersRunning = true;
             long total_seconds = millisUntilFinished / 1000;
+            secondsRemaining = total_seconds;
             long seconds = total_seconds % 60;
             long minutes = total_seconds / 60;
-            timerText.setText("Time Left: " + minutes + ":" + seconds);
+            if(!myTimerStopped)
+                p1_timerText.setText("Time Left: " + minutes + ":" + seconds);
+            if(!opponentTimerStopped)
+                p2_timerText.setText("Time Left: " + minutes + ":" + seconds);
             if (minutes < 2 && seconds <= 15) {
-                timerText.setTextColor(Color.rgb(255, 0, 0));
+
+                p1_timerText.setTextColor(Color.rgb(255, 0, 0));
+                p2_timerText.setTextColor(Color.rgb(255, 0, 0));
             }
         }
+
     }
 
     //Update score, alternating colors
     public void updateTextView() {
-        TextView textView = (TextView) findViewById(R.id.score);
-        textView.setText("Your score: " + userScore);
-        textView.setTextColor(getRandomColor());
+
+        TextView p1_textView = (TextView) findViewById(R.id.p1_score);
+        TextView p2_textView = (TextView) findViewById(R.id.p2_score);
+        p1_textView.setText("Player1 score: " + p1_score);
+        p2_textView.setText("Player2 score: " + p2_score);
+        p1_textView.setTextColor(getRandomColor());
     }
 
     public int getRandomColor() {
@@ -383,11 +502,18 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
         Button submitBtn = (Button) findViewById(R.id.submit);
 
+        Button stopTimer = (Button) findViewById(R.id.stopTimer);
+
+
 
         Button cancelBtn = (Button) findViewById(R.id.cancel);
 
         cancelBtn.setOnTouchListener(this);
         submitBtn.setOnTouchListener(this);
+
+        stopTimer.setOnTouchListener(this);
+
+
     }
 
     private void resetBtnBackground() {
@@ -410,7 +536,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     }
 
 
-    //Fingerslide Selection Logic
+    /*********************Fingerslide Selection Logic******************/
+
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         //TODO: Finger Sliding
@@ -430,6 +557,40 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                     */
                     sendMessage("CANCEL BUTTON SENT");
                 }
+
+                if (v.getId() == R.id.stopTimer){
+                    if(wordsFound.size() < 1){
+                        Toast.makeText(getApplicationContext(), "You have not found 5 words yet!", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+
+                        long myTimer = ((countDownTimer) p1_timer).secondsRemaining;
+                        long seconds = myTimer % 60;
+                        long minutes = myTimer / 60;
+                        p1_timerText.setText("Time Left: " + minutes + ":" + seconds);
+                        p1_timer.cancel();
+                        timersRunning = false;
+                        myTimerStopped = true;
+                        Toast.makeText(getApplicationContext(), "You've Stopped Your Timer!", Toast.LENGTH_SHORT).show();
+                        //It your the first to stop the timer, notify opponenet
+                        if(!opponentTimerStopped)
+                            playerStoppedTimer(String.valueOf(myTimer));
+
+                        //else i need to end the game
+                        else {
+                            //if im the guest
+                            if (!flag_host)
+                                endGameGuest();
+
+
+                            else { //if im the host, request results from the guest
+
+                                requestResultsFromGuest();
+                            }
+                        }
+                    }
+                }
+
                 if (v.getId() == R.id.submit) {
                     System.out.println("Checking user's words to dictionary.");
                     //if user's submitted word is valid
@@ -454,8 +615,19 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                                 pts = 10;
                             }
                             correct_word = (TextView) this.findViewById(R.id.correctSubmission);
-                            correct_word.setText(wordsFound.get(wordsFound.size() - 1));
-                            userScore += pts;
+
+                            //TODO: Increment points and notifiy other player
+                            p1_score += pts;
+                            notifyWordFound(selectingWord.toString(), pts);
+
+
+                            correct_word.setMovementMethod(new ScrollingMovementMethod());
+                            String wordList = "";
+                            for (int i = 0; i < wordsFound.size(); i++) {
+                                wordList = wordList.concat(wordsFound.get(i) + '\n');
+                            }
+                            correct_word.setText(wordList);
+
                             CharSequence text = "YOU EARNED " + pts + " POINTS!!!";
                             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                             updateTextView();
@@ -619,8 +791,25 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     }
 
     @Override
+
+    public void onPause(){
+        super.onPause();
+
+        //stop the current timer
+        //p1_timer.cancel();
+        //p2_timer.cancel();
+    }
+
+
+    @Override
     public void onResume() {
         super.onResume();
+
+        /*if(p1_timer != null) {
+            p1_timer.start();
+            p2_timer.start();
+        }
+    */
 
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
@@ -662,9 +851,246 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         }
     }
 
-    /*
-    Receive a message from a paired device
+
+    //Called when user finds a valid word
+    private void notifyWordFound(String wordFound, int pointValue) {
+        String str = NOTIFY_WORD_FOUND + " " + wordFound + " " + String.valueOf(pointValue);
+        sendMessage(str);
+    }
+
+    //Called when the Host has already created the board and needs to send to to the guest player
+    private void sendBoardData(String diceAsString, int myScore, int myTimer, int yourScore, int yourTimer) {
+        String str = SEND_BOARD_DATA + " " + diceAsString + " " + myScore + " " + myTimer + " " + yourScore + " " + yourTimer;
+        sendMessage(str);
+    }
+
+    //converts local dice to string
+    String diceAsString() {
+        String str = "";
+        for (int i = 0; i < dice.length; i++) {
+            str += dice[i].topLetter;
+        }
+        return str;
+    }
+
+    //Guest sends the ending results of their round to the host for computations
+    public void sendResults() {
+
+        long myTimeRemaining;
+        if(gameOver)
+            myTimeRemaining = 0;
+        else
+            myTimeRemaining = ((countDownTimer) p1_timer).secondsRemaining;
+
+        String str = END_GAME_GUEST + " " + p1_score + " " + String.valueOf(myTimeRemaining) + " " + wordsFound;
+        sendMessage(str);
+    }
+
+    public void endGameGuest() {
+        if(gameOver)
+            Toast.makeText(this, "The Game Has Ended!", Toast.LENGTH_LONG).show();
+        roundCount += 1;
+        sendResults();
+    }
+
+    private void requestResultsFromGuest() {
+        String str = REQUEST_RESULTS_FROM_GUEST;
+        sendMessage(str);
+    }
+
+    private void sendReadyToPlay(){
+        String str = READY_TO_PLAY;
+        sendMessage(str);
+    }
+
+    private void showResultsMessage(){
+        String str = SHOW_RESULTS;
+        sendMessage(str);
+    }
+
+    /**
+     * Receive a message from a paired device
      */
+
+    //Message codes for Handler switch statement
+    static final String NOTIFY_WORD_FOUND = "NOTIFY_WORD_FOUND";
+    static final String SEND_BOARD_DATA = "SEND_BOARD_DATA";
+    static final String END_GAME_GUEST = "END_GAME_GUEST";
+    static final String PLAYER_STOPPED_TIMER = "PLAYER_STOPPED_TIMER";
+    static final String REQUEST_RESULTS_FROM_GUEST = "REQUEST_RESULTS_FROM_GUEST";
+    static final String READY_TO_PLAY = "READY_TO_PLAY";
+    static final String SHOW_RESULTS = "SHOW_RESULTS";
+
+    public void endGameHost(String[] argTokens) {
+        //String str = END_GAME_GUEST + p1_score + p1_timer + wordsFound;
+
+        if(!flag_host) {
+            Toast.makeText(getApplicationContext(), "GUEST GOT TO HOST FUNCTIONS", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        int opponentScore = Integer.valueOf(argTokens[1]);
+        int myScore = p1_score;
+
+        myTotalGameScore =+ myScore;
+        opponentTotalGameScore =+ opponentScore;
+
+        long opponentTimer = Long.valueOf(argTokens[2]);
+
+        /*
+        String[] opponentWordsFound = new String[argTokens.length - 2];
+        for(int i = 3; i > argTokens.length; i ++){
+            opponentWordsFound[i - 3] = argTokens[i];
+        }
+        */
+
+        long myTimer = ((countDownTimer) p1_timer).secondsRemaining;
+        int myRemainingTime = (int) myTimer;
+        int opponentRemainingTime = (int) opponentTimer;
+
+        int myNextRoundTime = p1_score + myRemainingTime;
+        int opponentNextRoundTime = p2_score + opponentRemainingTime;
+
+
+        //just in case they arnt already canceled
+
+        //tell guest to show results page
+        showResultsMessage();
+
+        //Show your own results page
+        Intent i = new Intent(this, MultiroundResults.class);
+        startActivity(i);
+
+        //if someone has ran out of time
+        if(gameOver || myRemainingTime < 2 ){
+            Toast.makeText(getApplicationContext(), "The Game has ended!", Toast.LENGTH_SHORT).show();
+
+            if(myTotalGameScore < opponentTotalGameScore)
+                Toast.makeText(getApplicationContext(), "You Lost!", Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(getApplicationContext(), "You Won!", Toast.LENGTH_SHORT).show();
+        }
+
+        //Start a new round
+        else {
+            //create board for next round
+            roundCount += 1;
+            randomDice();
+
+            try {
+                newBoard(dice, 0, 0, myNextRoundTime, opponentNextRoundTime);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //Send your board information over to guest
+            sendBoardData(diceAsString(), p2_score, opponentNextRoundTime, p1_score, myNextRoundTime);
+
+            //now wait till guest sends readyToPlay back
+        }
+
+    }
+
+    //called when the player presses the StopTimer button
+    private void playerStoppedTimer(String playerTime) {
+        String str = PLAYER_STOPPED_TIMER + " " + playerTime;
+        sendMessage(str);
+    }
+
+
+
+    /**Handler Helper Functions*/
+
+    private void showResultsPage(){
+        Intent i = new Intent(this, MultiroundResults.class);
+        startActivity(i);
+    }
+
+    private void beginGame() {
+        //Show your current Board
+        //buttonCreation();
+        resetBtnBackground();
+
+        //p1_timer.start();
+        //p2_timer.start();
+    }
+
+    private void opponentStoppedTimer(String[] argTokens) {
+        //String str = PLAYER_STOPPED_TIMER + " " + playerTime;
+
+        p2_timer.cancel();
+        opponentTimerStopped = true;
+        long total_seconds = Long.valueOf(argTokens[1]);
+        long seconds = total_seconds % 60;
+        long minutes = total_seconds / 60;
+        p2_timerText.setText("Time Left: " + minutes + ":" + seconds);
+        Toast.makeText(getApplicationContext(), "Player 2 has stopped their timer!", Toast.LENGTH_SHORT).show();
+
+    }
+
+    private void updateOpponentScore(String[] argTokens) {
+        //String str = NOTIFY_WORD_FOUND + " " + wordFound + " " + String.valueOf(pointValue);
+
+        //if we're playing cutThroat Mode
+        if(modeCutThroat)
+            wordsFound.add(argTokens[1]);
+
+        p2_score += Integer.valueOf(argTokens[2]);
+        updateTextView();
+        Toast.makeText(getApplicationContext(), "Player 2 Found a Word!", Toast.LENGTH_SHORT).show();
+    }
+
+    //used by guest to create a local board
+    private void receiveBoardData(String[] argTokens) {
+        //String str = SEND_BOARD_DATA + " " + diceAsString + " " + myScore + " " + myTimer + " " + yourScore + " " + yourTimer;
+
+        Toast.makeText(getApplicationContext(), "Receiving Board Data", Toast.LENGTH_SHORT).show();
+
+        String diceAsString = argTokens[1];
+        int myScore = Integer.valueOf(argTokens[2]);
+        long myTimer = Long.valueOf(argTokens[3]);
+        int P1_Timer = (int) myTimer;
+
+        int yourScore = Integer.valueOf(argTokens[4]);
+        long yourTimer = Long.valueOf(argTokens[5]);
+        int P2_timer = (int) yourTimer;
+
+
+        //to make sure dice are initailized
+        randomDice();
+
+        char[] diceArray = diceAsString.toCharArray();
+        for (int i = 0; i < dice.length; i++) {
+            dice[i].topLetter = String.valueOf(diceArray[i]);
+        }
+
+
+        //create a new board
+        try {
+            newBoard(dice, myScore, yourScore, P1_Timer, P2_timer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        //Notifies other player that the board setup is complete
+        sendReadyToPlay();
+
+        //buttonCreation();
+        resetBtnBackground();
+
+
+        Toast.makeText(getApplicationContext(), "Board Created!", Toast.LENGTH_SHORT).show();
+
+        //Now create your board from this information
+
+
+        //
+        //
+        // SEND_BOARD_DATA + diceAsString + myScore + myTimer + yourScore + yourTimer + possibleWords.toString()
+    }
+
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -674,6 +1100,23 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                     switch (msg.arg1) {
                         case BluetoothManager.STATE_CONNECTED:
                             Toast.makeText(getApplicationContext(), R.string.status_connected_to, Toast.LENGTH_SHORT).show();
+
+                            if (flag_host) {
+                                Toast.makeText(getApplicationContext(), "You're host.", Toast.LENGTH_SHORT).show();
+                                randomDice();
+                                //Create first board
+                                try {
+                                    newBoard(dice, 0, 0, 60, 60);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                //Send your board information over to guest
+                                sendBoardData(diceAsString(), p1_score, 60, p2_score, 60);
+
+                                //now wait to hear back from guest
+                            } else
+                                Toast.makeText(getApplicationContext(), "You're guest.", Toast.LENGTH_SHORT).show();
+                            //TODO: send init board to the guest
                             break;
                         case BluetoothManager.STATE_CONNECTING:
                             Toast.makeText(getApplicationContext(), R.string.status_connecting, Toast.LENGTH_SHORT).show();
@@ -704,8 +1147,38 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String rawMessage = new String(readBuf, 0, msg.arg1);
+
+                    String[] argTokens = rawMessage.split(" ");
+                    switch (argTokens[0]) {
+                        case NOTIFY_WORD_FOUND:
+                            updateOpponentScore(argTokens);
+                            break;
+
+                        case SEND_BOARD_DATA:
+                            receiveBoardData(argTokens);
+                            break;
+
+                        case END_GAME_GUEST:
+                            endGameHost(argTokens);
+                            break;
+
+                        case PLAYER_STOPPED_TIMER:
+                            opponentStoppedTimer(argTokens);
+                            break;
+                        case REQUEST_RESULTS_FROM_GUEST:
+                            sendResults();
+                            break;
+
+                        case READY_TO_PLAY:
+                             beginGame();
+                            break;
+
+                        case SHOW_RESULTS:
+                            showResultsPage();
+                            break;
+                    }
                     //do something
-                    Toast.makeText(getApplicationContext(), rawMessage, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), rawMessage, Toast.LENGTH_SHORT).show();
                     break;
             }
         }

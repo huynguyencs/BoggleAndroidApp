@@ -29,10 +29,19 @@
         <activity android:name=".MultiplayerMode" />
         <activity android:name=".MultiplayerBoard" />
         <activity android:name=".Instruction" />
-        <activity android:name=".Leaderboard" />
+        <activity android:name=".LeaderboardDisplay" />
         <activity android:name=".Results" />
-        <activity android:name=".BluetoothDeviceList" />
-        <activity android:name=".ShakeActivity"></activity>
+
+      
+        <activity android:name=".ShakeActivity">
+
+        <activity android:name=".MultiroundResults" />
+        <activity android:name=".BluetoothDeviceList"></activity>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
     </application>
 
 </manifest>

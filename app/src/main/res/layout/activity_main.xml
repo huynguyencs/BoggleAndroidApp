@@ -14,10 +14,9 @@
 
     <Button
         android:text="1 Player"
-        android:layout_width="160dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:id="@+id/onePlayer"
-        style="@style/Widget.AppCompat.Button"
         android:layout_centerVertical="true"
         android:layout_alignLeft="@+id/twoPlayer"
         android:layout_alignStart="@+id/twoPlayer"
@@ -30,7 +29,7 @@
 
     <Button
         android:text="2 Players"
-        android:layout_width="160dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:id="@+id/twoPlayer"
         android:backgroundTint="@android:color/holo_orange_dark"
@@ -45,7 +44,7 @@
 
     <Button
         android:text="Leaderboard"
-        android:layout_width="160dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:id="@+id/leaderBoard"
         android:backgroundTint="@android:color/holo_red_light"
@@ -59,7 +58,7 @@
 
     <Button
         android:text="Instruction"
-        android:layout_width="160dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:id="@+id/instruction"
         android:backgroundTint="@android:color/holo_red_dark"
@@ -74,10 +73,11 @@
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="350dp"
+        android:layout_height="200dp"
         android:src="@mipmap/pic5"
-        android:layout_marginTop="13dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
     <!--
