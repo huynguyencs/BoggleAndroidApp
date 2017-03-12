@@ -51,8 +51,7 @@ public class MultiroundResults extends AppCompatActivity {
 
                 @Override
                 public void onFinish() {
-                    Intent i = new Intent(MultiroundResults.this, MultiplayerBoard.class);
-                    startActivity(i);
+                    finish();
                 }
             };
             nextRoundTimer.start();
