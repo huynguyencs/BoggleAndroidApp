@@ -4,12 +4,14 @@
 
     <item
         android:id="@+id/connect_scan"
+
         android:title="Connect"
         app:showAsAction="ifRoom" />
 
 
     <item
         android:id="@+id/discoverable"
+
         android:title="Discoverable"
         app:showAsAction="ifRoom"/>
 </menu>

@@ -12,9 +12,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class GameDifficulty extends AppCompatActivity {
+
+    String gameLevel;
+
     private static String difficulty = "";
     private static String playerName = "";
     Toast toast;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,9 +29,11 @@ public class GameDifficulty extends AppCompatActivity {
         easyDifficulty.setOnClickListener (new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i("clicks","You Clicked Easy Difficulty.");
-                difficulty = "easy";
-                Intent i = new Intent(GameDifficulty.this, MainBoard.class);
-                startActivity(i);
+
+                gameLevel = "Easy";
+                Intent in = ShakeActivity.newIntent(GameDifficulty.this, gameLevel);
+                startActivity(in);
+
             }
         });
 
@@ -35,9 +41,11 @@ public class GameDifficulty extends AppCompatActivity {
         mediumDifficulty.setOnClickListener (new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i("clicks","You Clicked Medium Difficulty.");
-                difficulty = "medium";
-                Intent i = new Intent(GameDifficulty.this, MainBoard.class);
-                startActivity(i);
+
+                gameLevel = "Medium";
+                Intent in = ShakeActivity.newIntent(GameDifficulty.this, gameLevel);
+                startActivity(in);
+
             }
         });
 
@@ -45,9 +53,11 @@ public class GameDifficulty extends AppCompatActivity {
         hardDifficulty.setOnClickListener (new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i("clicks","You Clicked Hard Difficulty.");
-                difficulty = "hard";
-                Intent i = new Intent(GameDifficulty.this, MainBoard.class);
-                startActivity(i);
+
+                gameLevel = "Hard";
+                Intent in = ShakeActivity.newIntent(GameDifficulty.this, gameLevel);
+                startActivity(in);
+
             }
         });
 

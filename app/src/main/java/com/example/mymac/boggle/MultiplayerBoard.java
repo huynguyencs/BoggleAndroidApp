@@ -82,6 +82,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     static int roundCount = 0;
 
     /************
+
      * new varribles to be used for multiplayer
      ***********/
     public TextView p1_timerText;
@@ -159,6 +160,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     private BluetoothAdapter mBluetoothAdapter = null;
 
+
     // Member object for the chat services
     private BluetoothManager mBluetoothManager = null;
 
@@ -168,6 +170,9 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
+
+    // Member object for the chat services
+    private BluetoothManager mBluetoothManager = null;
 
 
     // Key names received from the BluetoothChatService Handler
@@ -199,6 +204,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         //shakeDetector = new ShakeDetector(this);
 
 
+
         //get location from buttons
         BtnLocation = new Point[16];
         mainScreen = (RelativeLayout) findViewById(R.id.activity_basic_mode);
@@ -217,6 +223,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         //Create Board Timer + User Score
         p1_timerText = (TextView) this.findViewById(R.id.p1_timer);
         p2_timerText = (TextView) this.findViewById(R.id.p2_timer);
+
 
         //p1_timer = new countDownTimer(60 * 1000, 1 * 1000);
         //p2_timer = new countDownTimer(60 * 1000, 1 * 1000);
@@ -242,6 +249,16 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                 mBluetoothManager = new BluetoothManager(this, mHandler);
         }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        } else {
+            if (mBluetoothManager == null)
+                mBluetoothManager = new BluetoothManager(this, mHandler);
+        }
     }
 
 
@@ -260,6 +277,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     */
 
     //Sets up the board with a number of helper functions
+
     private boolean newBoard(Die[] dice, int P1_score, int P2_score, int P1_time, int P2_time) throws IOException {
         while (true) {
 
@@ -401,6 +419,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
             if(!opponentTimerStopped)
                 p2_timerText.setText("Time Left: " + minutes + ":" + seconds);
             if (minutes < 2 && seconds <= 15) {
+
                 p1_timerText.setTextColor(Color.rgb(255, 0, 0));
                 p2_timerText.setTextColor(Color.rgb(255, 0, 0));
             }
@@ -410,6 +429,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     //Update score, alternating colors
     public void updateTextView() {
+
         TextView p1_textView = (TextView) findViewById(R.id.p1_score);
         TextView p2_textView = (TextView) findViewById(R.id.p2_score);
         p1_textView.setText("Player1 score: " + p1_score);
@@ -481,13 +501,16 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         p16_button.setOnTouchListener(this);
 
         Button submitBtn = (Button) findViewById(R.id.submit);
+
         Button stopTimer = (Button) findViewById(R.id.stopTimer);
+
 
 
         Button cancelBtn = (Button) findViewById(R.id.cancel);
 
         cancelBtn.setOnTouchListener(this);
         submitBtn.setOnTouchListener(this);
+
         stopTimer.setOnTouchListener(this);
 
 
@@ -526,10 +549,13 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                     ButtonHandler(dieNo);
                 if (v.getId() == R.id.cancel) {
                     //TODO cancel case create
+                    /*
                     Toast.makeText(getApplicationContext(), "PREVIOUS SELECTIONS HAVE BEEN CANCELLED!!!", Toast.LENGTH_SHORT).show();
                     resetBtnBackground();
                     selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
+                    */
+                    sendMessage("CANCEL BUTTON SENT");
                 }
 
                 if (v.getId() == R.id.stopTimer){
@@ -564,6 +590,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                         }
                     }
                 }
+
                 if (v.getId() == R.id.submit) {
                     System.out.println("Checking user's words to dictionary.");
                     //if user's submitted word is valid
@@ -764,6 +791,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     }
 
     @Override
+
     public void onPause(){
         super.onPause();
 
@@ -782,6 +810,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
             p2_timer.start();
         }
     */
+
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
@@ -821,6 +850,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
             mBluetoothManager.write(send);
         }
     }
+
 
     //Called when user finds a valid word
     private void notifyWordFound(String wordFound, int pointValue) {
@@ -1070,6 +1100,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                     switch (msg.arg1) {
                         case BluetoothManager.STATE_CONNECTED:
                             Toast.makeText(getApplicationContext(), R.string.status_connected_to, Toast.LENGTH_SHORT).show();
+
                             if (flag_host) {
                                 Toast.makeText(getApplicationContext(), "You're host.", Toast.LENGTH_SHORT).show();
                                 randomDice();
@@ -1116,6 +1147,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String rawMessage = new String(readBuf, 0, msg.arg1);
+
                     String[] argTokens = rawMessage.split(" ");
                     switch (argTokens[0]) {
                         case NOTIFY_WORD_FOUND:

@@ -1,120 +1,73 @@
 package com.example.mymac.boggle;
 
-import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.FloatMath;
 
-import java.util.LinkedList;
-import java.util.List;
-
-/**
- * Created by Simeng on 02/20/17.
- */
 public class ShakeDetector implements SensorEventListener {
 
-    private void attachSensor()
-    {
-        mSensorManager = (SensorManager) mContext.getSystemService(mContext.SENSOR_SERVICE);
-        List<Sensor> listOfSensorsOnDevice = mSensorManager.getSensorList(Sensor.TYPE_ALL);
-        for (int i = 0; i < listOfSensorsOnDevice.size(); i++) {
-            if (listOfSensorsOnDevice.get(i).getType() == Sensor.TYPE_ACCELEROMETER) {
-                init = false;
-                mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-                mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-                break;
-            }
-        }
+    /*
+     * The gForce that is necessary to register as shake.
+     * Must be greater than 1G (one earth gravity unit).
+     * You can install "G-Force", by Blake La Pierre
+     * from the Google Play Store and run it to see how
+     *  many G's it takes to register a shake
+     */
+    private static final float SHAKE_THRESHOLD_GRAVITY = 2.7F;
+    private static final int SHAKE_SLOP_TIME_MS = 500;
+    private static final int SHAKE_COUNT_RESET_TIME_MS = 3000;
+
+    private OnShakeListener mListener;
+    private long mShakeTimestamp;
+    private int mShakeCount;
+
+    public void setOnShakeListener(OnShakeListener listener) {
+        this.mListener = listener;
     }
 
-    public void stop() {
-        mSensorManager.unregisterListener(this);
-    }
-
-    interface Shakecallback {
-        void onShake();
-    }
-
-    public void register(Shakecallback shakecallback)
-    {
-        callBacks.add(shakecallback);
-    }
-
-    public void unregister(Shakecallback shakecallback)
-    {
-        callBacks.remove(shakecallback);
-    }
-
-    private boolean init;
-    private Sensor mAccelerometer;
-    private SensorManager mSensorManager;
-    private float x, y, z;
-    private static final float ERROR =  4f;
-    private List<Shakecallback> callBacks;
-    private Context mContext;
-
-    public ShakeDetector(Context context)
-    {
-        mContext = context;
-        callBacks = new LinkedList<>();
-        attachSensor();
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent e) {
-        //Get x,y and z values
-        float x,y,z;
-        x = e.values[0];
-        y = e.values[1];
-        z = e.values[2];
-
-
-        if (!init) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            init = true;
-        } else {
-
-            float diffX = Math.abs(this.x - x);
-            //  Log.d("TAG", "sens dif = " + diffX);
-            float diffY = Math.abs(this.y - y);
-            //  Log.d("TAG", "sens dif = " + diffY);
-            float diffZ = Math.abs(this.z - z);
-            // Log.d("TAG", "sens dif = " + diffZ);
-
-            //Handling ACCELEROMETER Noise
-            if (diffX < ERROR) {
-
-                diffX =  0f;
-            }
-            if (diffY < ERROR) {
-                diffY = 0f;
-            }
-            if (diffZ < ERROR) {
-
-                diffZ = 0f;
-            }
-
-
-            this.x = x;
-            this.y = y;
-            this.z = z;
-
-
-            //Horizontal Shake Detected!
-            if (diffX > diffY && diffX > diffZ) {
-                for ( Shakecallback callBack : callBacks){
-                    callBack.onShake();
-                }
-            }
-        }
-
+    public interface OnShakeListener {
+        public void onShake(int count);
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // ignore
+    }
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        if (mListener != null) {
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+
+            float gX = x / SensorManager.GRAVITY_EARTH;
+            float gY = y / SensorManager.GRAVITY_EARTH;
+            float gZ = z / SensorManager.GRAVITY_EARTH;
+
+            // gForce will be close to 1 when there is no movement.
+            float gForce = (float)Math.sqrt(gX * gX + gY * gY + gZ * gZ);
+
+            if (gForce > SHAKE_THRESHOLD_GRAVITY) {
+                final long now = System.currentTimeMillis();
+                // ignore shake events too close to each other (500ms)
+                if (mShakeTimestamp + SHAKE_SLOP_TIME_MS > now) {
+                    return;
+                }
+
+                // reset the shake count after 3 seconds of no shakes
+                if (mShakeTimestamp + SHAKE_COUNT_RESET_TIME_MS < now) {
+                    mShakeCount = 0;
+                }
+
+                mShakeTimestamp = now;
+                mShakeCount++;
+
+                mListener.onShake(mShakeCount);
+            }
+        }
     }
 }
