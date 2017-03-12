@@ -46,38 +46,6 @@ public class ShakeActivity extends Activity {
                 startActivity(in);
             }
         });
-
-        /*
-        shake_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(Mode.equals("SinglePlayer")) {
-                    //System.out.println("SHAKE count " + count);
-                    Intent in = spNewGame.newIntent(ShakeActivity.this, Level);
-                    startActivity(in);
-                }
-
-                else if(Mode.equals("BASIC")) {
-                    // System.out.println("SHAKE count " + count);
-                    Intent in = mpNewGame.newIntent(ShakeActivity.this, Level, PlayerType, "BASIC");
-                    startActivity(in);
-                }
-                else if(Mode.equals("CUTTHROAT")) {
-                    //System.out.println("SHAKE count " + count);
-                    Intent in = mpNewGame.newIntent(ShakeActivity.this, Level, PlayerType, "CUTTHROAT");
-                    startActivity(in);
-                }
-                else if(Mode.equals("ROUNDS")) {
-                    //System.out.println("SHAKE count " + count);
-                    Intent in = mpNewGame.newIntent(ShakeActivity.this, Level, PlayerType, "ROUNDS");
-                    startActivity(in);
-                }
-
-            }
-        });
-        */
-
-
     }
 
     @Override
