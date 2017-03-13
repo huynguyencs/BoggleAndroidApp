@@ -44,6 +44,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
     public TextView user_score;
     private int userScore;
     private CountDownTimer timer;
+    private boolean isPause = false;
 
     //Set of 16 dice of the current board
     public Die[] dice;
@@ -220,6 +221,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
         }
         @Override
         public void onTick(long millisUntilFinished) {
+            if(isPause) cancel();
             long total_seconds = millisUntilFinished / 1000;
             long seconds = total_seconds % 60;
             long minutes = total_seconds / 60;
@@ -384,6 +386,12 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
                                 Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                                 updateTextView();
                                 resetBtnBackground();
+
+                                timer.cancel();
+                                isPause = true;
+                                timer = new countDownTimer(120 * 1000, 1 * 1000);
+                                timer.start();
+                                isPause = false;
                             }
                         }
                         else{
