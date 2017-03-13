@@ -95,7 +95,7 @@ public class MainBoard extends AppCompatActivity implements View.OnTouchListener
         setContentView(R.layout.activity_main_board);
 
         Bundle extras = getIntent().getExtras();
-        String gameLevel = extras.getString("LEVEL");
+        //String gameLevel = extras.getString("LEVEL");
 
         randomDice(); //Generates a new set of random dice
 

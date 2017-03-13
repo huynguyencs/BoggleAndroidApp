@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.graphics.Color;
 
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -94,6 +95,7 @@ class ResultsAdapter extends BaseAdapter {
                 case TYPE_BOLD_ITEM:
                     convertView = mInflater.inflate(R.layout.snippet_item3, null);
                     holder.textView = (TextView) convertView.findViewById(R.id.textBold);
+                    holder.textView.setBackgroundColor(Color.argb(255,250,231,185));
                     break;
             }
             convertView.setTag(holder);

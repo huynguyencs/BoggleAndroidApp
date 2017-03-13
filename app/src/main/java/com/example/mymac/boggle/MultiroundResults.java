@@ -18,6 +18,12 @@ public class MultiroundResults extends AppCompatActivity {
     public CountDownTimer nextRoundTimer;
     public Button doneButton;
 
+    @Override
+    protected void onStart(){
+        super.onStart();
+        System.out.print("Multiround onStart");
+    }
+
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
@@ -51,7 +57,7 @@ public class MultiroundResults extends AppCompatActivity {
 
                 @Override
                 public void onFinish() {
-                    finish();
+                    finish ();
                 }
             };
             nextRoundTimer.start();

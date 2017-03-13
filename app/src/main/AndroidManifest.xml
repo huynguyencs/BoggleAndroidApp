@@ -33,7 +33,7 @@
         <activity android:name=".Results" />
 
       
-        <activity android:name=".ShakeActivity">
+        <activity android:name=".ShakeActivity" />
 
         <activity android:name=".MultiroundResults" />
         <activity android:name=".BluetoothDeviceList"></activity>

@@ -80,6 +80,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     boolean modeCutThroat = false;
     boolean gameOver = false;
     static int roundCount = 0;
+    boolean isMidGame = true;
 
     /************
 
@@ -98,7 +99,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     private static CountDownTimer p1_timer;
     private static CountDownTimer p2_timer;
-    private boolean timersRunning;
+    private boolean isPaused;
+    private boolean loser = false;
 
 
 
@@ -171,9 +173,6 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
 
-    // Member object for the chat services
-    private BluetoothManager mBluetoothManager = null;
-
 
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
@@ -238,16 +237,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-        } else {
-            if (mBluetoothManager == null)
-                mBluetoothManager = new BluetoothManager(this, mHandler);
-        }
+
 
     @Override
     public void onStart() {
@@ -309,27 +299,34 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
             //if this is the first round
             if(roundCount < 1) {
-                if(timersRunning) {
+                if(!isPaused && p1_timer != null) {
                     p1_timer.cancel();
                     p2_timer.cancel();
-                    timersRunning = false;
+                    isPaused = true;
                 }
+
                 p1_timer = new countDownTimer(60 * 1000, 1 * 1000);
+                ((countDownTimer) p1_timer).isTimer1 = true;
                 p2_timer = new countDownTimer(60 * 1000, 1 * 1000);
+                ((countDownTimer) p2_timer).isTimer1 = false;
                 p1_timer.start();
                 p2_timer.start();
+                isPaused = false;
             }
 
             else {
-                if(timersRunning) {
+                if(!isPaused) {
                     p1_timer.cancel();
                     p2_timer.cancel();
-                    timersRunning = false;
+                    isPaused = true;
                 }
                 p1_timer = new countDownTimer(P1_time * 1000, 1 * 1000);
+                ((countDownTimer) p1_timer).isTimer1 = true;
                 p2_timer = new countDownTimer(P2_time * 1000, 1 * 1000);
+                ((countDownTimer) p2_timer).isTimer1 = false;
                 p1_timer.start();
                 p2_timer.start();
+                isPaused = false;
             }
 
 
@@ -384,6 +381,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     public class countDownTimer extends CountDownTimer {
 
         public long secondsRemaining = 0;
+        public boolean isTimer1;
 
         public countDownTimer(long startTime, long interval) {
             super(startTime, interval);
@@ -392,9 +390,15 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         @Override
         public void onFinish() {
 
-            timersRunning = false;
+            isPaused = true;
             //mark that someone has ran out of time
             gameOver = true;
+
+            if(isTimer1) {
+                p1_timerText.setText("TIME'S UP!");
+                loser = true;
+            }
+            else
 
             p1_timerText.setText("TIME'S UP!");
             p2_timerText.setText("TIME'S UP!");
@@ -409,19 +413,23 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
         @Override
         public void onTick(long millisUntilFinished) {
-            timersRunning = true;
-            long total_seconds = millisUntilFinished / 1000;
-            secondsRemaining = total_seconds;
-            long seconds = total_seconds % 60;
-            long minutes = total_seconds / 60;
-            if(!myTimerStopped)
-                p1_timerText.setText("Time Left: " + minutes + ":" + seconds);
-            if(!opponentTimerStopped)
-                p2_timerText.setText("Time Left: " + minutes + ":" + seconds);
-            if (minutes < 2 && seconds <= 15) {
+            if(isPaused) {
+                cancel();
+            }
+            else {
+                long total_seconds = millisUntilFinished / 1000;
+                secondsRemaining = total_seconds;
+                long seconds = total_seconds % 60;
+                long minutes = total_seconds / 60;
+                if (!myTimerStopped && isTimer1)
+                    p1_timerText.setText("Time Left: " + minutes + ":" + seconds);
+                if (!opponentTimerStopped && !isTimer1)
+                    p2_timerText.setText("Time Left: " + minutes + ":" + seconds);
+                if (minutes < 2 && seconds <= 15) {
 
-                p1_timerText.setTextColor(Color.rgb(255, 0, 0));
-                p2_timerText.setTextColor(Color.rgb(255, 0, 0));
+                    p1_timerText.setTextColor(Color.rgb(255, 0, 0));
+                    p2_timerText.setTextColor(Color.rgb(255, 0, 0));
+                }
             }
         }
 
@@ -548,13 +556,12 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                 if (dieNo != -1)
                     ButtonHandler(dieNo);
                 if (v.getId() == R.id.cancel) {
-                    //TODO cancel case create
-                    /*
+
                     Toast.makeText(getApplicationContext(), "PREVIOUS SELECTIONS HAVE BEEN CANCELLED!!!", Toast.LENGTH_SHORT).show();
                     resetBtnBackground();
                     selectingWord.delete(0, selectingWord.length());
                     flag = new boolean[16];
-                    */
+;
                     sendMessage("CANCEL BUTTON SENT");
                 }
 
@@ -569,7 +576,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
                         long minutes = myTimer / 60;
                         p1_timerText.setText("Time Left: " + minutes + ":" + seconds);
                         p1_timer.cancel();
-                        timersRunning = false;
+                        isPaused = false;
                         myTimerStopped = true;
                         Toast.makeText(getApplicationContext(), "You've Stopped Your Timer!", Toast.LENGTH_SHORT).show();
                         //It your the first to stop the timer, notify opponenet
@@ -794,6 +801,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     public void onPause(){
         super.onPause();
+        System.out.print("onPause called");
 
         //stop the current timer
         //p1_timer.cancel();
@@ -804,6 +812,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     @Override
     public void onResume() {
         super.onResume();
+        System.out.print("onResume called");
+
 
         /*if(p1_timer != null) {
             p1_timer.start();
@@ -930,6 +940,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         }
 
 
+
         int opponentScore = Integer.valueOf(argTokens[1]);
         int myScore = p1_score;
 
@@ -953,29 +964,27 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         int opponentNextRoundTime = p2_score + opponentRemainingTime;
 
 
-        //just in case they arnt already canceled
 
-        //tell guest to show results page
-        showResultsMessage();
 
-        //Show your own results page
-        Intent i = new Intent(this, MultiroundResults.class);
-        startActivity(i);
+
+
 
         //if someone has ran out of time
         if(gameOver || myRemainingTime < 2 ){
             Toast.makeText(getApplicationContext(), "The Game has ended!", Toast.LENGTH_SHORT).show();
-
-            if(myTotalGameScore < opponentTotalGameScore)
-                Toast.makeText(getApplicationContext(), "You Lost!", Toast.LENGTH_SHORT).show();
-            else
-                Toast.makeText(getApplicationContext(), "You Won!", Toast.LENGTH_SHORT).show();
+            isMidGame = false;
+            showResultsMessage();
+            startResultPage();
         }
 
         //Start a new round
         else {
             //create board for next round
             roundCount += 1;
+
+            isMidGame = true;
+            showResultsMessage(); //tells guest to show page
+            startResultPage(); //Show ma own page
             randomDice();
 
             try {
@@ -992,6 +1001,14 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     }
 
+    private void startResultPage(){
+        Intent i = new Intent(this, MultiroundResults.class);
+        i.putExtra("p1_score", p1_score);
+        i.putExtra("p2_score", p2_score);
+        i.putExtra("isMidGame", isMidGame);
+        startActivity(i);
+    }
+
     //called when the player presses the StopTimer button
     private void playerStoppedTimer(String playerTime) {
         String str = PLAYER_STOPPED_TIMER + " " + playerTime;
@@ -1003,8 +1020,7 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
     /**Handler Helper Functions*/
 
     private void showResultsPage(){
-        Intent i = new Intent(this, MultiroundResults.class);
-        startActivity(i);
+        startResultPage();
     }
 
     private void beginGame() {
