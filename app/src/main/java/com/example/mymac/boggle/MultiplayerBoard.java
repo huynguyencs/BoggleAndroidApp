@@ -1014,10 +1014,10 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
 
     private void startResultPage(){
         Intent i = new Intent(this, MultiroundResults.class);
-        i.putExtra("p1_score", p1_score);
-        i.putExtra("p2_score", p2_score);
         i.putExtra("isMidGame", isMidGame);
         i.putExtra("isLoser", loser);
+        i.putExtra("p1_timer", ""+p1_timer);
+        i.putExtra("p2_timer", ""+p2_timer);
         startActivity(i);
         if(gameOver) {
             finish();
