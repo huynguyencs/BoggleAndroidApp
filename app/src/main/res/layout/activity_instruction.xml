@@ -12,7 +12,7 @@
     tools:context="com.example.mymac.boggle.Instruction">
 
     <TextView
-        android:text="The game starts by shaking the phone. The dice fall into a 4x4 game board. Players then have some 3 minutes to select as many words of 3 or more letters as they can. Repeated words only count once. The words must be formed from sequentially adjacent cubes, which are horizontal, vertical or diagonal neighbors. Words can be in singular, plural or other derived forms. Each cube letter can be used only once in a single word. A candidate word is submitted by sliding a finger over dice on the screen. "
+        android:text="The game starts by shaking the phone. The dice fall into a 4x4 game board. Players then have 3 minutes to select as many 3 or more letter words as possible. Repeated words only count once. The words must be formed from sequentially adjacent cubes, which are horizontal, vertical or diagonal neighbors. Words can be in singular, plural or other derived forms. Each cube letter can be used only once in a single word. A candidate word is selected by either sliding a finger over all desired dice or clicking each die individual. Once a word is selected the submit button must be pressed to verify word. "
         android:layout_width="295dp"
         android:layout_height="wrap_content"
         android:id="@+id/instructionText"

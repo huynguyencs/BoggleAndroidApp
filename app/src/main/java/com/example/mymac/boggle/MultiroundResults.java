@@ -33,12 +33,12 @@ public class MultiroundResults extends AppCompatActivity {
         playerTwoScore = (TextView) findViewById(R.id.playerTwoScore);
 
         Intent intent = getIntent();
-        Integer p1Score = intent.getIntExtra("p1_score", 0);
-        Integer p2Score = intent.getIntExtra("p2_score", 0);
+        String p1Time = intent.getStringExtra("p1_time");
+        String p2Time = intent.getStringExtra("p2_time");
         Boolean isMidGame = intent.getBooleanExtra("isMidGame", true);
         boolean isLoser = intent.getBooleanExtra("isLoser", false);
-        playerOneScore.setText(""+p1Score);
-        playerTwoScore.setText(""+p2Score);
+        playerOneScore.setText(p1Time);
+        playerTwoScore.setText(p2Time);
 
         timerText = (TextView) findViewById(R.id.timerNextRound);
         doneButton = (Button) findViewById(R.id.buttonEndGameResults);
