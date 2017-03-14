@@ -16,7 +16,7 @@
         android:layout_weight="0.08">
 
         <TextView
-            android:text="player one Timer"
+            android:text="You"
             android:id="@+id/playerOneTitle"
             android:layout_weight="1"
             android:layout_width="191dp"
@@ -28,7 +28,7 @@
             android:textAlignment="center" />
 
         <TextView
-            android:text="player Two Timer"
+            android:text="Opponent"
             android:layout_height="match_parent"
             android:id="@+id/playerTwoTitle"
             android:layout_weight="1"

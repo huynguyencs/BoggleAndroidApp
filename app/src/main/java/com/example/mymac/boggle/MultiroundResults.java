@@ -33,17 +33,18 @@ public class MultiroundResults extends AppCompatActivity {
         playerTwoScore = (TextView) findViewById(R.id.playerTwoScore);
 
         Intent intent = getIntent();
-        String p1Time = intent.getStringExtra("p1_time");
-        String p2Time = intent.getStringExtra("p2_time");
+        String p1Time = intent.getStringExtra("p1_timer");
+        String p2Time = intent.getStringExtra("p2_timer");
         Boolean isMidGame = intent.getBooleanExtra("isMidGame", true);
         boolean isLoser = intent.getBooleanExtra("isLoser", false);
+        boolean modeCutThroat = intent.getBooleanExtra("modeCutThroat", false);
         playerOneScore.setText(p1Time);
         playerTwoScore.setText(p2Time);
 
         timerText = (TextView) findViewById(R.id.timerNextRound);
         doneButton = (Button) findViewById(R.id.buttonEndGameResults);
 
-        if (isMidGame) {
+        if (isMidGame && !modeCutThroat) {
             timerTitle = (TextView) findViewById(R.id.nextRoundTimerTitle);
             timerTitle.setText("Time until next round:");
 
@@ -64,10 +65,18 @@ public class MultiroundResults extends AppCompatActivity {
             nextRoundTimer.start();
         } else {
             String winner;
-            if (isLoser) {
-                winner = "You Lost";
+            if(modeCutThroat){
+                if(Integer.valueOf(p1Time) > Integer.valueOf(p2Time)) {
+                    winner = "You Won";
+                }else {
+                    winner = "You Lost";
+                }
             } else {
-                winner = "You Won";
+                if (isLoser) {
+                    winner = "You Lost";
+                } else {
+                    winner = "You Won";
+                }
             }
             timerText.setText(winner);
             doneButton.setOnClickListener(new View.OnClickListener() {

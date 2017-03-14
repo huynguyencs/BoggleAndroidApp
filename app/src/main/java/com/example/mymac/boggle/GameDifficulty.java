@@ -31,6 +31,7 @@ public class GameDifficulty extends AppCompatActivity {
                 Log.i("clicks","You Clicked Easy Difficulty.");
 
                 gameLevel = "Easy";
+                difficulty = "easy";
                 Intent in = ShakeActivity.newIntent(GameDifficulty.this, gameLevel);
                 startActivity(in);
 
@@ -43,6 +44,7 @@ public class GameDifficulty extends AppCompatActivity {
                 Log.i("clicks","You Clicked Medium Difficulty.");
 
                 gameLevel = "Medium";
+                difficulty = "medium";
                 Intent in = ShakeActivity.newIntent(GameDifficulty.this, gameLevel);
                 startActivity(in);
 
@@ -55,6 +57,7 @@ public class GameDifficulty extends AppCompatActivity {
                 Log.i("clicks","You Clicked Hard Difficulty.");
 
                 gameLevel = "Hard";
+                difficulty = "medium";
                 Intent in = ShakeActivity.newIntent(GameDifficulty.this, gameLevel);
                 startActivity(in);
 

@@ -973,8 +973,8 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         int myRemainingTime = (int) myTimer;
         int opponentRemainingTime = (int) opponentTimer;
 
-        int myNextRoundTime = (p1_score * 30) + myRemainingTime;
-        int opponentNextRoundTime = (p2_score * 30) + opponentRemainingTime;
+        int myNextRoundTime = (p1_score * 10) + myRemainingTime;
+        int opponentNextRoundTime = (p2_score * 10) + opponentRemainingTime;
 
 
 
@@ -1016,8 +1016,18 @@ public class MultiplayerBoard extends AppCompatActivity implements View.OnTouchL
         Intent i = new Intent(this, MultiroundResults.class);
         i.putExtra("isMidGame", isMidGame);
         i.putExtra("isLoser", loser);
-        i.putExtra("p1_timer", ""+p1_timer);
-        i.putExtra("p2_timer", ""+p2_timer);
+        i.putExtra("modeCutThroat", modeCutThroat);
+        if(!modeCutThroat) {
+            long myTimer = ((countDownTimer) p1_timer).secondsRemaining;
+            int p1_time = (int) myTimer;
+            long opponentTimer = ((countDownTimer) p2_timer).secondsRemaining;
+            int p2_time = (int) opponentTimer;
+            i.putExtra("p1_timer", "" + p1_time);
+            i.putExtra("p2_timer", "" + p2_time);
+        }else {
+            i.putExtra("p1_timer", "" + p1_score);
+            i.putExtra("p2_timer", "" + p2_score);
+        }
         startActivity(i);
         if(gameOver) {
             finish();
