@@ -36,6 +36,7 @@ public class MultiroundResults extends AppCompatActivity {
         Integer p1Score = intent.getIntExtra("p1_score", 0);
         Integer p2Score = intent.getIntExtra("p2_score", 0);
         Boolean isMidGame = intent.getBooleanExtra("isMidGame", true);
+        boolean isLoser = intent.getBooleanExtra("isLoser", false);
         playerOneScore.setText(""+p1Score);
         playerTwoScore.setText(""+p2Score);
 
@@ -63,12 +64,10 @@ public class MultiroundResults extends AppCompatActivity {
             nextRoundTimer.start();
         } else {
             String winner;
-            if (p1Score > p2Score) {
-                winner = "Player one Wins";
-            } else if (p1Score < p2Score) {
-                winner = "Player Two Wins";
+            if (isLoser) {
+                winner = "You Lost";
             } else {
-                winner = "DRAW";
+                winner = "You Won";
             }
             timerText.setText(winner);
             doneButton.setOnClickListener(new View.OnClickListener() {
